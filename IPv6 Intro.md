@@ -8,7 +8,7 @@ IPv4 和 IPv6 设计上并不是互操作的，但是有IPv6转换机制来允�
 
 Windows 能够同时支持 ipv4 和ipv6两种网络
 
-![1547536861493](E:\Resource\new comer training\IPv6\img\1547536861493.png)
+![1547536861493](img\1547536861493.png)
 
 
 
@@ -42,15 +42,15 @@ Windows 能够同时支持 ipv4 和ipv6两种网络
 
 IPv6 contain two part  a header and payload.  payloay must be less than 64KB by default . With a Jumbo Payload option (in a *Hop-By-Hop Options* extension header), the payload must be less than 4 GB.
 
-![ipv6_header_structure](E:\Resource\new comer training\IPv6\img\ipv6_header_structure.bmp)
+![ipv6_header_structure](img\ipv6_header_structure.bmp)
 
 ## IPv6 Header
 
 ipv4 vs ipv6
 
-![ipv6_ipv4](E:\Resource\new comer training\IPv6\img\ipv6_ipv4.png)
+![ipv6_ipv4](img\ipv6_ipv4.png)
 
-![ipv6_header](E:\Resource\new comer training\IPv6\img\ipv6_header.png)
+![ipv6_header](img\ipv6_header.png)
 
 ### Traffic Class (6+2): 
 
@@ -95,7 +95,7 @@ Indicates either the type of the first extension or the protocol in the upper-la
 
 
 
-![ip_v5_next_header](E:\Resource\new comer training\IPv6\img\ip_v5_next_header.png)
+![ip_v5_next_header](img\ip_v5_next_header.png)
 
 ( Protocol Data Unit(PDU)   ARP based for IPv4, IPv6 Realization function for Neighbor Discovery Protocol)
 
@@ -105,10 +105,10 @@ Indicates either the type of the first extension or the protocol in the upper-la
 
 - The Hop-by-Hop Options header is use to specify delivery parameter at each hop on the path to the destination 
 
-  ![hop_by_hop_header](E:\Resource\new comer training\IPv6\img\hop_by_hop_header.png)
+  ![hop_by_hop_header](img\hop_by_hop_header.png)
 
 
-![hop_by_hop](E:\Resource\new comer training\IPv6\img\hop_by_hop.png)
+![hop_by_hop](img\hop_by_hop.png)
 
 - **Next Header (8 bits)** 
 
@@ -125,7 +125,7 @@ Indicates either the type of the first extension or the protocol in the upper-la
 
 #### Routing
 
-![routing_header](E:\Resource\new comer training\IPv6\img\routing_header.png)
+![routing_header](img\routing_header.png)
 
 - **Next Header (8 bits)**
 
@@ -157,7 +157,7 @@ Indicates either the type of the first extension or the protocol in the upper-la
 
 21DA:00D3:0000:2F3B:02AA:00FF:FE28:9C5A
 
-![ipv6_address](E:\Resource\new comer training\IPv6\img\ipv6_address.png)
+![ipv6_address](img\ipv6_address.png)
 
 
 
@@ -190,7 +190,7 @@ The structure of global unicast addresses defined in RFC 3587 . The three high-o
 
 Global Routing Prefix
 
-![gloable_address](E:\Resource\new comer training\IPv6\img\gloable_address.png)
+![gloable_address](img\gloable_address.png)
 
 (可在全球范围内路由和到达的，相当于IPv4里面的global addresses。前三个bit是001
 
@@ -204,7 +204,7 @@ Link-Local addresses always begin with FE80
 
 Link-Local addresses are used between on-link neighbors and for Neighbor Discovery processes.
 
-![local_address_format](E:\Resource\new comer training\IPv6\img\local_address_format.png)
+![local_address_format](img\local_address_format.png)
 
 ( 用于同一个链路上的相邻节点之间通信，相当于IPv4里面的169.254.0.0/16地址。Ipv6的路由器不会转发链路本地地址的数据包。前10个bit是1111 1110 10，由于最后是64bit的interface ID，所以它的前缀总是FE80::/64
 例如：FE80::1 )
@@ -213,7 +213,7 @@ Link-Local addresses are used between on-link neighbors and for Neighbor Discove
 
 #### EUI-64 Mac Addresss
 
-![eui_64_mac_address](E:\Resource\new comer training\IPv6\img\eui_64_mac_address.png)
+![eui_64_mac_address](img\eui_64_mac_address.png)
 
 Used for Stateless Address Configuration.
 
@@ -224,7 +224,7 @@ Used for Stateless Address Configuration.
 - The first 10 bits are always fixed for site-local addresses, beginning with FEC0::/10
 - Equivalent to the IPv4 private address space (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16)
 
-![ipv6_site_local_address](E:\Resource\new comer training\IPv6\img\ipv6_site_local_address.png)
+![ipv6_site_local_address](img\ipv6_site_local_address.png)
 
 (对于无法访问internet的本地网络，可以使用站点本地地址，这个相当于IPv4里面的private address（10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16）。它的前10个bit是1111 1110 11，它最后是16bit的Subnet ID和64bit的interface ID，所以它的前缀是FEC0::/48。
 
@@ -235,7 +235,7 @@ Used for Stateless Address Configuration.
 - All local addresses have the address prefix FC00::/7
 - The Local (L) flag is set 1 to indicate that the prefix is locally assigned: FD00::/8
 
-![ipv6_unique_local_address](E:\Resource\new comer training\IPv6\img\ipv6_unique_local_address.png)
+![ipv6_unique_local_address](img\ipv6_unique_local_address.png)
 
 (在RFC4193中标准化了一种用来在本地通信中取代单播站点本地地址的地址。ULA拥有固定前缀FD00::/8，后面跟一个被称为全局ID的40bit随机标识符)
 
@@ -306,11 +306,11 @@ Defined Values for the Scope Field
 
 #### Solicited-Node Address
 
-![solicited_note_address](E:\Resource\new comer training\IPv6\img\solicited_note_address.png)
+![solicited_note_address](img\solicited_note_address.png)
 
 #### Mapping IPv6 Multicast Addresses to Ethernet Addresses
 
-![multicast_address2](E:\Resource\new comer training\IPv6\img\multicast_address2.png)
+![multicast_address2](img\multicast_address2.png)
 
 
 
@@ -322,7 +322,7 @@ Address of a set of interfaces One-to-one-of-many delivery to a single interface
 
 在IP网络上通过一个Anycast地址标识一组提供特定服务的主机，同时服务访问方并不关心提供服务的具体是哪一台主机（比如DNS或者镜像服务），访问该地址的报文可以被IP网络路由到这一组目标中的任何一台主机上，它提供的是一种无状态的、尽力而为的服务)
 
-![anycast](E:\Resource\new comer training\IPv6\img\anycast.png)
+![anycast](img\anycast.png)
 
 ( Anycast addresses are used only as destination addresses and are assigned only to routers) 
 

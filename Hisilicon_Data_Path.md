@@ -1,5 +1,3 @@
-
-
 # Hisilicon Data Flow Path
 
 ## Hisilicon Chip  Architecture
@@ -76,9 +74,9 @@ PLOAM (Physical Layer OAM)，OMCI (ONU Management and Control Interface)，OAM�
 
 1. **首包交CPU由软件转发，由软件控制数据流的走向。** 
      		1. 芯片交换L2模块，配置广播报文，未知单播报文交CPU，由软件处理 
-     		2. 芯片交换PDU模块，配置组播协议报文(IGMP|MLD)都交CPU，由软件处理。
-     		3. Flow 模块，配置IFC使目的MAC与桥设备(br-lan)MAC相等的报文指定去做硬件NAT加速。（初始硬件NAT表为空，由于加速失败也会交CPU，由软件处理）
-     		4. Port 模块，配置LAN侧所有端口，入口untag报文打上deftag。出口带deftag的报文剥除tag。（默认deftag 的vid是1）
+                   		2. 芯片交换PDU模块，配置组播协议报文(IGMP|MLD)都交CPU，由软件处理。
+               		3. Flow 模块，配置IFC使目的MAC与桥设备(br-lan)MAC相等的报文指定去做硬件NAT加速。（初始硬件NAT表为空，由于加速失败也会交CPU，由软件处理）
+                         		4. Port 模块，配置LAN侧所有端口，入口untag报文打上deftag。出口带deftag的报文剥除tag。（默认deftag 的vid是1）
 2. **数据流在软件走通后，配置芯片交换各模块功能，使其实现与软转发相同功能。 **
 3. **数据流由芯片交换转发，软件只进行监测（控制老化等）**
 
@@ -134,12 +132,9 @@ Port 和 QID 对应表
 | cli /home/cli/cfe/lrn/lrn_dump            | 查看加速连接         | 此命令打印出当前已经建立的 表项，类似内核contrack 。 分为原始和回应方向。 |
 | cli /home/cli/cfe/lrn/lrn_flush           | 清除所有加速连接     |                                                              |
 | cli /home/cli/cfe/lrn/lrn_setcfg          | 关闭加速             | -v enable 0                                                  |
-| cli /home/cli/cfe/dia/dump_intf           | 查看接口参数         | ifname <接口名>
-ethx , pon.xxx                                |
-| cli /home/cli/cfe/dia/hook_add            | 指定点进行报文打印   | pos ：要打印的未知(参见表3-2)
-cnt ：打印报文个数              |
+| cli /home/cli/cfe/dia/dump_intf           | 查看接口参数         | ifname <接口名> e.g. (ethx , pon.xxx)                        |
+| cli /home/cli/cfe/dia/hook_add            | 指定点进行报文打印   | pos ：要打印的未知(参见表3-2) cnt ：打印报文个数             |
 | cli /home/cli/cfe/dia/hook_clear          | 清除打印 hook        |                                                              |
-
 
 
 ### Debug Control Command
@@ -160,20 +155,29 @@ cnt ：打印报文个数              |
 
 ## FAQ:
 
-### 1) 如何查看硬件加速 （NAT/NAPT）？
+### 1. 如何查看硬件加速 （NAT/NAPT）？
+```
+$cli /home/cli/cfe/lrn/lrn_dump
+```
+![image](img\hi_napt_result.png)
 
 
-
-### 3) Nnimap ?
-
+### 2. Nnimap ?
 NNI 网络侧端口所对应的 table。猜测是用于OLT子网间的用途
 
 
+### 3. dmac ,car , pri , dscp , fdb? 
+dmac( destnation mac,) ;  dscp DSCP 差分服务标记字段（Different Service Code Point） , also call TOS (Type of Services) in IP frame ; car: also call  traffic car , is for traffic flow count; fdb (Forwarding Database) : table for router forward
 
-## 4) dmac ,car , pri , dscp , fdb? 
 
-dmac( destnation mac,) ;  dscp DSCP 差分服务标记字段（Different Service Code Point）在IP包头里称为TOS,
+### 4. 如何查看 vlan 以及绑定信息?
+```
+cli /home/cli/hal/sec/sec_vlan_dump
+```
+![image](img\hi_vlan_dump_result.png)
 
-car/ traffic car : traffic flow controller ; fdb (Forwarding Database) : table for router forward
 
-## 5) 如何查看 vlan 以及绑定信息?
+
+### 5. Update Devices Info
+
+$hi_cfm set sysinfo.gateway_mac  hi_cfm get sysinfo.gateway_mac 

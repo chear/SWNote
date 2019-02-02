@@ -8,3 +8,12 @@ $brctl show
 
 
 
+
+
+# 2. switch bewteen ePon and gPon.
+
+ePon :
+WAN working mode = 4
+
+gPon:
+WAN working mode = 1

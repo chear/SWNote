@@ -28,7 +28,7 @@ PLOAM (Physical Layer OAM)，OMCI (ONU Management and Control Interface)，OAM�
 
 ### Switch Exchange Forward
 
-​![image](E:/Resource/MitrastarNote/img/hisi_data_path.png)
+![image](E:/Resource/MitrastarNote/img/hisi_data_path.png)
 	Hisi 数据交换流程包括从交换芯片到Linux 协议栈再到用户空间程序的过程。(注：511xs 不支持L3模块 )
 
 1. UNI --> SEC: 对报文进行 vlan 过滤，源mac过滤，ip过滤
@@ -66,21 +66,36 @@ PLOAM (Physical Layer OAM)，OMCI (ONU Management and Control Interface)，OAM�
 
 ### Router Forward
 
-路由转发报文的 dmac 必须是对应的具有  IP 转发能力网络接口本身的 mac 。 对于lan 侧，只有桥网络接口具有 ip 转发能力 （br-lan 有 ip ，桥下的其他网络接口不允许有 ip ），br-lan 统一处理 ip 转发。 故上行数据流的 dmac 是 br-lan 的mac ，由桥转发流程可知，对于 dmac 为桥的报文，直接由 br-lan 接受并送到 ip 协议栈。 ip 协议栈内， 按报文的 Dip 查找路由表，若为本地报文，则由本地接受。否则找到出口 dev 以及下一跳， 通过 ARP 协议获取下一条的 mac 地址，组装报文发出。
+路由转发报文的 dmac 必须是对应的具有  IP 转发能力网络接口本身的 mac 。 对于lan 侧，只有桥网络接口具有 ip 转发能力 （br-lan 有 ip ，桥下的其他网络接口不允许有 ip ），br-lan 统一处理 ip 转发。 故上行数据流的 dmac 是 br-lan 的mac ，由桥转发流程可知，对于 dmac 为桥的报文，直接由 br-lan 接受并送到 ip 协议栈。 ip 协议栈内， 按报文的 Dip (Destination ip) 查找路由表，若为本地报文，则由本地接受。否则找到出口 dev 以及下一跳， 通过 ARP 协议获取下一条的 mac 地址，组装报文发出。
 
 
 
 ## Data Transmission Model
 
 1. **首包交CPU由软件转发，由软件控制数据流的走向。** 
-     		1. 芯片交换L2模块，配置广播报文，未知单播报文交CPU，由软件处理 
-                   		2. 芯片交换PDU模块，配置组播协议报文(IGMP|MLD)都交CPU，由软件处理。
-               		3. Flow 模块，配置IFC使目的MAC与桥设备(br-lan)MAC相等的报文指定去做硬件NAT加速。（初始硬件NAT表为空，由于加速失败也会交CPU，由软件处理）
-                         		4. Port 模块，配置LAN侧所有端口，入口untag报文打上deftag。出口带deftag的报文剥除tag。（默认deftag 的vid是1）
+   1. 芯片交换L2模块，配置广播报文，未知单播报文交CPU，由软件处理 
+   2. 芯片交换PDU模块，配置组播协议报文(IGMP|MLD)都交CPU，由软件处理。
+   3. Flow 模块，配置IFC使目的MAC与桥设备(br-lan)MAC相等的报文指定去做硬件NAT加速。（初始硬件NAT表为空，由于加速失败也会交CPU，由软件处理）
+   4. Port 模块，配置LAN侧所有端口，入口untag报文打上deftag。出口带deftag的报文剥除tag。（默认deftag 的vid是1）
 2. **数据流在软件走通后，配置芯片交换各模块功能，使其实现与软转发相同功能。 **
 3. **数据流由芯片交换转发，软件只进行监测（控制老化等）**
 
-## Hisilicon Search Command 
+## Hisilicon Command 
+
+### Debug Command
+
+| Command Nme                                                  | Description                                                  |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| hi_cfm set sysinfo.gateway_mac 00:00:23:e2:04:01             | 修改网络信息，设备MAC地址，                                  |
+| hi_cfm test restore                                          | 回复出产设置                                                 |
+| cli /home/cli/hal/port/port_mirror_set -v igr 0x200 egr 0x200 dport 0 | 镜像 PON 口的包到 lan 0 侧, (values should be reset when powoff) |
+|                                                              |                                                              |
+|                                                              |                                                              |
+|                                                              |                                                              |
+|                                                              |                                                              |
+|                                                              |                                                              |
+
+
 
 ### General Command
 
@@ -105,14 +120,22 @@ PLOAM (Physical Layer OAM)，OMCI (ONU Management and Control Interface)，OAM�
 
 Port 和 QID 对应表
 
-| Port            | QID     |
-| --------------- | ------- |
-| ETH0 (lan 1)    | 81 ~ 88 |
-| ETH1 (lan 2)    | 89 ~ 96 |
-| CPU             | 9 ~16   |
-| TCONT0 (LLID 0) | 17 ~ 24 |
-| TCONT1 (LLID 1) | 25 ~ 32 |
-| TCONT7 (LLID 7) | 73 ~ 80 |
+| PortID | Port Descript   | QID       |
+| ------ | --------------- | --------- |
+| 0      | ETH0 (lan 1)    | 81 ~ 88   |
+| 1      | ETH1 (lan 2)    | 89 ~ 96   |
+| 2      | ETH2 (lan 3)    | 97 ~ 104  |
+| 3      | ETH3 (lan 4)    | 105 ~ 112 |
+|        |                 |           |
+| 12     | CPU             | 9 ~16     |
+|        | TCONT0 (LLID 0) | 17 ~ 24   |
+|        | TCONT1 (LLID 1) | 25 ~ 32   |
+|        | TCONT2 (LLID 2) |           |
+|        | TCONT3 (LLID 3) |           |
+|        | TCONT4 (LLID 4) |           |
+|        | TCONT5 (LLID 5) |           |
+|        | TCONT6 (LLID 6) |           |
+|        | TCONT7 (LLID 7) | 73 ~ 80   |
 
 ### Switch Table Search Command
 
@@ -136,7 +159,6 @@ Port 和 QID 对应表
 | cli /home/cli/cfe/dia/hook_add            | 指定点进行报文打印   | pos ：要打印的未知(参见表3-2) cnt ：打印报文个数             |
 | cli /home/cli/cfe/dia/hook_clear          | 清除打印 hook        |                                                              |
 
-
 ### Debug Control Command
 
 | Command                                | Description                 | Note                                                         |
@@ -156,28 +178,51 @@ Port 和 QID 对应表
 ## FAQ:
 
 ### 1. 如何查看硬件加速 （NAT/NAPT）？
+
 ```
 $cli /home/cli/cfe/lrn/lrn_dump
 ```
-![image](img\hi_napt_result.png)
 
+![image](E:/Resource/MitrastarNote/img/hi_napt_result.png)
 
 ### 2. Nnimap ?
-NNI 网络侧端口所对应的 table。猜测是用于OLT子网间的用途
 
+NNI 网络侧端口所对应的 table。 对应 gPon/ePon  , 业务通道和上行通道的对应关系。
+
+```
+root@OpenWrt:~# cli /home/cli/hal/nni/nni_pon_map_dump 
+vlan=3001 igr_mask=0xf00f entry_pri=1 tcont_llid=1 gemport= 178
+vlan=3009 igr_mask=0xf00f entry_pri=1 tcont_llid=1 gemport= 178
+vlan= 200 igr_mask=0xf00f entry_pri=1 tcont_llid=1 gemport= 242
+vlan=3003 igr_mask=0xf00f entry_pri=1 tcont_llid=1 gemport= 306
+vlan=3004 igr_mask=0xf00f entry_pri=1 tcont_llid=1 gemport= 370
+vlan=  46 igr_mask=0xf00f entry_pri=1 tcont_llid=1 gemport= 434
+vlan=3006 igr_mask=0xf00f entry_pri=1 tcont_llid=1 gemport= 498
+vlan=3002 igr_mask=0xf00f entry_pri=1 tcont_llid=1 gemport= 562
+vlan=3008 igr_mask=0xf00f entry_pri=1 tcont_llid=1 gemport= 626
+succ.
+```
 
 ### 3. dmac ,car , pri , dscp , fdb? 
-dmac( destnation mac,) ;  dscp DSCP 差分服务标记字段（Different Service Code Point） , also call TOS (Type of Services) in IP frame ; car: also call  traffic car , is for traffic flow count; fdb (Forwarding Database) : table for router forward
 
+dmac( destnation mac,) ;  dscp DSCP 差分服务标记字段（Different Service Code Point） , also call TOS (Type of Services) in IP frame ; pri  (priority) ;car : also call  traffic car , is for traffic flow count; fdb (Forwarding Database) : table for router forward
 
 ### 4. 如何查看 vlan 以及绑定信息?
+
 ```
 cli /home/cli/hal/sec/sec_vlan_dump
 ```
-![image](img\hi_vlan_dump_result.png)
 
-
+![image](E:/Resource/MitrastarNote/img/hi_vlan_dump_result.png)
 
 ### 5. Update Devices Info
 
 $hi_cfm set sysinfo.gateway_mac  hi_cfm get sysinfo.gateway_mac 
+
+### 6. router forward in different WAN
+
+
+
+7. vlan interface does forward or not ?
+
+E

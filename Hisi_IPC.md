@@ -1,20 +1,68 @@
-IPC Introduction
+# IPC Introduction	
 
-
-
-
+IPC ( Linux Process Introduction) , the **Program** is image for machine code and data which is stored in disks and can be executed it is a passive static entity, but the **Process** is  program which executing under CPU, can  apply and own the system resource .  contain the program and info of current  activity it is a dynamic entity. The ways for Linux IPCs  such like **Signal** , **Pipe /FIFO** , **Message queue** , **Semaphore**, **Share Memory** , more detail check the following or [this](https://beej.us/guide/bgipc/).
 
 ## Signal
 
+**Signals** are a limited form of [inter-process communication](https://en.wikipedia.org/wiki/Inter-process_communication) (IPC), typically used in [Unix](https://en.wikipedia.org/wiki/Unix), [Unix-like](https://en.wikipedia.org/wiki/Unix-like), and other [POSIX](https://en.wikipedia.org/wiki/POSIX)-compliant operating systems. A signal is an [asynchronous](https://en.wiktionary.org/wiki/asynchronous) notification sent to a [process](https://en.wikipedia.org/wiki/Process_(computing)) or to a specific [thread](https://en.wikipedia.org/wiki/Thread_(computer_science)) within the same process in order to notify it of an event that occurred. 
 
+When a signal is sent, the operating system interrupts the target process' normal [flow of execution](https://en.wikipedia.org/wiki/Control_flow) to deliver the signal. Execution can be interrupted during any [non-atomic instruction](https://en.wikipedia.org/wiki/Atomic_operation). If the process has previously registered a **signal handler**, that routine is executed. Otherwise, the default signal handler is executed. 
+
+Embedded programs may find signals useful for inter-process  communications, as the computational and memory footprint for signals is  small. 
+
+Signals are similar to [interrupts](https://en.wikipedia.org/wiki/Interrupt), the difference being that interrupts are mediated by the processor and handled by the [kernel](https://en.wikipedia.org/wiki/Kernel_(operating_system))  while signals are mediated by the kernel (possibly via system calls)  and handled by processes. The kernel may pass an interrupt as a signal  to the process that caused it (typical examples are [SIGSEGV](https://en.wikipedia.org/wiki/SIGSEGV), [SIGBUS](https://en.wikipedia.org/wiki/SIGBUS), [SIGILL](https://en.wikipedia.org/wiki/SIGILL) and [SIGFPE](https://en.wikipedia.org/wiki/SIGFPE)). 
+
+Each signal has a current disposition, which determines how the  process behaves when it is delivered the signal.
+
+( Note: 信号是Unix/Linux系统在一定条件下生成的事件。信号是一种异步通信机制，进程不需要执行任何操作来等待信号的到达。信号异步通知接收信号的进程发生了某个事件，然后操作系统将会中断接收到信号的进程的执行，转而去执行相应的信号处理程序。)
+
+### Sending Signals
+
+
+
+
+
+Note:
+
+| SIGABRT   | 6    | Terminate (core dump) | Process abort signal                              |
+| --------- | ---- | --------------------- | ------------------------------------------------- |
+| SIGALRM   | 14   | Terminate             | Alarm clock                                       |
+| SIGBUS    | N/A  | Terminate (core dump) | Access to an undefined portion of a memory object |
+| SIGCHLD   | N/A  | Ignore                | Child process terminated, stopped, or continued   |
+| SIGCONT   | N/A  | Continue              | Continue executing, if stopped                    |
+| SIGFPE    | N/A  | Terminate (core dump) | Erroneous arithmetic operation                    |
+| SIGHUP    | 1    | Terminate             | Hangup                                            |
+| SIGILL    | N/A  | Terminate (core dump) | Illegal instruction                               |
+| SIGINT    | 2    | Terminate             | Terminal interrupt signal                         |
+| SIGKILL   | 9    | Terminate             | Kill (cannot be caught or ignored)                |
+| SIGPIPE   | N/A  | Terminate             | Write on a pipe with no one to read it            |
+| SIGPOLL   | N/A  | Terminate             | Pollable event                                    |
+| SIGPROF   | N/A  | Terminate             | Profiling timer expired                           |
+| SIGQUIT   | 3    | Terminate (core dump) | Terminal quit signal                              |
+| SIGSEGV   | N/A  | Terminate (core dump) | Invalid memory reference                          |
+| SIGSTOP   | N/A  | Stop                  | Stop executing (cannot be caught or ignored)      |
+| SIGSYS    | N/A  | Terminate (core dump) | Bad system call                                   |
+| SIGTERM   | 15   | Terminate             | Termination signal                                |
+| SIGTRAP   | 5    | Terminate (core dump) | Trace/breakpoint trap                             |
+| SIGTSTP   | N/A  | Stop                  | Terminal stop signal                              |
+| SIGTTIN   | N/A  | Stop                  | Background process attempting read                |
+| SIGTTOU   | N/A  | Stop                  | Background process attempting write               |
+| SIGUSR1   | N/A  | Terminate             | User-defined signal 1                             |
+| SIGUSR2   | N/A  | Terminate             | User-defined signal 2                             |
+| SIGURG    | N/A  | Ignore                | High bandwidth data is available at a socket      |
+| SIGVTALRM | N/A  | Terminate             | Virtual timer expired                             |
+| SIGXCPU   | N/A  | Terminate (core dump) | CPU time limit exceeded                           |
+| SIGXFSZ   | N/A  | Terminate (core dump) | File size limit exceeded                          |
+| SIGWINCH  | N/A  | Ignore                | Terminal window size changed                      |
+
+### Handling Signals
+
+
+​	父进程和子进程之间，或者两个兄弟进程之间，可以通过系统调用建立起一个单向的通信管道。但是这种管道只能由父进程开建立，对于子进程来说是静态的，与生俱来的。管道两端的进程各自都将该管道视作一个文件。一个进程写，另一个进程读。并且，通过管道传递的内容遵循“先入先出”（FIFO）的原则。每个管道都是单向的，需要双向通信时就要建立两个管道。
 
 ## Pipe/FIFO
 
 The **pipe** in Linux is identical in concept to the pipe in Unix, and is a core element of the Unix philosophy. The core idea that relates to pipes is you can pipeline simple apps together and create a complex operation using pipes instead of needing large, complex applications.
-
-​	父进程和子进程之间，或者两个兄弟进程之间，可以通过系统调用建立起一个单向的通信管道。但是这种管道只能由父进程开建立，对于子进程来说是静态的，与生俱来的。管道两端的进程各自都将该管道视作一个文件。一个进程写，另一个进程读。并且，通过管道传递的内容遵循“先入先出”（FIFO）的原则。每个管道都是单向的，需要双向通信时就要建立两个管道。
-
-
 
 Socket
 

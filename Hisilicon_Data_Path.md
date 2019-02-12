@@ -223,6 +223,5 @@ $hi_cfm set sysinfo.gateway_mac  hi_cfm get sysinfo.gateway_mac
 
 
 
-7. vlan interface does forward or not ?
+### 7. vlan interface does forward or not ?
 
-E

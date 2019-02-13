@@ -4,6 +4,24 @@
 
 [OpenWRT](https://openwrt.org/docs/guide-user/start) is embedded operation system  for Linux distribution based on GPL License .  OpenWRT did not contain any source code , this composed by each patch and zip, other word OpenWRT almost everything is an ".ipk ",  the ".ipk" is other name for ".tar.gz" . 
 
+## Startup
+
+
+```flow
+sst=>start: Start
+boot=>operation: Hi_Boot
+kernel=>operation: Kernel
+preinit=>operation: /etc/preinit,/sbin/init,/sbin/procd
+pre1=>operation: Exec /lib/preinit/*
+pre2=>operation: Exec /etc/init.d/*, /etc/init.d/hi_boot
+xpon=>operation: Running /usr/bin/xpon
+appm=>operation: Running Service hi_appm
+e=>end
+st->boot->kernel->preinit->pre1->pre2->xpon->appm->e
+```
+
+
+
 ## Hisilicon Architecture
 
 ![hisilicon_arch](img\hisilicon_arch.png)
@@ -107,6 +125,26 @@ cd ..
 make chip=sd5116 image V=s
 ```
 
+## Burn to board
+
+Reboot and entry into burn menu like following:
+
+```
+##### Menu #####
+[0] Update bootbin
+[1] Update debug bootbin
+[2] Update kernela and rootfsa
+[3] Update rootfsa
+[4] Update kernela
+[5] Update kernelb and rootfsb
+[6] Update rootfsb
+[7] Update kernelb
+[8] Recover default environment
+[r] Reboot
+[e] Enter cmdline
+Please enter your selection: 2
+```
+
 
 
 # Hisilicon Configure Management
@@ -141,3 +179,7 @@ CM module be used to Connections between internal modules , responsible  for:
 ## CM Flow Process
 ![image](img\hi_cm_process.png)
 
+
+```
+
+```

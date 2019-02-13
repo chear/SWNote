@@ -16,9 +16,53 @@ Each signal has a current disposition, which determines how the  process behaves
 
 ( Note: 信号是Unix/Linux系统在一定条件下生成的事件。信号是一种异步通信机制，进程不需要执行任何操作来等待信号的到达。信号异步通知接收信号的进程发生了某个事件，然后操作系统将会中断接收到信号的进程的执行，转而去执行相应的信号处理程序。)
 
+### Related basic APIs
+
+```C
+#include <signal.h> 
+void (*signal (int, void (*)(int)))(int);
+
+typedef void (*sighandler_t)(int);
+/*如果signal()调用成功，返回最后一次为安装信号signum而调用signal()时的handler值；
+失败则返回SIG_ERR。*/
+sighandler_t signal(int signum, sighandler_t handler);
+/* sigaction函数用于改变进程接收到特定信号后的行为。*/
+int sigaction(int signum, const struct sigaction* act, struct sigaction* oldact);
+int kill(pid_t pid, int sig);
+int sigqueue(pid_t pid, int sig, const union sigval value);
+```
+
 ### Sending Signals
 
+```C
+#include <signal.h>
+#include <sys/types.h>
+#include <unistd.h>
+void new_op(int,siginfo_t*,void*);
+int main(int argc,char**argv) {
+    struct sigaction act;
+    int sig;
+    sig=atoi(argv[1]);
+    sigemptyset(&act.sa_mask);
+    act.sa_flags=SA_SIGINFO;
+    act.sa_sigaction=new_op;
+    
+    if(sigaction(sig,&act,NULL) < 0) {
+        printf("install sigal error\n");
+    }   
+    
+    while(1) {
+        sleep(2);
+        printf("wait for the signal\n");
+    }   
+}   
 
+void new_op(int signum,siginfo_t *info,void *myact) {
+    printf("receive signal %d", signum);
+    sleep(5);
+
+}
+```
 
 
 
@@ -57,12 +101,79 @@ Note:
 
 ### Handling Signals
 
+​	
 
-​	父进程和子进程之间，或者两个兄弟进程之间，可以通过系统调用建立起一个单向的通信管道。但是这种管道只能由父进程开建立，对于子进程来说是静态的，与生俱来的。管道两端的进程各自都将该管道视作一个文件。一个进程写，另一个进程读。并且，通过管道传递的内容遵循“先入先出”（FIFO）的原则。每个管道都是单向的，需要双向通信时就要建立两个管道。
+
 
 ## Pipe/FIFO
 
-The **pipe** in Linux is identical in concept to the pipe in Unix, and is a core element of the Unix philosophy. The core idea that relates to pipes is you can pipeline simple apps together and create a complex operation using pipes instead of needing large, complex applications.
+The **pipe** in Linux is identical in concept to the pipe in Unix, and is a core element of the Unix philosophy. The core idea that relates to pipes is you can pipeline simple Apps together and create a complex operation using pipes instead of needing large, complex applications.
+
+(Note: 父进程和子进程之间，或者两个兄弟进程之间，可以通过系统调用建立起一个单向的通信管道。但是这种管道只能由父进程开建立，对于子进程来说是静态的，与生俱来的。管道两端的进程各自都将该管道视作一个文件。一个进程写，另一个进程读。并且，通过管道传递的内容遵循“先入先出”（FIFO）的原则。每个管道都是单向的，需要双向通信时就要建立两个管道。)
+
+### Related basic APIs
+```C
+/*
+fd[0]: used only for read
+fd[1]: used only for write
+*/
+int pipe(int fd[2]);
+Read();
+write();
+Close();
+```
+
+### Sample:
+
+```c
+#include <unistd.h>
+#include <sys/types.h>
+#include <errno.h>
+main() {
+	int pipe_fd[2];
+	pid_t pid;
+	char r_buf[100];
+	char w_buf[4];
+	char* p_wbuf;
+	int r_num;
+	int cmd;
+	
+	memset(r_buf,0,sizeof(r_buf));
+	memset(w_buf,0,sizeof(r_buf));
+	p_wbuf=w_buf;
+	if(pipe(pipe_fd)<0)
+	{
+		printf("pipe create error\n");
+		return -1;
+	}
+	
+	if((pid=fork())==0)
+	{
+	    printf("\n");
+	   close(pipe_fd[1]);
+                       sleep(3);//确保父进程关闭写端
+	    r_num=read(pipe_fd[0],r_buf,100);
+                       printf("read num is %d   the data read from the pipe is %d\n",r_num,atoi(r_buf));
+
+                       close(pipe_fd[0]);
+	    exit();
+	}
+	else if(pid>0)
+	{
+	close(pipe_fd[0]);//read
+	strcpy(w_buf,"111");
+	if(write(pipe_fd[1],w_buf,4)!=-1)
+		printf("parent write over\n");
+	close(pipe_fd[1]);//write
+		printf("parent close fd[1] over\n");
+	sleep(10);
+	}	
+}
+
+```
+
+
+
 
 Socket
 

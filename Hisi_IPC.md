@@ -16,7 +16,7 @@ Each signal has a current disposition, which determines how the  process behaves
 
 ( Note: 信号是Unix/Linux系统在一定条件下生成的事件。信号是一种异步通信机制，进程不需要执行任何操作来等待信号的到达。信号异步通知接收信号的进程发生了某个事件，然后操作系统将会中断接收到信号的进程的执行，转而去执行相应的信号处理程序。)
 
-### Related basic APIs
+### Related APIs
 
 ```C
 #include <signal.h> 

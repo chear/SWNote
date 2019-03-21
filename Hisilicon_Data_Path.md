@@ -90,10 +90,6 @@ PLOAM (Physical Layer OAM)，OMCI (ONU Management and Control Interface)，OAM�
 | hi_cfm test restore                                          | 回复出产设置                                                 |
 | cli /home/cli/hal/port/port_mirror_set -v igr 0x200 egr 0x200 dport 0 | 镜像 PON 口的包到 lan 0 侧, (values should be reset when powoff) |
 |                                                              |                                                              |
-|                                                              |                                                              |
-|                                                              |                                                              |
-|                                                              |                                                              |
-|                                                              |                                                              |
 
 
 
@@ -179,7 +175,7 @@ Port 和 QID 对应表
 
 ### 1. 如何查看硬件加速 （NAT/NAPT）？
 
-```
+```shell
 $cli /home/cli/cfe/lrn/lrn_dump
 ```
 
@@ -189,7 +185,7 @@ $cli /home/cli/cfe/lrn/lrn_dump
 
 NNI 网络侧端口所对应的 table。 对应 gPon/ePon  , 业务通道和上行通道的对应关系。
 
-```
+```shell
 root@OpenWrt:~# cli /home/cli/hal/nni/nni_pon_map_dump 
 vlan=3001 igr_mask=0xf00f entry_pri=1 tcont_llid=1 gemport= 178
 vlan=3009 igr_mask=0xf00f entry_pri=1 tcont_llid=1 gemport= 178
@@ -209,15 +205,16 @@ dmac( destnation mac,) ;  dscp DSCP 差分服务标记字段（Different Service
 
 ### 4. 如何查看 vlan 以及绑定信息?
 
-```
-cli /home/cli/hal/sec/sec_vlan_dump
+```shell
+$cli /home/cli/hal/sec/sec_vlan_dump
 ```
 
 ![image](E:/Resource/MitrastarNote/img/hi_vlan_dump_result.png)
 
 ### 5. Update Devices Info
-
+```shell
 $hi_cfm set sysinfo.gateway_mac  hi_cfm get sysinfo.gateway_mac 
+```
 
 ### 6. router forward in different WAN
 

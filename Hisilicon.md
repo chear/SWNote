@@ -1,5 +1,7 @@
 # Hisilicon Platform Introduction
 
+ARM ARMv7 , 667 Hz , 1 Core
+
 ## OpenWRT
 
 [OpenWRT](https://openwrt.org/docs/guide-user/start) is embedded operation system  for Linux distribution based on GPL License .  OpenWRT did not contain any source code , this composed by each patch and zip, other word OpenWRT almost everything is an ".ipk ",  the ".ipk" is other name for ".tar.gz" . 
@@ -17,7 +19,7 @@ pre2=>operation: Exec /etc/init.d/*, /etc/init.d/hi_boot
 xpon=>operation: Running /usr/bin/xpon
 appm=>operation: Running Service hi_appm
 e=>end
-st->boot->kernel->preinit->pre1->pre2->xpon->appm->e
+sst->boot->kernel->preinit->pre1->pre2->xpon->appm->e
 ```
 
 
@@ -96,40 +98,66 @@ Sub-system Interface Introduction
 ```
 **Kernel Building path at:**
 
-`$ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/linux-sd5116_generic/`
+```shell
+$ls slinux-3.18.11.tar.xz
+	(Linux zip for svn solution)
+$ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/linux-sd5116_generic/
+	(this for building)
+```
 
 **Rootfs Building path at:**
 
-`$ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/root-sd5116/`
+```shell
+$ls solution/patch/openwrt/package/base-files/files/
+	(this is for svn solution)
+$ls openwrt/package/base-files/files/etc/shadow
+	(this for openwrt building)
+$ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/root-sd5116/
+	(this for image release)
+```
 
 ## Download & Building 
 
-```
+```shell
 $svn checkout http://wx-svn.zyxel.cn/SW-31/mld_sg/Hisilicon_trunk/trunk/HSANV200R010C01SPC011
-
 $make chip=sd5116 V=s
-( used to make whole target ,  V=s means  to show the  build log)
-cd openwrt/
-make package/gateway/{compile,install} V=s
+( used to make whole target ,  V=s means  to show the  build log.)
+
+$cd openwrt/
+$make package/gateway/{compile,install} V=s
 ( to build Hisilicon operation module)
 
-make package/network/services/dnsmasq/{compile,install} V=s
+$make package/network/services/dnsmasq/{compile,install} V=s
 ( to build the opern source module.)
 ```
 
-Note: if you want to update the code in trunk, please commit the code in directory solution\patch\openwrt\package\network\services\(generate patch)
+**Note: if you want to update the code in trunk, please commit the code in directory solution\patch\openwrt\package\network\services\(generate patch)**
 
-```
+```shell
 make target/linux/install V=s
 cd ..
 make chip=sd5116 image V=s
 ```
 
-## Burn to board
+**Release Image**
+The generated files at ./openwrt/bin/sd5116/
 
-Reboot and entry into burn menu like following:
-
+```shell
+openwrt/bin/sd5116/
+├── hi_boot.bin
+├── hi_boot_dbg.bin
+├── java.bin
+├── java.jffs2.bin
+├── kernel.images
+├── root.jffs2-128k
+└── root.squashfs
 ```
+
+
+## Burn to board
+### burn rootfs and kernel
+Reboot and entry into burn menu like following:
+```shell
 ##### Menu #####
 [0] Update bootbin
 [1] Update debug bootbin
@@ -145,41 +173,49 @@ Reboot and entry into burn menu like following:
 Please enter your selection: 2
 ```
 
+Note: console update pwd "hsan" 
 
+### burning Java partition
 
-# Hisilicon Configure Management
-
-## CM Introduction
-
-CM module be used to Connections between internal modules , responsible  for:
-
-- Operating business logical 
-
-  provide  API  , received and collect configure message from WEB , Tr069  or other module , to forward and convert the format to SAL.
-
-- Store data
-
-- Initialize configuration
-
-  CM loading configurations  by sequence and dependency  when device  startup 
-
-## CM Architecture
-
-![image](img\hi_cm_structure.png)
-
-**GPon Service Interaction**
-
-![image](img\hi_cm.png)
-
-**Web Service Interaction**
-
-![image](img\hi_cm2.png)
-
-
-## CM Flow Process
-![image](img\hi_cm_process.png)
-
-
+``` shell
+##### Menu #####
+[0] Update bootbin
+[1] Update debug bootbin
+[2] Update kernela and rootfsa
+[3] Update rootfsa
+[4] Update kernela
+[5] Update kernelb and rootfsb
+[6] Update rootfsb
+[7] Update kernelb
+[8] Recover default environment
+[r] Reboot
+[e] Enter cmdline
+Please enter your selection: e
+hi # ?
+?               - alias for help
+bootm           - boot
+ddr_greenbox    - ddr_greenbox test
+ddr_ssn         - ddr_ssn test
+go              - start application at address 'addr'
+help            - print command help
+md              - memory display
+mdio            - mdio sub-system
+menu            - menu
+mw              - memory write (fill)
+nand            - NAND sub-system
+ping            - send ICMP ECHO_REQUEST to network host
+printenv        - print env
+reset           - Perform RESET of the CPU
+run             - run command that saved in env
+saveenv         - save env
+setenv          - set env
+sfc             - sfc sub-system
+sfc_nand        - sfc_nand sub-system
+tftp            - tftp [loadAddress] filename
+upg             - upg alias
+hi # upg javaa 
 ```
 
-```
+
+
+## Log Print

@@ -168,6 +168,7 @@ configure.ac ----------------------->|autoconf|------> configure ----->autoconfi
 cli /home/cli/log_cmd/log/cfg_set -v module 0xF0001000 dbg 0xff print 0xff sys 0
 
 cli /home/cli/log_cmd/log/cfg_set -v module 0xF6003000 dbg 0xff print 0xff sys 0
+(to debug wan.)
 ```
 
 
@@ -203,3 +204,34 @@ cli /home/cli/hal/port/port_mirror_set -v igr 0x200 egr 0x200 dport 0
 **Linux Observability Tools**
 
 ![linux_observability_tools](img\linux_observability_tools.jpg)
+
+![linux_observability_tools_sar](img\linux_6.jpg)
+
+![linux_observability_tools_perf](img\linux_perf_tools.jpg)
+
+
+
+## 7. Switch the province
+
+```shell
+root@OpenWrt:~# hi_cfg set sysinfo.province jt
+root@OpenWrt:~# hi_cfg config
+root@OpenWrt:~# sync
+root@OpenWrt:~# reboot
+root@OpenWrt:~# hi_cfc test restore
+```
+
+
+
+
+
+
+
+
+## 8. ebtables & iptables
+[ebtables](<http://ebtables.netfilter.org/misc/ebtables-man.html>) is an application program used to set up and maintain the tables of rules (inside the Linux kernel) that inspect Ethernet frames. It is analogous to the **iptables**application, but less complicated, due to the fact that the Ethernet protocol is much simpler than the IP protocol.  more detail in [ebtables/iptables interaction on a Linux-based bridge](<http://ebtables.netfilter.org/br_fw_ia/br_fw_ia.html>)
+
+
+
+
+

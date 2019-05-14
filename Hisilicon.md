@@ -1,4 +1,4 @@
-# Hisilicon Platform Introduction
+# 0Hisilicon Platform Introduction
 
 ARM ARMv7 , 667 Hz , 1 Core
 
@@ -121,7 +121,8 @@ $ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/root-sd5116/
 ```shell
 $svn checkout http://wx-svn.zyxel.cn/SW-31/mld_sg/Hisilicon_trunk/trunk/HSANV200R010C01SPC011
 $make chip=sd5116 V=s
-( used to make whole target ,  V=s means  to show the  build log.)
+( used to make whole target ,  V=s means  to show the  build log. to direct province by 
+'make chip=sd5116 province=heilongjiang V=s')
 
 $cd openwrt/
 $make package/gateway/{compile,install} V=s
@@ -217,5 +218,16 @@ hi # upg javaa
 ```
 
 
+
+## General Command
+
+```shell
+root@OpenWrt:~# hi_cfm test restore 
+(to reset default env in partition /config/worka/*)
+root@OpenWrt:~# cli /home/cli/hal/port/port_mirror_set -v igr 0 egr 0x200 dport 0
+(mirror pon package to lan0.)
+
+
+```
 
 ## Log Print

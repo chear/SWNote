@@ -2,6 +2,10 @@
 
 IPC ( Linux Process Introduction) , the **Program** is image for machine code and data which is stored in disks and can be executed it is a passive static entity, but the **Process** is  program which executing under CPU, can  apply and own the system resource .  contain the program and info of current  activity it is a dynamic entity. The ways for Linux IPCs  such like **Signal** , **Pipe /FIFO** , **Message queue** , **Semaphore**, **Share Memory** , more detail check the following or [this](https://beej.us/guide/bgipc/).
 
+![ipc1](img/ipc_1.bmp)
+
+![ipc2](img/ipc_2.bmp)
+
 ## Signal
 
 **Signals** are a limited form of [inter-process communication](https://en.wikipedia.org/wiki/Inter-process_communication) (IPC), typically used in [Unix](https://en.wikipedia.org/wiki/Unix), [Unix-like](https://en.wikipedia.org/wiki/Unix-like), and other [POSIX](https://en.wikipedia.org/wiki/POSIX)-compliant operating systems. A signal is an [asynchronous](https://en.wiktionary.org/wiki/asynchronous) notification sent to a [process](https://en.wikipedia.org/wiki/Process_(computing)) or to a specific [thread](https://en.wikipedia.org/wiki/Thread_(computer_science)) within the same process in order to notify it of an event that occurred. 
@@ -105,25 +109,43 @@ Note:
 
 
 
-## Pipe/FIFO
+## Pipe
 
 The **pipe** in Linux is identical in concept to the pipe in Unix, and is a core element of the Unix philosophy. The core idea that relates to pipes is you can pipeline simple Apps together and create a complex operation using pipes instead of needing large, complex applications.
 
 (Note: 父进程和子进程之间，或者两个兄弟进程之间，可以通过系统调用建立起一个单向的通信管道。但是这种管道只能由父进程开建立，对于子进程来说是静态的，与生俱来的。管道两端的进程各自都将该管道视作一个文件。一个进程写，另一个进程读。并且，通过管道传递的内容遵循“先入先出”（FIFO）的原则。每个管道都是单向的，需要双向通信时就要建立两个管道。)
 
-### Related basic APIs
+### 1. Pipe == byte stream buffer in kernel
+
+- #### ​Sequential (can’t lseek())
+
+- #### Multiple readers/writers difficult
+
+### 2. Unidirectional
+
+- #### Write end + read end
+
+
+
+``` shell
+ls | wc -l
+```
+![ipc_pipe](img/ipc_pipe.bmp)
+
+##### Related basic APIs
 ```C
 /*
-fd[0]: used only for read
-fd[1]: used only for write
+filedes[0]: used only for read
+filedes[1]: used only for write
 */
-int pipe(int fd[2]);
-Read();
-write();
+int filedes[1];
+int pipe(int filedes[1]);
+write(filedes[1], buf, count);
+read(filedes[0], buf, count);
 Close();
 ```
 
-### Sample:
+##### Sample:
 
 ```c
 #include <unistd.h>
@@ -174,10 +196,84 @@ main() {
 
 
 
+## FIFO (named pipe)
+
+- ### pipes (anonymous) can only be used by related processes
+
+- ### FIFOs == pipe with name in file system
+
+- ### Creation:
+  		#### 	mkfifo(pathname, permissions)
+
+- ###  Any process can open and use FIFO
+
+- ###  I/O is same as for pipes
+
+
+#### Related basic APIs
+
+```C
+open(pathname, O_WRONLY/O_RDONLY);
+#Open write/read end
+open();
+# locks until other end is opened Opens are synchronized
+open(pathname, O_RDONLY | O_NONBLOCK);
+# can be useful
+```
+
+#### Sample
+
+```c
+
+```
+
+
+
+## Message Queue
+
+#### Related basic APIs
+```c
+# Queue management (analogous to files)
+# open/create MQ, set attributes
+# flags (analogous to open()):
+# 	O_CREAT – create MQ if it doesn’t exist
+#	O_EXCL – create MQ exclusively
+#	O_RDONLY, O_WRONLY, O_RDWR – just like file open
+#	O_NONBLOCK – non-blocking I/O
+# mode sets permissions
+# &attr: attributes for new MQ
+#	NULL gives defaults
+mqd = mq_open(name, flags [, mode, &attr]);
+# close MQ
+mq_close();
+# remove MQ pathname
+mq_unlink();
+
+# I/O
+# send message
+mq_send();
+# receive message
+mq_receive();
+
+# Other:
+# set/get MQ attributes
+mq_setattr(); / mq_getattr(); 
+# request notification of msg arrival
+mq_notify();
+
+
+```
+
+#### Sample:
+
+```c
+```
+
+
+
+
 
 Socket
-
-Message queue
 
 
 

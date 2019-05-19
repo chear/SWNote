@@ -39,7 +39,7 @@ hi-boot 主要文件结构如下:
     (压缩工具以及 ddr 初始化实现)
 ```
 
-# Hi-Boot Startup
+## Hi-Boot Startup
 
 Hi-Boot  secction 1 startup located at *hisilicon/sdk/boot/hi-boot-ram/startcode/hi_startcode.c*, for secction 2 located at  *hisilicon/sdk/boot/hi-boot-ram/arch/arm/cortexa9/hi_start_hi5630.S* , the whole process as following: (more detail about bootloader by  [ubootframework](pdf_resource/ubootframework.pdf) )
 
@@ -47,7 +47,15 @@ Hi-Boot  secction 1 startup located at *hisilicon/sdk/boot/hi-boot-ram/startcode
 
 
 
+## Communicate bewteen Hi-Boot & Linux
+
+![img](img/hi_boot_linux_para.png)
+
+开机时执行 hi-boot, hi-boot引导完后，控制权就移交给 linux 系统了，但是linux需要一些基本信息，如内存大小，启动方式等，这就涉及到 hi-boot和 linux 通信。而通信格式由linux规定，如*Documentation/arm/Setup*
 
 
 
+![hi_boot_linux](img/hi_boot_linux_2.gif)
+
+hi-boot会按照上述格式，在内存中划分一块atag参数区域，对该区域进行赋值。当赋值完成后，将cpu初始化成 MMU = off, D-cache = off, I-cache = dont care, r0 = 0, r1 = machine nr, r2 = atags or dtb pointer，跳转到linux代码起始处。[具体如](http://www.cnblogs.com/embedded-tzp/p/4449143.html)
 

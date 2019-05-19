@@ -138,6 +138,7 @@ $make package/network/services/dnsmasq/{compile,install} V=s
 make target/linux/install V=s
 cd ..
 make chip=sd5116 image V=s
+(make chip=hi5663h V=s)
 ```
 
 **Release Image**

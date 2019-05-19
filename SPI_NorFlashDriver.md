@@ -22,7 +22,11 @@ The three or four signal wires hold a clock (**SCK**, often in the range of 1-20
 
 ![spi_interface](img\spi_interface.png)
 
-SPI is a full duplex protocol; for each bit shifted out the MOSI line (one per clock) another is shifted in on the MISO line. Those bits are assembled into words of various sizes on the way to and from system memory. An additional chipselect line is usually active-low (nCS); four signals are normally used for each peripheral, plus sometimes an interrupt. 
+SPI is a full duplex protocol; for each bit shifted out the MOSI line (one per clock) another is shifted in on the MISO line. Those bits are assembled into words of various sizes on the way to and from system memory. An additional chipselect line is usually active-low (nCS); four signals are normally used for each 
+
+
+
+peripheral, plus sometimes an interrupt. 
 
 ![spi_transmission](img\spi_transmission.png)
 

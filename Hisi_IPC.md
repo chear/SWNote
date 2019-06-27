@@ -267,6 +267,7 @@ mq_notify();
 #### Sample:
 
 ```c
+
 ```
 
 

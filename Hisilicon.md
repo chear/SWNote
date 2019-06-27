@@ -1,3 +1,5 @@
+
+
 # 0Hisilicon Platform Introduction
 
 ARM ARMv7 , 667 Hz , 1 Core
@@ -120,9 +122,9 @@ $ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/root-sd5116/
 
 ```shell
 $svn checkout http://wx-svn.zyxel.cn/SW-31/mld_sg/Hisilicon_trunk/trunk/HSANV200R010C01SPC011
-$make chip=sd5116 V=s
+$make chip=sd5116 V=s 
 ( used to make whole target ,  V=s means  to show the  build log. to direct province by 
-'make chip=sd5116 province=heilongjiang V=s')
+'make chip=sd5116 province=heilongjiang V=s' , to H3 by 'make chip=hi5663h V=s' )
 
 $cd openwrt/
 $make package/gateway/{compile,install} V=s
@@ -130,17 +132,21 @@ $make package/gateway/{compile,install} V=s
 
 $make package/network/services/dnsmasq/{compile,install} V=s
 ( to build the opern source module.)
+
 ```
 
 **Note: if you want to update the code in trunk, please commit the code in directory solution\patch\openwrt\package\network\services\(generate patch)**
 
 ```shell
-make target/linux/install V=s
-cd ..
-make chip=sd5116 image V=s
-(make chip=hi5663h V=s)
-```
+$make package/gateway/sdk/hi_boot/compile V=s
+$make package/gateway/sdk/hi_boot/install V=s
+( to build the hi-boot)
 
+$make target/linux/install V=s
+cd ..
+$make chip=sd5116 image V=s
+( to H3 by 'make chip=hi5663h V=s hitools image factory')
+```
 **Release Image**
 The generated files at ./openwrt/bin/sd5116/
 
@@ -220,6 +226,26 @@ hi # upg javaa
 
 
 
+**举例：将内存中0x8700000****的数据写入到nand flash**
+
+a)写数据0x12345678到内存0x87000000，长度0x40000，即256k
+
+相关命令：**mw 0x87000000 0x12345678 0x40000** 
+
+b)擦除flash 1M的内容
+
+相关命令：**nand erase 0x100000 0x40000** 
+
+c)flash 写：将内存0x87000000的内容写入flash 1M的地址，写入长度256k
+
+相关命令：**nand write 0x87000000 0x100000 0x40000** 
+
+d)flash 读：读flash 1M地址内容到内存0x88000000.
+
+相关命令：**nand read 0x88000000 0x100000 0x40000** 
+
+实际操作如下图：
+
 ## General Command
 
 ```shell
@@ -227,6 +253,10 @@ root@OpenWrt:~# hi_cfm test restore
 (to reset default env in partition /config/worka/*)
 root@OpenWrt:~# cli /home/cli/hal/port/port_mirror_set -v igr 0 egr 0x200 dport 0
 (mirror pon package to lan0.)
+root@OpenWrt:~# cli /home/cli/cm/cm_ctrl -v value 0x2000000f
+(enable TR069 WAN-ID in GUI)
+root@OpenWrt:~# cli /home/cli/cm/cm_ctrl -v value 0x2000000d
+(enable edit itms info for TR069 wan in GUI)
 
 
 ```

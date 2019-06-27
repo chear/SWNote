@@ -12,3 +12,9 @@
 
 The important bit here is that program operations (i.e. writes) take place to a page, which might typically be 8-16KB in size, while erase operations take place to a block, which might be 4-8MB in size. Since a block needs to be erased before it can be programmed again (*sort of, I’m generalising to make this easier), all of the pages in a block need to be candidates for erasure before this can happen.
 
+**(Note: **
+
+- **[MTD is neither a block nor a char device.]((<http://linux-mtd.infradead.org/faq/general.html#L_mtd_what>) )  **
+- **Ext2 ,ext3 and FAT are file systems work with block device not for MTD devices, MTD device work with jffs2 or squashFS . **
+- **the /dev/mtdblockX device nodes  are simple Flash Translation Layers (FTLs) over the MTD devices.) **
+

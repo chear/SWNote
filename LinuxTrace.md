@@ -2,6 +2,10 @@
 
 在 Linux 中 panic 的程度显然是高于oops，内核panic后，就死机了俗称内核崩溃。但是内核报oops，这个时候不见得会panic，它可能只是报个oops，杀死进程而已 。例如 [Kernel Oops和Panic是一回事吗](<http://www.eeworld.com.cn/mp/ymc/a52750.jspx>)
 
+
+
+
+
 ## arm arch
 
 

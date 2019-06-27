@@ -1,6 +1,9 @@
 ## Nor Flash 
 
-- Nor Flash 像内存一样是直接挂在系统总线上的，这样有足够多的地址线使得CPU能够寻址到每一个存储单元上去，这也意味着CPU能够直接通过总线访问 Nor Flash 上存储的内容，同时它还支持XIP（片选内存上执行，不用将代码拷贝到内存中，直接在 Nor Flash 上就能运行）。
+- Nor Flash 像内存一样是直接挂在系统总线上的，这样有足够多的地址线使得CPU能够寻址到每一个存储单元上去，这也意味着CPU能够直接通过总线访问 Nor Flash 上存储的内容，同时它还支持XIP (XIP, eXecute In Place）.
+
+   **(Note: Nor Flash的特点是片选内存上执行，不用将代码拷贝到内存中，直接在 Nor Flash 上就能运.)**
+
 - 相比较于 Nand Flash ， Nor Flash 读取速度更快，擦除和写入速度则更慢，且没有坏块。
 
 
@@ -448,6 +451,8 @@ typedef struct
     hi_uint32 ui_sfc_cmd_databuf64;     /* 0x4fc - 命令操作方式数据Buffer寄存器64*/
 }hi_sfc_reg_s;
 ```
+
+
 
 ## Kernel Driver
 
@@ -898,6 +903,6 @@ I2S 有3个主要信号：1.串行时钟SCLK，也叫位时钟（BCLK），即�
 
 ### 2. U-Boot 环境是否需要使用 Flash 驱动。
 
-u-boot 启动环境本身是需要识别 flash 芯片，其中包括 ID, Register 等。读，写的操作是通过统一的标准操作。以Hi-Boot SPI Flash 驱动为例读写操作通过 hs
+u-boot 启动环境本身是需要识别 flash 芯片，其中包括 ID, Register 等。读，写的操作是通过统一的标准操作。以Hi-Boot SPI Nor Flash 驱动为例读写操作通过向芯片内部发送命令，获取地址的形式来进行读写操作 （*有待检查*） 
 
    

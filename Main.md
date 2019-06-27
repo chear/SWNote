@@ -10,7 +10,7 @@ ecnet pdf pwd: mstcecnt
 海思support:	
 
 https://hisupport.hisilicon.com/hisupport
-mitrastarcn_002/15138!sw3
+ mitrastarcn_002/15138!sw31
 
 
 
@@ -118,7 +118,7 @@ iperf.exe   -c 91.0.0.172 -w 2M -p 5001 -i 1 -t 3600
 
 ## ITMS
 
-login url ( test / test!@34 ): <http://172.25.17.232:8080/itms/pages/security/loginAction.action>
+login url for ITMS/RMS ( test / test!@34 ): <http://172.25.17.232:8080/itms/pages/security/loginAction.action>
 
 user: test pwd: !@qw34er 
 

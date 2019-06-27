@@ -32,7 +32,7 @@ CM Contains two part:
 
 ​	To operating the data , logical verify ,event callback.
 
-**(Note:  "log_voice_cli odl odl_log " to open CM Logs) **
+**(Note:  "log_voice_cli odl odl_log " to open CM Logs , log file at /tmp/log/message) **
 
 ```shell
 hisilicon/gateway/service/cm/

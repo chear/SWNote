@@ -120,7 +120,7 @@ iperf.exe   -c 91.0.0.172 -w 2M -p 5001 -i 1 -t 3600
 
 login url for ITMS/RMS ( test / test!@34 ): <http://172.25.17.232:8080/itms/pages/security/loginAction.action>
 
-user: test pwd: !@qw34er 
+user: test pwd: test!@#$ 
 
 GUI certification url： <http://172.25.17.232:9090/ACS-server/ACS>
 

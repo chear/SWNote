@@ -175,3 +175,10 @@ gpon registed pwd: 0000000054
 
 [Restore Default](http://192.168.1.1/webcmcc/gui_restore_factory.html?password=!@qw34er&username=root)
 
+
+
+## Econet GUI
+
+bootloader telecomadmin / nE7jA%5ms
+
+console	admin / 1234

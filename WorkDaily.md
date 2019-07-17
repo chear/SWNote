@@ -29,7 +29,7 @@ General setup  --->
             0xc05a 4500                  |
                      --------------------| __bss_start
                     |                    |
-                      0xc05a 44e8        |
+            0xc05a 44e8      			 |
                     ---------------------| _edata
                     |                    |
                     |                    |
@@ -149,7 +149,68 @@ iounmap(vaddr_base);
 
 
 
-## 20190515
+## 20190703
+
+### 移动下载仿真测试 (httping)
+
+```mermaid
+graph LR
+CM -->|hi_emu_speed_start|EMU(EMU)
+EMU -->|ktcpdiag.ko|C(tcpdiag)
+C -->|httping|D(monitor)
+D -->E[Finish]
+```
 
 
+
+ITMS Setting
+
+```s
+InternetGatewayDevice   
+  └──  DownloadDiagnostics
+     ├── DiagnosticsState
+         ├── Interface 						    (InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1)
+     ├── DownloadURL	(http://192.168.8.3:51473/170 or http://192.168.8.3:51473/1.4G)
+```
+
+Test Report
+| Province | ROMTime       | EOMTime       | TotalBytesReceived | Result     |
+| -------- | ------------- | ------------- | ------------------ | ---------- |
+| Sichuan  | 1562138596102 | 1562138598246 | 62331827           | *abnormal* |
+| Shanxi   | 1562146461085 | 1562146463390 | 65966221           | *abnormal* |
+| QingHai  | 1562149484828 | 1562149497017 | 187274868          | *normal*   |
+
+(Note: ‘unsigned int‘ with same stored format as 'int' , only different while for display format . 'double'  stored)
+
+```shell
+$cli /home/cli/log_cmd/log/cfg_set -v module 0xF0004000 dbg 0xff print 0xff sys 1
+(to print debug info)
+$cli /home/cli/cm/cm_ctrl -v value 0x2000000d
+(disable ACS control)
+$cli /home/cli/cm/cm_ctrl -v value 0x2000000e
+(enable ACS control)
+$cli /home/cli/cm/cm_ctrl -v value 0x2000000f
+(disable Tr069 wan control)
+$cli /home/cli/cm/cm_ctrl -v value 0x20000010
+(enable Tr069 wan control)
+```
+
+Httping Test command
+
+```shell
+$httping http://192.168.8.3:51473/170 -d pppoe-wan_3002 -c 1 -G -b --priority 0 --tos 0 -y 0.0.0.0/54326 
+```
+
+- -d : for device name
+- -c :  means how many times to connect
+- -G:  do a GET request instead of HEAD
+- -b : show transfer speed in KB/s
+- --tos  : Type - Of - Service
+- -y : bind to ip-address (and thus interface)
+
+windows 下生成大小为500 M的文件
+
+```shell
+fsutil file createnew null.txt 5278350000
+```
 

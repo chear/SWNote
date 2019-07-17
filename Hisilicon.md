@@ -1,6 +1,6 @@
 
 
-# 0Hisilicon Platform Introduction
+# Hisilicon Platform Introduction
 
 ARM ARMv7 , 667 Hz , 1 Core
 
@@ -49,7 +49,49 @@ Sub-system Interface Introduction
 
 ![hi_subsystem](img/hi_subsytem_internal_exchange.png)
 
-## Files Structure
+## Hisilicon partition table
+
+```shell
+                    |--------------------|
+                    |                    |
+                    |                    |
+                    |                    |
+                    |                    |
+            0xc05d 1dc0                  |                     
+                     --------------------| __data_start  init_thread_union
+                    |                    | 
+                      0xc058 1000 _etext |
+                     --------------------|
+                    |                    |
+                    |		kernel B	 |
+                    |                    |
+           0xc056 d000                   |
+                     --------------------| __start_rodata
+                    |                    |
+                    |                    |
+                    |					 |
+                    |                    |
+                    |                    |
+                    |	  	rootfs B	 |
+                     --------------------| _text        __init_end    
+                    |                    |
+                    | 					 | DISCARD 这个section在内核完成初始化后
+                    |                    |         会被释放掉
+                    |     	kernel A     |
+                     --------------------| _einittext
+                    |                    |
+                    |     	rootfs A     |
+                	|				     |
+                     --------------------|<------------ __init_begin
+                    |    	 Env         |
+ 0x00000000         |--------------------|
+```
+
+
+
+
+
+## Source Files Structure
 
 **./root Structure**
 

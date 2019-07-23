@@ -68,11 +68,12 @@ all --> kernel(linux-3.18.21)
 . zboot
 . kernel
 
+
+
 To generate the bootloader and release NAND.bin
 
-​```shell
+```shell
 $make PROFILE=CCC3
 $make boot
 $make production
 ```
-

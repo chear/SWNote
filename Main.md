@@ -2,8 +2,7 @@
 
 id, R00499 ,  tel 15148
 ecnet pdf pwd: mstcecnt
-
-
+e-school: zyxel\R00499 /pwd
 
 ## Hisilicon Support Info:
 
@@ -116,6 +115,8 @@ iperf.exe   -c 91.0.0.172 -w 2M -p 5001 -i 1 -t 3600
 
 <http://wx-svn.zyxel.cn/SW3-1/mld_sg/trunk/product/MT7526G_CTC>
 
+
+
 ## ITMS
 
 login url for ITMS/RMS ( test / test!@34 ): <http://172.25.17.232:8080/itms/pages/security/loginAction.action>
@@ -125,6 +126,18 @@ user: test pwd: test!@#$
 GUI certification url： <http://172.25.17.232:9090/ACS-server/ACS>
 
 hgw/hgw , itms/itms
+
+
+
+## PQA
+
+TR069 wan: 3003
+
+100M band width wan: 3002  pppoe (PQATest/PQAtest@123)
+
+1G band width wan : 3007 pppoe (no username & pwd)
+
+LOID: 2222222222 , debug00002
 
 
 
@@ -179,6 +192,6 @@ gpon registed pwd: 0000000054
 
 ## Econet GUI
 
-bootloader telecomadmin / nE7jA%5ms
+bootloader telecomadmin / nE7jA%5m
 
 console	admin / 1234

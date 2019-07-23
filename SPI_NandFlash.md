@@ -1,10 +1,14 @@
 # Basic Info
-![nand_flash_structure](./img/nand_flash.png)
+
+![nand_flash_layout](./img/nand_flash_layout.png)
 
 ## OOB
 
-​	于[Nand Flash](<https://www.cnblogs.com/zhugeanran/p/8423484.html>)，每一个页，对应一个空闲区域 ( *'OOB' or  ‘Redundant Area‘ or ‘Spare Area‘, 一般在 linux 系统中称为 OOB* )，这个区域是基于Nand Flash的硬件特性，数据在读写的时候容易出错，为了保证数据的正确性，就产生了这样一个检测和纠错的区域，用来放置数据的校验值。OOB的读写操作，一般都是随着页的操作一起完成，也就是在读写页的时候，对应的OOB就产生了。
+对于[Nand Flash](<https://www.cnblogs.com/zhugeanran/p/8423484.html>)，每一个页，对应一个空闲区域 ( *'OOB' or  ‘Redundant Area‘ or ‘Spare Area‘, 一般在 linux 系统中称为 OOB* )，这个区域是基于Nand Flash的硬件特性，数据在读写的时候容易出错，为了保证数据的正确性，就产生了这样一个检测和纠错的区域，用来放置数据的校验值。OOB的读写操作，一般都是随着页的操作一起完成，也就是在读写页的时候，对应的OOB就产生了。
 
+XTX-spi-nand flash Array  Organization chart as following:
+
+![nand_flash_structure](./img/nand_flash.png)
 主要用途如下：
 
 1. 标记是否存在坏块

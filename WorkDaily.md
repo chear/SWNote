@@ -1,4 +1,4 @@
-## 20190422
+## Mitrastar Info:
 
 make menuconfig
 General setup  --->  
@@ -151,7 +151,7 @@ iounmap(vaddr_base);
 
 ## 20190703
 
-### Hisilicon 平台移动下载仿真测试 (httping)
+### 移动下载仿真测试 (httping)
 
 ```mermaid
 graph LR
@@ -214,6 +214,8 @@ windows 下生成大小为500 M的文件
 fsutil file createnew null.txt 5278350000
 ```
 
+
+
 ## 20190719
 
 ### Econet 7528 emu download diagnostic:
@@ -232,8 +234,8 @@ fsutil file createnew null.txt 5278350000
 
 2. SpeedtestFF 
 ```shell
-# gdbus call -y -d com.ctc.igd1 -o /com/ctc/igd1/Diagnostics/HttpDownload -m com.ctc.igd1.Properties.Set com.ctc.igd1.SpeedTestFF URL "<\"http://61.175.31.158:16039\">"
-(or http://202.107.217.212:16039, http://61.154.53.106:16039)
+# gdbus call -y -d com.ctc.igd1 -o /com/ctc/igd1/Diagnostics/HttpDownload -m com.ctc.igd1.Properties.Set com.ctc.igd1.SpeedTestFF URL "<\"http://202.107.217.212:16039\">"
+(or http://61.175.31.158:16039, http://61.154.53.106:16039)
 
 # gdbus call -y -d com.ctc.igd1 -o /com/ctc/igd1/Diagnostics/HttpDownload -m com.ctc.igd1.Properties.Set com.ctc.igd1.SpeedTestFF Ticket "<\"0000022222\">"
 
@@ -245,3 +247,4 @@ fsutil file createnew null.txt 5278350000
 
 # gdbus call -y -d com.ctc.igd1 -o /com/ctc/igd1/Diagnostics/HttpDownload -m com.ctc.igd1.Properties.GetAll com.ctc.igd1.SpeedTestFF
 ```
+

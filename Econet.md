@@ -76,4 +76,6 @@ To generate the bootloader and release NAND.bin
 $make PROFILE=CCC3
 $make boot
 $make production
+$make kernel
+$make modules
 ```

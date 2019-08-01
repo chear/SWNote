@@ -190,7 +190,7 @@ gpon registed pwd: 0000000054
 
 
 
-## Econet GUI
+## Econet Platform FW
 
 bootloader telecomadmin / nE7jA%5m
 

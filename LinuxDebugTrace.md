@@ -1,3 +1,5 @@
+
+
 # Linux ELF
 
 Linux ELF (**[Executable and Linkable Format](<https://ctf-wiki.github.io/ctf-wiki/executable/elf/elf-structure-zh/>)**)  defines the structure for binaries, libraries, and core files. The formal specification allows the operating system to interpreter its underlying machine instructions correctly. ELF files are typically the output of a compiler or linker and are a binary format. With the right tools, such file can be analyzed and better understood. 
@@ -29,8 +31,14 @@ Uninitialized data, with read/write access rights (=WA)
 
 Initialized data, with read access rights only (=A).
 
+**.stack & .heap**
+
+stack to store local variable and parameter value for function
+
 ```shell
-                    |--------------------| 0x00
+                    |--------------------| 0xFF                         
+            		|	   stack    	 |
+            		|--------------------|
                     |    ELF Header      |
                     |--------------------| 
                     |Program Header Table|
@@ -39,13 +47,15 @@ Initialized data, with read access rights only (=A).
                     |--------------------| 
                     |    .rodata		 |
             		|--------------------|
+            		|	   heap			 |
+            		|--------------------|
                     |	    ...			 |
                     |--------------------|
                     |	  .data			 |
             		|--------------------|
                     |    Section Header  |
                     |    Table optional	 |
- 			        |--------------------| 0xFF
+ 			        |--------------------| 0x00
 ```
 
 (Note: Stack/Heap are in-memory structures which are created/modified during run-time so in essence they are not in the file itself - they can't be. Think of them as a special place in memory where each and every program can store run-time data and by run-time data I mean variables. function invocations, return values and all the nitty-gritty stuff that are hapening on the low level.)
@@ -99,16 +109,6 @@ hw_nat-objs := ra_nat.o foe_fdb.o util.o hwnat_ioctl.o ppe_api.o
 EXTRA_CFLAGS += -g -DCONFIG_HNAT_V2 -DCONFIG_RA_HW_NAT_IPV6
 #(Note: -g usd to debug info to this module)
 
-#ifeq ($(CONFIG_RALINK_RT3052),y)
-#hw_nat-objs += sys_rfrw.o
-#endif
-
-#ifneq ($(CONFIG_HNAT_V2),y)
-#hw_nat-objs += acl_policy.o acl_ioctl.o
-#hw_nat-objs += ac_policy.o ac_ioctl.o
-#hw_nat-objs += mtr_policy.o mtr_ioctl.o
-#endif
-
 all:
 	$(MAKE) -C $(KERNELDIR) M=`pwd` modules
 	$(STRIP) --strip-unneeded hw_nat.ko
@@ -128,39 +128,177 @@ make modules
 通过 ToolChain 中的工具 **mips-linux-objdump**  得到该函数名的偏移地址为 **0x00006550** 
 
 ```shell
-./opt/trendchip/mips-linux-uclibc-4.9.3/usr/bin/mips-linux-objdump -d ra_nat.o | grep PpeSportDportCheck
+/opt/trendchip/mips-linux-uclibc-4.9.3/usr/bin/mips-linux-objdump -d ra_nat.o | grep PpeSportDportCheck
 ```
 
 , 通过上面 crash 信息得到 crash 点的偏移为 **0x3c** ,因此真正crash的点为 **0x658c**
 
-![1557292168621](C:\Users\R00499\AppData\Roaming\Typora\typora-user-images\1557292168621.png)
+![obj_dump](img/obj_dump.png)
 
-### Step  4.  
+### Step  4.
+
 通过 **mips-linux-addr2line**  , 找到代码对应的行数
 
 ```shell
-./opt/trendchip/mips-linux-uclibc-4.9.3/usr/bin/mips-linux-addr2line -e ra_nat.o 658c
+/opt/trendchip/mips-linux-uclibc-4.9.3/usr/bin/mips-linux-addr2line -e ra_nat.o 658c
 ```
 
-![1557292180046](C:\Users\R00499\AppData\Roaming\Typora\typora-user-images\1557292180046.png)
+![add2line](img/add2line.png)
 
 ### Step  5.
+
 使用 **mips-linux-objdump** 得到汇编代码。
 
 ```shell
-./opt/trendchip/mips-linux-uclibc-4.9.3/usr/bin/mips-linux-objdump -d ra_nat.o >
+/opt/trendchip/mips-linux-uclibc-4.9.3/usr/bin/mips-linux-objdump -d ra_nat.o >
 list
 ```
 
-![1557292189854](C:\Users\R00499\AppData\Roaming\Typora\typora-user-images\1557292189854.png)
+![obj_dump2](img/obj_dump2.png)
 
+### Step  6.
 
-### Step  6.   
-适用 **mips-linux-objdump** ，可以获得c语言代码和对应的反汇编代码
+使用 **mips-linux-objdump** ，可以获得c语言代码和对应的反汇编代码
 
 ```shell
 ./opt/trendchip/mips-linux-uclibc-4.9.3/usr/bin/mips-linux-objdump -dS ra_nat.o >
 list
 ```
 
-![1557292213639](C:\Users\R00499\AppData\Roaming\Typora\typora-user-images\1557292213639.png)
+![obj_dump3](img/obj_dump3.png)
+
+
+
+
+
+## FAQ
+###  1. kernel message info without 'epc'
+
+```shell
+CPU: 0 PID: 7551 Comm: test_ff.sh Tainted: P           O   3.18.21 #15
+Stack : 00000006 c43e23ec 00000000 00000000 00000000 00000000 806da4e2 00000046
+	  806d0000 806d5134 00001d7f 00000000 805f0498 805ebc98 00001d7f 00000000
+	  806d5134 8a50ebd0 80540000 c43f0000 7fb7fcf8 80541ef4 8a707970 0000000a
+	  8a707b5f 00000000 805f0498 8a70798c 8a70798c 00000035 c43f0000 8067db47
+	  00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+	  ...
+Call Trace:
+[<8001624c>] show_stack+0x88/0xa4
+[<80543e04>] dump_stack+0x64/0x88
+[<c11276bc>] xponmap_ioctl+0x1394/0x1494 [xponmap]
+```
+those kernel info print by "dump_stack()"  to show the function call relationship in kernel space  , to located *xponmap_ioctl*  by **objdump** should  by following  
+```shell
+objdump -d xponmap.ko |grep xponmap_ioctl
+00001328 <xponmap_ioctl>:
+    13ac:	12030241 	beq	s0,v1,1cb4 <xponmap_ioctl+0x98c>
+    13b8:	14600026 	bnez	v1,1454 <xponmap_ioctl+0x12c>
+    ...
+```
+
+Notes:  **0x1328+0x1394=0x26bc**  , the 0x26bc its the relative address in *xponmap.o*
+
+```shell
+dddr2line -e xponmap.o 0x26bc
+```
+
+
+
+
+
+###  2. [Common Tools](<https://www.cnblogs.com/kele-dad/p/9394568.html>) within GCC
+
+| Tools   | Description |
+| -------- | ----------- |
+| ar     |             |
+| add2line |             |
+| objdump  |             |
+| readelf  |             |
+
+
+
+### 3.  [memory usage in process](<https://www.cnblogs.com/zcblogs/p/3645302.html>)
+
+```shell
+# cat /proc/{pid}/maps       
+00400000-00414000 r-xp 00000000 1f:05 193        /bin/zysh        代码段
+00453000-00454000 rw-p 00013000 1f:05 193        /bin/zysh        数据段
+00454000-0045d000 rwxp 00454000 00:00 0          [heap]           堆
+2aaa8000-2aaae000 r-xp 00000000 1f:05 366        /lib/ld-uClibc-0.9.28.so共享库的内存地址
+2aaae000-2aaaf000 rw-p 2aaae000 00:00 0 
+2aaed000-2aaee000 r--p 00005000 1f:05 366        /lib/ld-uClibc-0.9.28.so
+2aaee000-2aaef000 rw-p 00006000 1f:05 366        /lib/ld-uClibc-0.9.28.so
+2aaef000-2ab4d000 r-xp 00000000 1f:05 319        /lib/libuClibc-0.9.28.so
+2ab4d000-2ab8c000 ---p 2ab4d000 00:00 0 
+2ab8c000-2ab8d000 r--p 0005d000 1f:05 319        /lib/libuClibc-0.9.28.so
+2ab8d000-2ab8e000 rw-p 0005e000 1f:05 319        /lib/libuClibc-0.9.28.so
+2ab8e000-2ab93000 rw-p 2ab8e000 00:00 0 
+2ab93000-2ab96000 r-xp 00000000 1f:05 313        /lib/libnvram-0.9.28.so
+2ab96000-2abd6000 ---p 2ab96000 00:00 0 
+2abd6000-2abe4000 rw-p 00003000 1f:05 313        /lib/libnvram-0.9.28.so
+2abe4000-2abe8000 r-xp 00000000 1f:05 365        /lib/libcfg.so
+2abe8000-2ac28000 ---p 2abe8000 00:00 0 
+2ac28000-2ac29000 rw-p 00004000 1f:05 365        /lib/libcfg.so
+2ac29000-2ac38000 r-xp 00000000 1f:05 310        /lib/libpthread-0.9.28.so
+2ac38000-2ac77000 ---p 2ac38000 00:00 0 
+2ac77000-2ac7c000 rw-p 0000e000 1f:05 310        /lib/libpthread-0.9.28.so
+2ac7c000-2ac7e000 rw-p 2ac7c000 00:00 0          
+7ff41000-7ff56000 rwxp 7ff41000 00:00 0          [stack]         栈
+```
+
+**Note: 列说明 1. 内存段的虚拟地址; 2. 可执行权限  r-w-x ,  p 私有 s 公有 ; 3.在进程地址的偏移量 ; 4. 映像文件主次设备号; 5. 映像文件的节点号inode ; 6. 映像文件的路径**
+
+
+
+```shell
+/proc/{pid}/status
+Name:	zysh
+State:	S (sleeping)
+Tgid:	9481
+Ngid:	0
+Pid:	9481
+PPid:	7565
+TracerPid:	0
+Uid:	1000	1000	1000	1000
+Gid:	0	0	0	0
+FDSize:	32
+Groups:	0 
+VmPeak:	   12568 kB
+VmSize:	   12568 kB
+VmLck:	       0 kB
+VmPin:	       0 kB
+VmHWM:	    3920 kB
+VmRSS:	    3920 kB
+VmData:	    2340 kB
+VmStk:	     136 kB
+VmExe:	     192 kB
+VmLib:	    6264 kB
+VmPTE:	      24 kB
+VmSwap:	       0 kB
+Threads:	1
+SigQ:	0/983
+SigPnd:	00000000000000000000000000000000
+ShdPnd:	00000000000000000000000000000000
+SigBlk:	00000000000000000000000000000000
+SigIgn:	00000000000000000000000000000000
+SigCgt:	00000000000000000000000181884007
+CapInh:	0000000000000000
+CapPrm:	0000000000000000
+CapEff:	0000000000000000
+CapBnd:	0000003fffffffff
+Cpus_allowed:	3
+Cpus_allowed_list:	0-1
+Mems_allowed:	1
+Mems_allowed_list:	0
+voluntary_ctxt_switches:	12
+nonvoluntary_ctxt_switches:	19
+```
+
+**Note:  VmSize:整个进程使用虚拟内存大小，是VmLib, VmExe, VmData, 和VmStk的总和;
+VmLck: 虚拟内存锁。进程当前使用的并且加锁的虚拟内存总数;
+VmHWM: 表示进程所占用物理内存的峰值;
+VmRSS: 虚拟内存驻留集合大小。这是驻留在物理内存的一部分。它没有交换到硬盘。它包括代码，数据和栈;
+VmData: 虚拟内存数据。堆使用的虚拟内存;
+VmStk: 虚拟内存栈  栈使用的虚拟内存;
+VmExe: 可执行的虚拟内存, 可执行的和静态链接库所使用的虚拟内存;
+VmLib: 虚拟内存库动态链接库所使用的虚拟内存**

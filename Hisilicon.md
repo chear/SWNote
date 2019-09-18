@@ -53,38 +53,28 @@ Sub-system Interface Introduction
 
 ```shell
                     |--------------------|
+            		|       Java B       |	java.bin,zize=0xE00000
+            0x6000000 -------------------|
+                    |       Java A       |	java.bin,zize=0xE00000
+            0x4200000 -------------------|
                     |                    |
+                    |		rootfs B	 |  root.squshfs,size=0x1900000              
+ 			0x2900000 -------------------|
                     |                    |
+                    |	  	rootfs A	 |	root.squshfs,size=0x1900000
+ 	        0x1000000 -------------------|
                     |                    |
+                    |	  	kernel B	 |	kernel.img size=0x50000
+             0xB00000 -------------------|
                     |                    |
-            0xc05d 1dc0                  |                     
-                     --------------------| __data_start  init_thread_union
-                    |                    | 
-                      0xc058 1000 _etext |
-                     --------------------|
-                    |                    |
-                    |		kernel B	 |
-                    |                    |
-           0xc056 d000                   |
-                     --------------------| __start_rodata
-                    |                    |
-                    |                    |
-                    |					 |
-                    |                    |
-                    |                    |
-                    |	  	rootfs B	 |
-                     --------------------| _text        __init_end    
-                    |                    |
-                    | 					 | DISCARD 这个section在内核完成初始化后
-                    |                    |         会被释放掉
-                    |     	kernel A     |
-                     --------------------| _einittext
-                    |                    |
-                    |     	rootfs A     |
-                	|				     |
-                     --------------------|<------------ __init_begin
-                    |    	 Env         |
- 0x00000000         |--------------------|
+                    |     	kernel A     |  kernel.img size=0x50000
+             0x600000 -------------------|
+                    |		ENV		     |	env.bin, size=0xA0000
+ 	          0xc0000 -------------------|
+                    |     	ENV          |  env.bin, size=0xA0000
+ 	          0x20000 -------------------|
+                    |    	HI_Boot      |	hiboot.bin,size=0x20000
+ 	          0x00000 -------------------|
 ```
 
 

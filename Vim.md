@@ -1,6 +1,8 @@
 ##  Ctags
 
-[reference](http://docs.ctags.io/en/latest/news.html?highlight=macro#defining-a-macro-in-cpreprocessor-input)
+**Universal-Ctags** replace to **Exuberant-Ctags**  ,and more powerful , source at [Github](<https://github.com/ universal-ctags/ctags>) , [Docs](<http://docs.ctags.io/en/latest/news.html?highlight=macro#defining-a-macro-in-cpreprocessor-input>)
+
+linux.ctags to define macro for *SYSCALL_DEFINE0*  to *SYSCALL_DEFIN9*
 
 ```shell
 $ cat linux.ctags

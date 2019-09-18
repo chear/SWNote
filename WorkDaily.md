@@ -149,9 +149,10 @@ iounmap(vaddr_base);
 
 
 
+
 ## 20190703
 
-### 移动下载仿真测试 (httping)
+### Hisilicon 移动下载仿真测试 (httping)
 
 ```mermaid
 graph LR
@@ -216,11 +217,12 @@ fsutil file createnew null.txt 5278350000
 
 
 
+
 ## 20190719
 
-### Econet 7528 emu download diagnostic:
+###  MTK En_7528 speed test :
 
-1. Http Download
+1. Http Download:
 
 ```shell
 # gdbus call -y -d com.ctc.igd1 -o /com/ctc/igd1/Diagnostics/HttpDownload -m com.ctc.igd1.Properties.Set com.ctc.igd1.HttpDownloadTest URL "<\"http://1.204.169.133:16906/MDAuMDAuMDN1NE56OTdISHhYN0trNkxmL0pNWGlxZTN0b1c4V0hjYjBpMnFueUR0Q1pCUHZaYXVzOEdBZEhYWjRxLzREaHV2cUhjUXhHNXJiWEFhTVVnaTN6YjhzUT09.dat\">"    
@@ -232,9 +234,28 @@ fsutil file createnew null.txt 5278350000
 ```
 
 
-2. SpeedtestFF 
+2. SpeedtestFF :
+
+```mermaid
+        gantt        
+        dateFormat  YYYY-MM-DD
+        title SpeedTest FF diagram
+        section /usr/sbin/dbus_ctc_igd1_server
+        dbus_server            :active, a1, 2019-08-23,1d
+        com_ctc_igd1_speed_test_ff_handle_start_test()   :active, a2, after a1, 6d
+        section /usr/lib/libplatform.so
+        libPlatform_CTCSpeedTestFF():active,  b1,after a2, 2d
+        libPlatformHal_CTCSpeedTestFF():active,   b2, after a2, 2d        
+        section /usr/sbin/speedDownload
+        speedDownload               : active , d1 ,2019-09-03, 2d            
+        section /lib/modules/speedtest.ko
+        insmod speedtest.ko               :active, c1, after b2,4d
+```
+
+
+
 ```shell
-# gdbus call -y -d com.ctc.igd1 -o /com/ctc/igd1/Diagnostics/HttpDownload -m com.ctc.igd1.Properties.Set com.ctc.igd1.SpeedTestFF URL "<\"http://202.107.217.212:16039\">"
+# gdbus call -y -d com.ctc.igd1 -o /com/ctc/igd1/Diagnostics/HttpDownload -m com.ctc.igd1.Properties.Set com.ctc.igd1.SpeedTestFF URL "<\"http://202.107.217.212:16039 \">"
 (or http://61.175.31.158:16039, http://61.154.53.106:16039)
 
 # gdbus call -y -d com.ctc.igd1 -o /com/ctc/igd1/Diagnostics/HttpDownload -m com.ctc.igd1.Properties.Set com.ctc.igd1.SpeedTestFF Ticket "<\"0000022222\">"
@@ -247,4 +268,204 @@ fsutil file createnew null.txt 5278350000
 
 # gdbus call -y -d com.ctc.igd1 -o /com/ctc/igd1/Diagnostics/HttpDownload -m com.ctc.igd1.Properties.GetAll com.ctc.igd1.SpeedTestFF
 ```
+
+
+
+
+## 20190812
+
+### MfgMode
+
+```shell
+# zysh
+ZySH> configure terminal
+config$ btt off
+config$ testled on
+config$ ethctl
+```
+
+### ePon & gPon Register
+
+```shell
+# atbp show
+Number of MAC Addresses (1-32)    :  10  
+Base MAC Address                  :  00:19:cb:0a:05:87  
+Serial Number                     :  649A0649A0896B944  
+Password for Useradmin            :  12345  
+SSID for first wireless (10-31)   :  ChinaNet-b944  
+Password for first wireless (8-31):  12345678  
+WAN working mode [0|1|2|3|4|5|6|7]:  0  (0,4 for ePon, 1 for gPon) 
+GPON Serial Number                :  MSTC0A000058  
+GPON Password                     :  2334567834  
+Semi-manufactured SN              :  0Y0000000000  
+
+```
+
+to register ePon should setting **Base MAC Address ** by  "00:19:CB:0A:05:87" ( **0590-3**)  and running  *"onuoamd"* app , to register gPon should setting **GON Serial Number** by  "MSTC0A000058" and running 	"*mosapp*". ( **serial number must be capital case.**)
+
+
+
+#### Capture frame by ePon
+
+1.  open package mirror :
+
+```shell
+/usr/sbin/sys wan2lan on 15
+```
+
+2. open *Wireshark* ( install slow_new plugin) , and choise *slow_new* as following.
+
+![epon_capture](img/epon_capture.png)
+
+
+
+#### Capture by gPon
+
+develop with gPon can not use *wireshark* to capture frame directly , to capture frame by following:
+
+```shell
+# moscli ploamtrace on
+# Debug Level: 10
+Debug Level: 14
+[42949464360ms]PLOAM: Send REI message.(3A080000 00000400 00000000)
+[42949474380ms]PLOAM: Send REI message.(3A080000 00000500 00000000)
+AsicSetSyncModeAndEnable(): NotSupportedFunc for this arch(HIF_MT)!
+[DfsCacEndUpdate] CAC end. Enable MAC TX.
+[42949477900ms]GPON IRQ: A PLOAM message received interrupt.DBG_GRP_0[1f0006], DBG_GRP_1[40000]
+[42949477900ms]PLOAM: Receive Assign_ONU_ID message.(FF033643 4D4440B2 00004800)
+[42949477900ms]The serial number of PLOAM message is incorrect
+[42949477900ms]Receive the PLOAM message same:FF033643
+[42949477900ms]Receive the PLOAM message same:FF033643
+[42949477930ms]GPON IRQ: A PLOAM message received interrupt.DBG_GRP_0[1f0006], DBG_GRP_1[40000]
+[42949484400ms]PLOAM: Send REI message.(3A080000 00000600 00000000)
+[42949494420ms]PLOAM: Send REI message.(3A080000 00000700 00000000)
+[42949504440ms]PLOAM: Send REI message.(3A080000 00000800 00000000)
+[42949506780ms]GPON IRQ: A PLOAM message received interrupt.DBG_GRP_0[1f0006], DBG_GRP_1[40000]
+[42949506780ms]PLOAM: Receive Assign_ONU_ID message.(FF033643 4D4440B2 00004800)
+[42949506780ms]The serial number of PLOAM message is incorrect
+[42949506780ms]Receive the PLOAM message same:FF033643
+[42949506780ms]Receive the PLOAM message same:FF033643
+[42949506810ms]GPON IRQ: A PLOAM message received interrupt.DBG_GRP_0[1f0006], DBG_GRP_1[40000]
+[42949514460ms]PLOAM: Send REI message.(3A080000 00000900 00000000)
+```
+
+(more detail at [gPonKownledge](pdf_resource/GPON_Knowledge_Introduce.pptx)  , the following sequence of events to register on OLT  by  **1) serial number  ; 2) password ; 3) LOID** )
+
+
+
+## 20190816
+
+### econet 7526 crash info
+
+1. epc info shows without offset address
+
+```shell
+User Mode page fault at process 1052 (zysh)
+CPU: 1 PID: 1052 Comm: zysh Tainted: P           O   3.18.21 #96
+task: 99ed8b30 ti: 9ac6c000 task.ti: 9ac6c000
+$ 0   : 00000000 77b69415 00000000 77e7d8e0
+$ 4   : 00000004 00000000 776693e4 00000000
+$ 8   : 77ae42f4 77ade924 00000000 ffffffff
+$12   : 77e62000 f0000000 00000001 77656ad0
+$16   : 00000000 00000000 00000006 00000000
+$20   : 00000001 004370b8 00898990 00000001
+$24   : 000000bd 77b47de0                  
+$28   : 77671330 7f9e6ef8 00892260 776582b8
+Hi    : 00000249
+Lo    : 0001cbed
+epc   : 776582c8 0x776582c8
+ Tainted: P           O  
+ra    : 776582b8 0x776582b8
+Status: 01000013	USER EXL IE 
+Cause : 0080d008
+BadVA : 00000000
+PrId  : 0001992f (MIPS 1004Kc)
+ort Status Speed Duplex TX_FC RX_FC
+Segmentation fault
+```
+
+2. 提前打印出将要crash 的地址信息
+
+```shell
+# cat /proc/1052/maps 
+00400000-00430000 r-xp 00000000 1f:00 1106       /usr/bin/zysh
+00430000-00431000 rw-p 00030000 1f:00 1106       /usr/bin/zysh
+...
+77654000-7765a000 r-xp 00000000 1f:00 1175       /usr/lib/libmtkswitch.so.1.
+...
+```
+
+
+3. 算偏移量  **776582c8 - 77654000 = 42c8** ， 通过 *mips-linux-objdump* 以及偏移量, 查找 **libmtkswitch.so** 文件的偏移地址
+
+```shell
+# /opt/trendchip/mips-linux-uclibc-4.9.3/usr/bin/mips-linux-objdump -d  libmtkswitch.so |
+00004270 <macMT7530GetPortLinkState>:
+...
+42c8:	304300ff 	andi	v1,v0,0xff
+...
+```
+
+
+4. 计算偏移量  **42c8 - 4270 = 58**  ,  继续通过 *mips-linux-objdump* 查找对应的 **libmtkswitch.o** 文件的对应地址，之后加上偏移量 **58** ，得到相对应的偏移地址 **1838**
+
+```shell
+# /opt/trendchip/mips-linux-uclibc-4.9.3/usr/bin/mips-linux-objdump -d ./libmtkswitch.o |grep  "macMT7530GetPortLinkState"
+000017e0 <macMT7530GetPortLinkState>: 
+```
+
+
+5. 查找与地址相对应的代码为 : *sysapps/ethcmd/mtkswitch_api.c*  中的 1307 行。
+
+```shell
+# /opt/trendchip/mips-linux-uclibc-4.9.3/usr/bin/mips-linux-addr2line -e ./libmtkswitch.o 1838
+/home/chear/EN7528_CTC_NEW/dev/build/sysapps/ethcmd/mtkswitch_api.c:1307
+```
+
+
+
+## 20190826
+### USB-Flash disc hang without any response
+
+sample script to running *dd*  command within 11 times to testing the USB hung issue.
+
+```shell
+# for i in $(seq 1 11); do echo ${i}; dd if=/dev/mtd2 of=/mnt/usb1_1/test.bin;  done
+
+("for i in {1..10}; do echo ${i}; dd if=/dev/mtd2 of=/mnt/usb1_1/test.bin;done", for /bin/bash in x86 or x64)
+```
+
+"*for i in 1 2 3 4 5 6 7 8 9 10 ; do echo ${i}; dd if=/dev/mtd2 of=/mnt/usb1_1/test.bin; done*" can both running in **busybox sh**  and **bash**
+
+
+
+ *umount* usb-flash with following issue, should remove *minidlna* first.	
+
+```shell
+# umount /mnt/usb1_1/
+umount: can't umount /mnt/usb1_1/: Device or resource busy
+# ps |grep "minidlna"
+7264 root     10880 S    /usr/sbin/minidlna -R -f /etc/minidlna/minidlna.conf
+# kill -9 7264
+# umount /mnt/usb1_1/
+# usb 1-1: USB disconnect, device number 4
+```
+
+
+
+## 20190828
+
+### econet original image login
+
+original econet FW use  *boa* to be web server, local file at */boaroot/cgi-bin/*
+```shell
+# prolinecmd xponmode set epon 	(or gpon, to switch ePon or gPon) 
+# sys wan2lan on 15
+# prolinecmd restore defualt
+```
+
+
+
+
+
 

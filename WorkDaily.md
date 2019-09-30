@@ -425,7 +425,7 @@ Segmentation fault
 
 
 ## 20190826
-### USB-Flash disc hang without any response
+### system crash (without any response) when plug-in usb-flash disc
 
 sample script to running *dd*  command within 11 times to testing the USB hung issue.
 
@@ -464,8 +464,119 @@ original econet FW use  *boa* to be web server, local file at */boaroot/cgi-bin/
 # prolinecmd restore defualt
 ```
 
+z
+
+## 20190917
+
+### Switch FW image between Ecnet and Mitrashar within En_7528
+
+Econet for *tcboot.bin & tclinux.bin* ,and  Mitrashar for *loader.img & ras.bin* , the more important its both boot-loader with same size for 256k.
+
+**switch loader.img to tcboot.bin**
+
+1. login to u-boot, and download *tcboot.bin* to memory  , then write to flash. 
+
+```shell
+u-boot # loadx 0x80000000 			(upload tcboot.bin with x-modem by serial port)
+u-boot # nander 0 40000				(earse nand flash from 0x0 to 0x40000 for 256k)
+u-boot # nandwr 0 80000000 40000	(write nand flash from 0x0 to 0x40000,sync from 										memory at 0x80000000 )  
+```
+
+2. reboot and upgrade *tclinux.bin* ( Econet boot-loader login password by telecomadmin / nE7jA%5m)
+
+![econet_upgrade](img/econet_fw_upgrade.png)
+
+**switch tcboot.bin to loader.img**
+
+1. Rename loader.img to tcboot.bin  (not working) 
+
+
+
+```shell
+
+```
 
 
 
 
+
+## 20190919
+
+### kernel hook for net filter.
+
+```c
+struct nf_sockopt_ops
+{
+    struct list_head list;
+    
+    int pf;
+    
+    /* Non-inclusive ranges: use 0/0/NULL to never get called. */
+    int set_optmin;
+    int set_optmax;
+    int (*set)(struct sock *sk, int optval, void *user, unsigned int len);
+
+    int get_optmin;
+    int get_optmax;
+    int (*get)(struct sock *sk, int optval, void *user, int *len);
+        
+    /* Number of users inside set() or get(). */
+    unsigned int use;
+    struct task_struct *cleanup_task;
+};  
+
+// usage:
+static struct nf_hook_ops httpd_hooks = {   
+    .hook = httpd_syn_flood_hook_fun,
+    .pf = NFPROTO_IPV6,
+    .owner = THIS_MODULE,
+    .hooknum =  NF_BR_LOCAL_IN, 
+    .priority = NF_IP_PRI_FIRST, // NF_IP_PRI_FIRST, //NF_IP_PRI_LAST ;NF_IP_PRI_MANGLE;
+};  
+```
+
+
+
+## 20190925
+
+### count child-process for mini_httpd
+
+re-move the child-process when "mini_httpd" crate by *fork()*.
+
+```shell
+# ps |grep mini_httpd|grep -v grep|awk '{print int($0)}'|xargs kill -9
+```
+
+to count the child-process when accept by "mini_httpd" , the *1190*  means the parent-process.
+
+```shell
+# ps |grep mini_httpd|grep -v grep|grep -v 1190|awk '{print NR}'|tail -n1
+or
+# pgrep mini_httpd|wc -l
+```
+
+to count the TCP connection while "mini_httped" listened , hex '1F90' convert decimal with '8080'. 
+
+```shell
+# cat /proc/net/tcp6 |grep "1F90" |awk 'END{print NR}'
+```
+
+
+
+## 20190927
+
+### different between *system()* and *popen()*
+
+both *[system()](<http://man7.org/linux/man-pages/man3/system.3.html>)* and *[popen()](<http://man7.org/linux/man-pages/man3/popen.3.html>)* are source in glibc for  POSIX library , 
+
+
+```c
+#include <stdio.h>
+FILE *popen(const char *command, const char *type);
+int pclose(FILE *stream);
+
+#include <stdlib.h>
+int system(const char *command);
+```
+ref: [Linux Man Page List ](<http://man7.org/linux/man-pages/dir_all_by_section.html>)
 

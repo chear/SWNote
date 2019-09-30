@@ -149,7 +149,9 @@ tcboot --> loader(loader.img)
 ```
 **(Note:  the zbootload.c , lzmaload.c its not actual source code this mean this can not execute any code , its just used to store the section for lzma.img and zloader.img. )**
 
-## Building
+
+
+## Makefile Builder arch
 
 making process
 

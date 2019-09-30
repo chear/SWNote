@@ -76,19 +76,7 @@ stack to store local variable and parameter value for function
 
 
 
-
-
-
-
-## arm arch
-
-
-
-
-
-
-
-## mips arch
+## Sample for MIPS Arch 
 
 ### Step 1.
 
@@ -211,7 +199,7 @@ dddr2line -e xponmap.o 0x26bc
 | Tools   | Description |
 | -------- | ----------- |
 | ar     |             |
-| add2line |             |
+| add2line |  |
 | objdump  |             |
 | readelf  |             |
 

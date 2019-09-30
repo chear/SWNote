@@ -1,6 +1,8 @@
-# IPC Introduction	
+# Linux Process Introduction
 
-IPC ( Linux Process Introduction) , the **Program** is image for machine code and data which is stored in disks and can be executed it is a passive static entity, but the **Process** is  program which executing under CPU, can  apply and own the system resource .  contain the program and info of current  activity it is a dynamic entity. The ways for Linux IPCs  such like **Signal** , **Pipe /FIFO** , **Message queue** , **Semaphore**, **Share Memory** , more detail check the following or [this](https://beej.us/guide/bgipc/).
+IPC ( Inter-Process Communication) , the **Software Program** is image for machine code and data which is stored in disks and can be executed it is a passive static entity, but the **Process** is  program which executing under CPU, can  apply and own the system resource .  contain the program and info of current  activity it is a dynamic entity. 
+
+The ways for Linux IPCs  such like **Signal** , **Pipe /FIFO** , **Message queue** , **Semaphore**, **Share Memory** ect. more detail check the [following url](https://beej.us/guide/bgipc/).
 
 ![ipc1](img/ipc_1.bmp)
 
@@ -117,13 +119,13 @@ The **pipe** in Linux is identical in concept to the pipe in Unix, and is a core
 
 ### 1. Pipe == byte stream buffer in kernel
 
-- #### ​Sequential (can’t lseek())
+- Sequential (can’t lseek())
 
-- #### Multiple readers/writers difficult
+- Multiple readers/writers difficult
 
 ### 2. Unidirectional
 
-- #### Write end + read end
+-  Write end + read end
 
 
 
@@ -132,7 +134,8 @@ ls | wc -l
 ```
 ![ipc_pipe](img/ipc_pipe.bmp)
 
-##### Related basic APIs
+#####  Related basic APIs
+
 ```C
 /*
 filedes[0]: used only for read
@@ -198,19 +201,20 @@ main() {
 
 ## FIFO (named pipe)
 
-- ### pipes (anonymous) can only be used by related processes
+-  pipes (anonymous) can only be used by related processes
 
-- ### FIFOs == pipe with name in file system
+-  FIFOs == pipe with name in file system
 
-- ### Creation:
-  		#### 	mkfifo(pathname, permissions)
+- Creation:
 
-- ###  Any process can open and use FIFO
+     	mkfifo(pathname, permissions)
 
-- ###  I/O is same as for pipes
+-  Any process can open and use FIFO
+
+-  I/O is same as for pipes
 
 
-#### Related basic APIs
+###  Related basic APIs
 
 ```C
 open(pathname, O_WRONLY/O_RDONLY);

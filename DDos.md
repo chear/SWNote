@@ -26,11 +26,11 @@ By repeatedly sending initial connection request (**SYN**) packets, the attacker
 
 
 
-The normally capture tcp handshark
+**The normally capture tcp handshark :**
 
 ![handshark](img\tcp_handshark.png)
 
-after syn flood attacks 
+**after syn flood attacks :**
 
 ![sync_flood](img\tcp_syn_flood.png)
 

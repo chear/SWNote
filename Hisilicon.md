@@ -108,7 +108,7 @@ Sub-system Interface Introduction
 (  **./App-plugin  ./document   ./hisilicon  ./solution  and  ./sysinfo** are store in trunk , all other folder are genreate by compile )
 ```
 
-**./openwrt File Structure**
+### Hi-Boot
 
 ```
 ├── bin
@@ -133,7 +133,7 @@ Sub-system Interface Introduction
 **Kernel Building path at:**
 
 ```shell
-$ls slinux-3.18.11.tar.xz
+$ls solution/package/openwrt/linux-3.18.11.tar.xz
 	(Linux zip for svn solution)
 $ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/linux-sd5116_generic/
 	(this for building)

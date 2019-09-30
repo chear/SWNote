@@ -2,6 +2,8 @@
 
 ![nand_flash_layout](./img/nand_flash_layout.png)
 
+
+
 ## OOB
 
 对于[Nand Flash](<https://www.cnblogs.com/zhugeanran/p/8423484.html>)，每一个页，对应一个空闲区域 ( *'OOB' or  ‘Redundant Area‘ or ‘Spare Area‘, 一般在 linux 系统中称为 OOB* )，这个区域是基于Nand Flash的硬件特性，数据在读写的时候容易出错，为了保证数据的正确性，就产生了这样一个检测和纠错的区域，用来放置数据的校验值。OOB的读写操作，一般都是随着页的操作一起完成，也就是在读写页的时候，对应的OOB就产生了。
@@ -17,8 +19,11 @@ XTX-spi-nand flash Array  Organization chart as following:
 
 3. 存储一些与文件系统相关的信息，对于ramfs/jffs2文件系统映像文件中没有OOB的内容，需要根据OOB的标记略过坏块，然后将一页的数据写入，然后计算这一页数据的ECC校验码，然后将它写入到OOB区；而对于yaffs文件系统，因为本身包含有OOB区的数据（里面纪录有坏块标记，ECC校验码，其他信息），所以首先需要检查坏块，如果是，则跳过，然后写入数据，最后写入OOB数据。
 
+
+
 ## SLC & MLS
-   Nand Flash按照内部存储数据单元的电压的不同层次，也就是单个内存单元中，是存储1位数据，还是多位数据，可以分为SLC  和MLC。那么软件如何识别系统上使用过的SLC还是MLC呢？ 
+
+   Nand Flash按照内部存储数据单元的电压的不同层次，也就是单个内存单元中，是存储1位数据，还是多位数据，可以分为 **SLC (Single-Level Cell) ** 和 **MLC (Multi-Level Cell)** 。那么软件如何识别系统上使用过的SLC还是MLC呢？ 
    Nand Flash设计中，有个命令叫做Read ID，读取ID，读取好几个字节，一般最少是4个，新的芯片，支持5个甚至更多，从这些字节中，可以解析出很多相关的信息，比如此Nand Flash内部是几个芯片（chip）所组成的，每个chip包含了几片（Plane），每一片中的页大小，块大小，等等。在这些信息中，其中有一个，就是识别此flash是SLC还是MLC。
 
    
@@ -112,7 +117,22 @@ nand erase
 
 
 
-# Hi-Boot
+## Hisilicon NAND Flash Arch
+
+SPI Nand driver in hisi platform based on HSAN arch. The basic specfication loaded within bootloader, and transfor to kernel by  paramater. 
+
+Most general action such like earse , read , write, has been defined in hi-boot. 
+
+**FMC (FPGA Mezzanine Card)**
+
+ ```mermaid
+graph LR
+hi_flash_init -->|&g_st_fmc_spi_nand_reg|fmc_probe(fmc_probe)
+fmc_probe-->|hi_fmc_nand_chip_init|C(get_nand_chip)
+C -->D(Loading nand spec)
+ ```
+
+### Hi-Boot
 
 hi-boot 中 spec 信息保存在 *drivers/mtd/fmc/hi_fmc_tbl.c*  中， 并且在 *drivers/mtd/flash.c* 中初始化，代码如下：
 
@@ -170,7 +190,7 @@ struct hi_fmc_nand_spl_ids_s g_ast_fmc_nand_spl_ids[] =
 
 
 
-## Kernel
+### Kernel
 
 mtd 信息通过 HSAN 模块传递给 kernel，其传递方式与 SPI Nor Flash Driver 相似，都是通过在hi-boot 中Tag写入内存地址 **0x5441000A**， 之后在 kernel中解析得到诸如，page_size, black_size, earse_size 等信息并且保存于全局变量 *g_pc_flash_info* 中。解析代码位于 *solution/patch/linux-3.18.11/arch/arm/kernel/atags_parse.c* 
 
@@ -252,6 +272,7 @@ hi # md 0x88000000 0x100
 880000f0: 683d656c 6f625f69 645f746f 622e6762    le=hi_boot_dbg.b
 88000100: 5e77ffe5 f9e3b6bf f3bffd3b fbecaeff    ..w^....;.......
 ```
+
 
 
 ### 3. direct dump date from flash chip

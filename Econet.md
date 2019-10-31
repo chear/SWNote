@@ -183,3 +183,25 @@ $make kernel
 $make modules
 ```
 
+
+
+**Note: make ccc3.0 error by macro not define within rdm, then do following commands**  
+
+```shell
+$cd dev/makecode
+$make clean
+$rm -Rf ../build
+$find sysapps/private/mitrastar/ccc3.0 -name *.cprep |xargs rm -f
+$find sysapps/private/mitrastar/ccc3.0 -name *.cprep2 |xargs rm -f
+$make PROFILE=CCC3
+```
+
+
+
+
+
+**[Beyond  Compare 4.19 Expire Usage](<https://blog.csdn.net/baidu_39340548/article/details/88257556>):** 
+ 1. remove or delete **BCUnrar.dll** in installed folder ; 
+ 2. delete item "**HKEY_CURRENT_USER\Software\Scooter Software\Beyond Compare 4\CacheId**" in windows regedit.
+
+[more reference](<https://blog.csdn.net/weixin_42995876/article/details/85049233>)

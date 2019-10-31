@@ -6,10 +6,12 @@ linux.ctags to define macro for *SYSCALL_DEFINE0*  to *SYSCALL_DEFIN9*
 
 ```shell
 $ cat linux.ctags
---langdef=linux{base=C}
---kinddef-linux=s,syscall,system calls
---regex-linux=/SYSCALL_DEFINE[0-9]\(([^, )]+)[\),]*/\1/s/
+--langdef=linux{base=C}								# define language "linux"
+--kinddef-linux=s,syscall,system calls				# letter,name,description
+--regex-linux=/SYSCALL_DEFINE[0-9]\(([^, )]+)[\),]*/\1/s/   
 ```
+
+
 
 
 

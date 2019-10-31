@@ -4,6 +4,8 @@ id, R00499 ,  tel 15148
 ecnet pdf pwd: mstcecnt
 e-school: zyxel\R00499 /pwd
 
+
+
 ## Hisilicon Support Info:
 
 海思support:	
@@ -65,11 +67,13 @@ IPv4 路由表
 > route change 172.25.24.255 mask 255.255.255.255 172.25.24.254 metric 10 if 10
 ```
 
+
+
 ## Pon Info
 
 | Type  | Working Mode | OLT Note            | Note                                    |
 | ----- | ------------ | ------------------- | --------------------------------------- |
-| ePon  | 4            | interface epon 0/12 |                                         |
+| ePon  | 0 or 4       | interface epon 0/12 |                                         |
 | gPon  | 1            | interface epon 0/2  |                                         |
 | xgPon | 6            | interface epon 0/10 | 1) loid, 2) mac add, 3) restore default |
 
@@ -98,6 +102,9 @@ iwpriv rai0 e2p
 
 
 ``` shell
+# To create new file for 2M size in windows
+fsutil file createnew 2M 2097152
+
 # For upload server & client
 iperf -S -W 1M
 iperf.exe -c 91.0.0.1 -w 2M -p 5001 -i 1 -t 3600

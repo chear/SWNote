@@ -188,17 +188,25 @@ struct hi_fmc_nand_spl_ids_s g_ast_fmc_nand_spl_ids[] =
 };
 ```
 
-
+**(Note: 在新发布的 hisi 中，诸如 page_size ,block_size , ecc_bit, oob_size, 都是从寄存器中获取。寄存器地址 0x10A20000 )**
 
 ### Kernel
 
-mtd 信息通过 HSAN 模块传递给 kernel，其传递方式与 SPI Nor Flash Driver 相似，都是通过在hi-boot 中Tag写入内存地址 **0x5441000A**， 之后在 kernel中解析得到诸如，page_size, black_size, earse_size 等信息并且保存于全局变量 *g_pc_flash_info* 中。解析代码位于 *solution/patch/linux-3.18.11/arch/arm/kernel/atags_parse.c* 
+#### kernel image consists
+
+![kernel](img/kernel_bootloader.gif)
 
 
 
 
 
+mtd 信息通过 HSAN 模块传递给 kernel，其传递方式与 SPI Nor Flash Dr
 
+
+
+
+
+iver 相似，都是通过在hi-boot 中Tag写入内存地址 **0x5441000A**， 之后在 kernel中解析得到诸如，page_size, black_size, earse_size 等信息并且保存于全局变量 *g_pc_flash_info* 中。解析代码位于 *solution/patch/linux-3.18.11/arch/arm/kernel/atags_parse.c* 
 
 
 
@@ -206,7 +214,7 @@ mtd 信息通过 HSAN 模块传递给 kernel，其传递方式与 SPI Nor Flash 
 
 ### 1. Downloading file and write to flash
 
-Downloading  hi_boot.bin to memory address at **0x84000000**, then writing to address at **0x20000**  in flash , then next to read and display 256 byte at first head.
+Downloading  hi_boot.bin to memory address at **0x84000000**, then writing to address at **0x20000**  in flash , then next to read and display **0x100**(256) byte at first head, **0x88000000** its memory address to display with it.
 
 ```shell
 hi # tftp 0x84000000 env.bin    

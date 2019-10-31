@@ -196,10 +196,10 @@ $cli /home/cli/cm/cm_ctrl -v value 0x20000010
 (enable Tr069 wan control)
 ```
 
-Httping Test command
+speed test command for *httping*
 
 ```shell
-$httping http://192.168.8.3:51473/170 -d pppoe-wan_3002 -c 1 -G -b --priority 0 --tos 0 -y 0.0.0.0/54326 
+    $httping http://192.168.8.3:51473/170 -d pppoe-wan_3002 -c 1 -G -b --priority 0 --tos 0 -y 0.0.0.0/54326 
 ```
 
 - -d : for device name
@@ -464,11 +464,11 @@ original econet FW use  *boa* to be web server, local file at */boaroot/cgi-bin/
 # prolinecmd restore defualt
 ```
 
-z
+
 
 ## 20190917
 
-### Switch FW image between Ecnet and Mitrashar within En_7528
+### Switch FW image between Ecnet and Mitrashar within en7528 chip
 
 Econet for *tcboot.bin & tclinux.bin* ,and  Mitrashar for *loader.img & ras.bin* , the more important its both boot-loader with same size for 256k.
 
@@ -580,3 +580,28 @@ int system(const char *command);
 ```
 ref: [Linux Man Page List ](<http://man7.org/linux/man-pages/dir_all_by_section.html>)
 
+
+
+## 20191017
+
+*[quilt](<<http://www.shakthimaan.com/downloads/glv/quilt-tutorial/quilt-doc.pdf>)*  command used to manage patch.
+
+![quilt](img/quilt-stack.png)
+
+```shell
+# diff -u solution/package/openwrt/dnsmasq-2.72/dnsmasq-2.72/VERSION  openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/dnsmasq-full/dnsmasq-2.72/VERSION > dns.patch
+
+```
+
+
+
+## 20191018
+
+TR069  debug value for  **InternetGatewayDevice.Time.CurrentLocalTime** , source at *hisilicon/gateway/cms/*
+
+```shell
+root@OpenWrt:~# cli /home/cli/hal/port/port_mirror_set -v igr 0 egr 0x200 dport 0
+root@OpenWrt:~# log_voice_cli cwmpClient cwmp_log 		(enable or disable TR069 log)
+```
+
+ 

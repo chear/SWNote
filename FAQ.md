@@ -8,15 +8,27 @@ $brctl show
 
 
 
-## 2. switch bewteen ePon and gPon.
+## 2. switch bewteen with ePon and gPon 
 
-| Type  | Working Mode | OLT Note            |
+| Type  | Working Mode | OLT Server          |
 | ----- | ------------ | ------------------- |
-| ePon  | 4            | interface epon 0/12 |
+| ePon  | 0 or 4       | interface epon 0/12 |
 | gPon  | 1            | interface gpon 0/2  |
 | xgPon | 6            | interface epon 0/10 |
 
-### **ePont Register:**
+### display registed info with-in OLT server
+
+telnet login root@172.25.17.250 , root/admin
+
+```shell
+>enable
+#config
+#interface epon 0/12  			(Note: interface gpon 0/2)
+#display ont info 0 all 		(Note: 查看所有的ONT状态)
+#display ont info 0 1
+```
+
+### **ePon Register:**
 
 ```shell
 # atbp show
@@ -38,8 +50,10 @@ more loid for register:
 | --------------- | ----------------- | -------------- |
 | mstcwxsw3loid26 | 00:19:CB:0A:05:57 | 0019-CB0A-0560 |
 | mstcwxsw3loid27 | 00:19:CB:0A:05:67 | 0019-CB0A-0570 |
+| mstcwxsw3loid29 | 00:19:CB:0A:05:87 | 0019-CB0A-0590 |
 
 ### **xgPon Register**
+
 ``` shell
 # atbp show
 Number of MAC Addresses (1-32)    :  19  

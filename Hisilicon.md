@@ -1,14 +1,16 @@
 
 
-# Hisilicon Platform Introduction
+#  Hisilicon Platform Introduction
 
-ARM ARMv7 , 667 Hz , 1 Core
+ARM ARMv7 , 667 Hz , 1 Core, Memory 256M , 
 
-## OpenWRT
+## 1.1 OpenWRT
 
 [OpenWRT](https://openwrt.org/docs/guide-user/start) is embedded operation system  for Linux distribution based on GPL License .  OpenWRT did not contain any source code , this composed by each patch and zip, other word OpenWRT almost everything is an ".ipk ",  the ".ipk" is other name for ".tar.gz" . 
 
-## Startup
+
+
+## 1.2 Startup
 
 
 ```flow
@@ -26,7 +28,7 @@ sst->boot->kernel->preinit->pre1->pre2->xpon->appm->e
 
 
 
-## Hisilicon Architecture
+## 1.3 Hisilicon Architecture
 
 ![hisilicon_arch](img\hisilicon_arch.png)
 
@@ -49,7 +51,7 @@ Sub-system Interface Introduction
 
 ![hi_subsystem](img/hi_subsytem_internal_exchange.png)
 
-## Hisilicon partition table
+## 1.4 Hisilicon partition table
 
 ```shell
                     |--------------------|
@@ -81,7 +83,7 @@ Sub-system Interface Introduction
 
 
 
-## Source Files Structure
+## 1.5 Source Files Structure
 
 **./root Structure**
 
@@ -108,49 +110,9 @@ Sub-system Interface Introduction
 (  **./App-plugin  ./document   ./hisilicon  ./solution  and  ./sysinfo** are store in trunk , all other folder are genreate by compile )
 ```
 
-### Hi-Boot
 
-```
-├── bin
-├── build_dir
-│	( temporary directory for building )
-├── config
-├── dl -> /home/chear/HisiliconSource/HSANV200R010C01SPC011/solution/package/openwrt
-│	( downloaded files by the toolchain, target or package)
-├── docs
-│	( access "make -C /docs" to generate the openwrt.pdf)
-├── include
-├── package
-│	( main Hisilicon source files)
-├── scripts
-├── staging_dir
-├── target
-├── tmp
-├── toolchain
-├── tools
-└── vendors
-```
-**Kernel Building path at:**
 
-```shell
-$ls solution/package/openwrt/linux-3.18.11.tar.xz
-	(Linux zip for svn solution)
-$ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/linux-sd5116_generic/
-	(this for building)
-```
-
-**Rootfs Building path at:**
-
-```shell
-$ls solution/patch/openwrt/package/base-files/files/
-	(this is for svn solution)
-$ls openwrt/package/base-files/files/etc/shadow
-	(this for openwrt building)
-$ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/root-sd5116/
-	(this for image release)
-```
-
-## Download & Building 
+### 1.5.1 Download & Building
 
 ```shell
 $svn checkout http://wx-svn.zyxel.cn/SW-31/mld_sg/Hisilicon_trunk/trunk/HSANV200R010C01SPC011
@@ -170,8 +132,7 @@ $make package/network/services/dnsmasq/{compile,install} V=s
 **Note: if you want to update the code in trunk, please commit the code in directory solution\patch\openwrt\package\network\services\(generate patch)**
 
 ```shell
-$make package/gateway/sdk/hi_boot/compile V=s
-$make package/gateway/sdk/hi_boot/install V=s
+$make package/gateway/sdk/hi_boot/{compile,install} V=s
 ( to build the hi-boot)
 
 $make target/linux/install V=s
@@ -193,9 +154,53 @@ openwrt/bin/sd5116/
 └── root.squashfs
 ```
 
+### 1.5.2 Hi-Boot
 
-## Burn to board
-### burn rootfs and kernel
+```
+├── bin
+├── build_dir
+│	( temporary directory for building )
+├── config
+├── dl -> /home/chear/HisiliconSource/HSANV200R010C01SPC011/solution/package/openwrt
+│	( downloaded files by the toolchain, target or package)
+├── docs
+│	( access "make -C /docs" to generate the openwrt.pdf)
+├── include
+├── package
+│	( main Hisilicon source files)
+├── scripts
+├── staging_dir
+├── target
+├── tmp
+├── toolchain
+├── tools
+└── vendors
+```
+
+### 1.5.3 kernel
+
+**Kernel Building path at:**
+
+```shell
+$ls solution/package/openwrt/linux-3.18.11.tar.xz
+	(Linux zip for svn solution)
+$ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/linux-sd5116_generic/
+	(this for building)
+```
+
+**Rootfs Building path at:**
+
+```shell
+$ls solution/patch/openwrt/package/base-files/files/
+	(this is for svn solution)
+$ls openwrt/package/base-files/files/etc/shadow
+	(this for openwrt building)
+$ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/root-sd5116/
+	(this for image release)
+```
+
+## 1.6 Burn to board
+###  1.6.1 burn rootfs and kernel
 Reboot and entry into burn menu like following:
 ```shell
 ##### Menu #####
@@ -215,7 +220,7 @@ Please enter your selection: 2
 
 Note: console update pwd "hsan" 
 
-### burning Java partition
+### 1.6.2 burning Java partition
 
 ``` shell
 ##### Menu #####
@@ -278,7 +283,7 @@ d)flash 读：读flash 1M地址内容到内存0x88000000.
 
 实际操作如下图：
 
-## General Command
+## 1.7 General Command
 
 ```shell
 root@OpenWrt:~# hi_cfm test restore 
@@ -293,4 +298,7 @@ root@OpenWrt:~# cli /home/cli/cm/cm_ctrl -v value 0x2000000d
 
 ```
 
-## Log Print
+
+
+## 1.8 Log Print
+

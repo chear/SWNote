@@ -1,6 +1,6 @@
 # Hisilicon Data Flow Path
 
-## Hisilicon Chip  Architecture
+## 1.1 Hisilicon Chip  Architecture
 
 ![image](E:/Resource/MitrastarNote/img/onu_chip_arch.png)
 以 Hisi 5116 为例，ONU 芯片包含两部分：交换核和 ARM 核。 数据流转发主要发生在交换芯片内。ARM 芯片用以运行 Linux 系统软件，交换芯片顾名思义则提供数据交换功能。 交换芯片包含多个用户侧以太网端口， 一个 Pon 网络口，以及多个 cpu 端口，芯片交换对底层屏蔽并由HAL（Hardware Abstraction Layer） 层接口进行封装， 提供 API 与应用层交互。ARM 芯片也通过 HAL 对交换芯片进行配置调用。
@@ -10,7 +10,7 @@ PLOAM (Physical Layer OAM)，OMCI (ONU Management and Control Interface)，OAM�
 **对比 Ecnet Data Path Arch:**
 ![image](E:/Resource/MitrastarNote/img/ecnet_data_path_arch.png)
 
-## Frame Forward
+## 1.2 Frame Forward
 
 | Sub-Module                   | Description                    | Command Path                               |
 | ---------------------------- | ------------------------------ | ------------------------------------------ |
@@ -26,7 +26,7 @@ PLOAM (Physical Layer OAM)，OMCI (ONU Management and Control Interface)，OAM�
 | QoS                          | 质量服务                       | /home/cli/chip/qos , /home/cli/hal/qos/    |
 | CNT                          | 统计                           | /home/cli/hal/cnt/* , /home/cli/chip/cnt/* |
 
-### Switch Exchange Forward
+### 1.2.1 Switch Exchange Forward
 
 ![image](E:/Resource/MitrastarNote/img/hisi_data_path.png)
 	Hisi 数据交换流程包括从交换芯片到Linux 协议栈再到用户空间程序的过程。(注：511xs 不支持L3模块 )
@@ -43,7 +43,7 @@ PLOAM (Physical Layer OAM)，OMCI (ONU Management and Control Interface)，OAM�
    均可以指定报文做car)。Car 处理完成后进入队列，在调度器调度下进行出队列发送到
    实际转发出口。
 
-### ARM Forward
+### 1.2.2 ARM Forward
 
 ![image](E:/Resource/MitrastarNote/img/hi_arm_data_path.png)
 (CFE 以对应的物理端口虚拟lan1、lan2，分别对应物理端口GE0、FE1（UNI)  ,端口+vlan 虚拟出wan.100,wan.200 )
@@ -58,19 +58,23 @@ PLOAM (Physical Layer OAM)，OMCI (ONU Management and Control Interface)，OAM�
 
    （类似的从NNI(G/EPON)接收带100 vlan 的报文先按原始入端口进行查找，找到wan 虚拟网络接口，然后按vlan 查找，找到基于vlan 映射的wan.100，并由其接收。同样，NNI 接收的带200 vlan 的报文将由wan.200 接收。从wan.100、wan.200 发送出去的报文也会被打上100、200 的vlan 再发送出去。）
 
-### Bridge Forward
+
+
+### 1.2.3 Bridge Forward
 
 虚拟网络接口 lan1, lan2, wan.100 都在桥内，互相之间可以进行桥接转发。报文由桥内网络接口收后，如果是广播或组播报文，在桥内广播。即在除入口外的桥内其他接口上复制转发，并把报文由桥设备 br-lan 送至内核协议栈。 如从 lan1 进入的广播报文，会被复制3份， lan2， wan.100 各一份送出去，最后由桥网络接口 br-lan 接受并送到内核的协议栈 （IP，ARP的协议）
 
 对于单播报文，首先判断其Dmac 是否桥本身的mac 地址。若是，则由桥接口收送内核。否则，查找桥下的fdb 表。 Fdb 表在报文接收的 时候会学习报文的smac 和对应的 和对应的 网络接口。在发送查找时，以报文的 dmac 查找 ，查找 ，mac 对应的网 络接口。若找到对应的网 络接口，则从此网将报文发送出去；否则在 除入口 外的桥内其他接口上复制转发。
 
-### Router Forward
+
+
+### 1.2.4 Router Forward
 
 路由转发报文的 dmac 必须是对应的具有  IP 转发能力网络接口本身的 mac 。 对于lan 侧，只有桥网络接口具有 ip 转发能力 （br-lan 有 ip ，桥下的其他网络接口不允许有 ip ），br-lan 统一处理 ip 转发。 故上行数据流的 dmac 是 br-lan 的mac ，由桥转发流程可知，对于 dmac 为桥的报文，直接由 br-lan 接受并送到 ip 协议栈。 ip 协议栈内， 按报文的 Dip (Destination ip) 查找路由表，若为本地报文，则由本地接受。否则找到出口 dev 以及下一跳， 通过 ARP 协议获取下一条的 mac 地址，组装报文发出。
 
 
 
-## Data Transmission Model
+##  1.3 Data Transmission Model
 
 1. **首包交CPU由软件转发，由软件控制数据流的走向。** 
    1. 芯片交换L2模块，配置广播报文，未知单播报文交CPU，由软件处理 
@@ -80,7 +84,36 @@ PLOAM (Physical Layer OAM)，OMCI (ONU Management and Control Interface)，OAM�
 2. **数据流在软件走通后，配置芯片交换各模块功能，使其实现与软转发相同功能。 **
 3. **数据流由芯片交换转发，软件只进行监测（控制老化等）**
 
-## Hisilicon Command 
+
+
+## 1.4 QoS & Car 约定访问速率
+
+```c
+/**
+ * @brief car配置
+ */
+typedef struct
+{
+    hi_uint32       ui_car_id;  /**< car 模板索引index ,从1开始，0预留作为不限速car参数*/
+    hi_uint32       ui_cir;     /**< cir,  kbps or pps */
+    hi_uint32       ui_cbs;     /**< cbs, kbit*/
+    hi_uint32       ui_pir;     /**< pir,  kbps or pps*/
+    hi_uint32       ui_pbs;     /**< pbs, kbit */
+    hi_uint32       ui_pps_en;   /**< 1:按包数限流，0:按bps限流 */
+} hi_hal_car_s;
+```
+
+CIR (Committed Information Rate) 
+
+PIR (Peak Information Rate)
+
+CBS (Committed Burst Size)
+
+PBS (Peak Burst Size)
+
+
+
+## 1.5 Hisilicon Command
 
 ### Debug Command
 
@@ -89,7 +122,7 @@ PLOAM (Physical Layer OAM)，OMCI (ONU Management and Control Interface)，OAM�
 | hi_cfm set sysinfo.gateway_mac 00:00:23:e2:04:01             | 修改网络信息，设备MAC地址，                                  |
 | hi_cfm test restore                                          | 回复出产设置                                                 |
 | cli /home/cli/hal/port/port_mirror_set -v igr 0x200 egr 0x200 dport 0 | 镜像 PON 口的包到 lan 0 侧, (values should be reset when powoff) |
-|                                                              |                                                              |
+
 
 
 
@@ -181,6 +214,8 @@ $cli /home/cli/cfe/lrn/lrn_dump
 
 ![image](E:/Resource/MitrastarNote/img/hi_napt_result.png)
 
+
+
 ### 2. Nnimap ?
 
 NNI 网络侧端口所对应的 table。 对应 gPon/ePon  , 业务通道和上行通道的对应关系。
@@ -199,9 +234,13 @@ vlan=3008 igr_mask=0xf00f entry_pri=1 tcont_llid=1 gemport= 626
 succ.
 ```
 
-### 3. dmac ,car , pri , dscp , fdb? 
+
+
+### 3. dmac ,car , pri , dscp , fdb?
 
 dmac( destnation mac,) ;  dscp DSCP 差分服务标记字段（Different Service Code Point） , also call TOS (Type of Services) in IP frame ; pri  (priority) ;car : also call  traffic car , is for traffic flow count; fdb (Forwarding Database) : table for router forward
+
+
 
 ### 4. 如何查看 vlan 以及绑定信息?
 
@@ -212,11 +251,16 @@ $cli /home/cli/hal/sec/sec_vlan_dump
 ![image](E:/Resource/MitrastarNote/img/hi_vlan_dump_result.png)
 
 ### 5. Update Devices Info
+
 ```shell
 $hi_cfm set sysinfo.gateway_mac  hi_cfm get sysinfo.gateway_mac 
 ```
 
+
+
 ### 6. router forward in different WAN
+
+
 
 
 

@@ -199,7 +199,10 @@ $ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/root-sd5116/
 	(this for image release)
 ```
 
+
+
 ## 1.6 Burn to board
+
 ###  1.6.1 burn rootfs and kernel
 Reboot and entry into burn menu like following:
 ```shell
@@ -283,22 +286,84 @@ d)flash 读：读flash 1M地址内容到内存0x88000000.
 
 实际操作如下图：
 
-## 1.7 General Command
+
+
+## 1.7 gPon debug
+
+OAM message at physical layer falls into three types: **embedded OAM**, **PLOAM** and **OMCI**.
+
+### 1.7.1 OMCI (ONT Management and Control Interface)
+
+OMCI used to management and control ONT configuration by ME(Managed Entity) instance,the package like following:
+
+![omci_frame](img/omci_frame_format.bmp)
+
+![omci_establishment](img/ocmi_establishment.bmp)
+
+
+
+### 1.7.2  PLOAM (Physical layer OAM)
+Main functions provided by PLOAM:
+1. Configuration of upstream burst
+
+2. ONU activation
+
+3. ONU registration
+
+4. Update of encryption key, exchange
+
+5. ProtectionSwitching Signalling
+
+6. Power management
+
+![gpon_ploam](img/gpon_ploam.jpg)
+
+​    
+
+package of PLOAM as following:
+
+| Byte  | Name     | Description                     |
+| ----- | -------- | ------------------------------- |
+| 1-2   | ONU-ID   | 10比特的ONU-ID，最高6位没有使用 |
+| 3     | 消息ID   |                                 |
+| 4     | 消息编号 |                                 |
+| 5-40  | 消息内容 |                                 |
+| 41-48 | MIC      | 用于消息的完整性检测            |
+
+
+### 1.7.3 command
+
+to debug gPon within hisilicon platform, 
 
 ```shell
-root@OpenWrt:~# hi_cfm test restore 
-(to reset default env in partition /config/worka/*)
-root@OpenWrt:~# cli /home/cli/hal/port/port_mirror_set -v igr 0 egr 0x200 dport 0
-(mirror pon package to lan0.)
-root@OpenWrt:~# cli /home/cli/cm/cm_ctrl -v value 0x2000000f
-(enable TR069 WAN-ID in GUI)
-root@OpenWrt:~# cli /home/cli/cm/cm_ctrl -v value 0x2000000d
-(enable edit itms info for TR069 wan in GUI)
+root@OpenWrt:~# cli /home/cli/log_cmd/klog/cfg_set -v module 0xf9002000 sys 0 dbg 0x0 print 0x10
+root@OpenWrt:~# cli /home/cli/log_cmd/klog/cfg_set -v module 0xf9002000 sys 0 dbg 0x00 print 0x00
+(open or close ploam debug message for gPon)
 
-
+root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xf2003100 sys 0 dbg 0x38 print 0x38
+(open omci message for gPon)
+root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xfe000000 sys 0 dbg 0x0 print 0x0
+( NOTSURE?)
 ```
 
 
 
-## 1.8 Log Print
+## 1.8 General Command
 
+to reset factory setting, and dump network frame from **WAN** port to **LAN** port
+
+disable and enable ACS control for ITMS(RMS) in GUI:
+
+```shell
+root@OpenWrt:~# hi_cfm test restore 
+(to reset default env in partition /config/worka/*)
+root@OpenWrt:~# cli /home/cli/cm/cm_ctrl -v value 0x2000000d	(disable)
+root@OpenWrt:~# cli /home/cli/cm/cm_ctrl -v value 0x2000000e	(enable)
+```
+
+disable and enable TR069 wan control in GUI:
+
+```shell
+root@OpenWrt:~# cli /home/cli/cm/cm_ctrl -v value 0x2000000f	(disable)
+root@OpenWrt:~# cli /home/cli/cm/cm_ctrl -v value 0x20000010	(enable) 
+```

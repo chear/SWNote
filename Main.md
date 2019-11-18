@@ -105,16 +105,16 @@ iwpriv rai0 e2p
 # To create new file for 2M size in windows
 fsutil file createnew 2M 2097152
 
-# For upload server & client
+# For upload server & client,iperf.exe not for iperf3.exe)
 iperf -S -W 1M
-iperf.exe -c 91.0.0.1 -w 2M -p 5001 -i 1 -t 3600
+iperf.exe -c 91.0.0.1 -w 2M -p 5001 -i 1 -t 3600   
 
 # For download server & client
 iperf -S -W 1M
 iperf.exe   -c 91.0.0.172 -w 2M -p 5001 -i 1 -t 3600
 ```
 
-
+**(Note: iperf2 server and iperf3 client dose not work together.)**
 
 ## Main Trunk
 

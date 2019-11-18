@@ -1,6 +1,6 @@
 ## 1. What about WAN , and why the WAN can inside  bridge or not (while display by brctl )?
 
-WAN(Wide Area Network) , 可以在 ip 地址枯竭的时候，临时用以扩充 IP 子网。WAN interface 可以在 bridge 内，也可以不在 brideg 内， 在 bridge 内则是属于桥接模式，对应于网络的二层交换；  如果不在 bridge 内则属于路由模式对网络模型的三层路由交换。可以通过以下方式查看。
+WAN(Wide Area Network) , 可以在 ip 地址枯竭的时候，临时用以扩充 IP 子网。WAN interface 可以在 bridge 内，也可以不在 brideg 内， 在 bridge 内则是属于桥接模式，对应于网络的二层交换；  如果不在 bridge 内则属于路由模式对应于网络模型的三层路由交换。可以通过以下方式查看。
 
 ```shell
 $brctl show 
@@ -179,12 +179,12 @@ configure.ac ----------------------->|autoconf|------> configure ----->autoconfi
 ## 4. Print sal log for Hisilicon platfrom 
 
 ``` shell
-cli /home/cli/log_cmd/log/cfg_set -v module 0xF0001000 dbg 0xff print 0xff sys 0
+root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF0001000 dbg 0xff print 0xff sys 0
 
-cli /home/cli/log_cmd/log/cfg_set -v module 0xF6003000 dbg 0xff print 0xff sys 0
+root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF6003000 dbg 0xff print 0xff sys 0
 (to debug wan.)
 
-cli /home/cli/log_cmd/log/cfg_set -v module 0xF7003000 dbg 0xff print 0xff sys 1
+root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF7003000 dbg 0xff print 0xff sys 1
 ```
 
 

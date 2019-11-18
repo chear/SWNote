@@ -13,6 +13,8 @@
 
 [how transistor works](<https://www.build-electronic-circuits.com/how-transistors-work/>)
 
+(Tips: 所谓 [RAM-Random Access Memory](<https://baike.baidu.com/item/%E9%9A%8F%E6%9C%BA%E5%AD%98%E5%8F%96%E5%AD%98%E5%82%A8%E5%99%A8/4099402?fr=aladdin#2>) 随机读存储器，是和 Sequential Access 相对应，既存储器中的数据被读取或写入时，所需要的时间与这段信息所在的位置或所写入的位置无关。相对的，读取或写入顺序访问（Sequential Access）存储设备中的信息时，其所需要的时间与位置就会有关系。)
+
 
 
 ## 2. Eye Diagram 眼图
@@ -41,8 +43,9 @@
 
 当存在噪声时，噪声将叠加在信号上，观察到的眼图的线迹会变得模糊不清。若同时存在码间串扰 ， “眼睛”将 张开得更小。与无码间串扰时的眼图相比，原来清晰端正的细线迹，变成了比较模糊的带状线，而且不很端正。噪声越大，线迹越宽，越模糊；码间串扰越大，眼图越不端正.
 
+例如眼图效果显示传输效率上图要明显优于下图
+
 ![eye_diagram_test](./img/eye_diagram_test_result.png)
 
 ![eye_diagram_result2](./img/eye_diagram_test_result2.png)
 
-眼图效果显示传输效率上图要明显优于下图

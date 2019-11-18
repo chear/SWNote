@@ -20,9 +20,9 @@
 
 
 
-##　NAND Partition Table
+##　ZyXEL Flash Partition Table
 
-
+![zyxel_flash_partition](img/zyxel_flash_partition.bmp)
 
 ```txt
 				    |--------------------|

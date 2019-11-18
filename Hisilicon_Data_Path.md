@@ -196,11 +196,12 @@ Port 和 QID 对应表
 | cli /home/cli/log_cmd/log/cfg_set      | LAN Dbg                     | -v module 0xf6007000 sys 1 dbg 0xff print 0xff               |
 | cli /home/cli/log_cmd/log/cfg_set      | QoS Dbg                     | -v module 0xf6006000 sys 1 dbg 0xff print 0xff               |
 | cli /home/cli/log_cmd/log/cfg_set      | MC Dbg                      | -v module 0xf6005000 sys 1 dbg 0xff print 0xff               |
-| cli /home/cli/log_cmd/log/cfg_set      | GPon OMCI ( dbg to console) | -v module 0xf2003100 sys 0 dbg 0x38 print 0x38               |
-| cli /home/cli/log_cmd/log/cfg_set      | GPon OMCI ( dbg to file)    | -v module 0xf2003e00 sys 0 dbg 0x10f    cat /log/hisi/hi_omci.log |
-| cli /home/cli/log_cmd/log/cfg_set      | GPon PLOAM                  | -v module 0xf9002000 sys 0 dbg 0x0 print 0x10                |
-|                                        | EPon OAM                    | -v module 0xf20200000 sys 0 dbg 0x11                         |
+| cli /home/cli/log_cmd/log/cfg_set      | gPon OMCI ( dbg to console) | -v module 0xf2003100 sys 0 dbg 0x38 print 0x38               |
+| cli /home/cli/log_cmd/log/cfg_set      | gPon OMCI ( dbg to file)    | -v module 0xf2003e00 sys 0 dbg 0x10f    cat /log/hisi/hi_omci.log |
+| cli /home/cli/log_cmd/log/cfg_set      | gPon PLOAM                  | -v module 0xf9002000 sys 0 dbg 0x0 print 0x10                |
+|                                        | ePon OAM                    | -v module 0xf20200000 sys 0 dbg 0x11                         |
 | cli /home/cli/hal/port/port_mirror_set | 镜像报文                    | -v igr 0x200 egr 0x200 dport 1                               |
+| log_voice_cli cwmpClient cwmp_log      | TR069                       | debug for TR069                                              |
 
 
 

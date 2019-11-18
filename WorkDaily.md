@@ -169,9 +169,10 @@ ITMS Setting
 ```s
 InternetGatewayDevice   
   └──  DownloadDiagnostics
-     ├── DiagnosticsState
-         ├── Interface 						    (InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1)
-     ├── DownloadURL	(http://192.168.8.3:51473/170 or http://192.168.8.3:51473/1.4G)
+     ├── DiagnosticsState	(seting to "Requested")
+     ├── Interface 						    						("InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANPPPConnection.1" for pppoe wan  ,
+ or "InternetGatewayDevice.WANDevice.1.WANConnectionDevice.1.WANIPConnection.1" for DHCP wan)
+     ├── DownloadURL		(http://192.168.8.3:51473/170 or http://192.168.8.3:51473/1.4G)
 ```
 
 Test Report
@@ -252,7 +253,7 @@ fsutil file createnew null.txt 5278350000
         insmod speedtest.ko               :active, c1, after b2,4d
 ```
 
-
+to setting values:
 
 ```shell
 # gdbus call -y -d com.ctc.igd1 -o /com/ctc/igd1/Diagnostics/HttpDownload -m com.ctc.igd1.Properties.Set com.ctc.igd1.SpeedTestFF URL "<\"http://202.107.217.212:16039 \">"
@@ -263,12 +264,28 @@ fsutil file createnew null.txt 5278350000
 # gdbus call -y -d com.ctc.igd1 -o /com/ctc/igd1/Diagnostics/HttpDownload -m com.ctc.igd1.Properties.Set com.ctc.igd1.SpeedTestFF SpeedType "<byte 0x01>"
 
 # gdbus call -y -d com.ctc.igd1 -o /com/ctc/igd1/Diagnostics/HttpDownload -m com.ctc.igd1.SpeedTestFF.StartTest 10
-
-# gdbus call -y -d com.ctc.igd1 -o /com/ctc/igd1/Diagnostics/HttpDownload -m com.ctc.igd1.Properties.Get com.ctc.igd1.SpeedTestFF Result
-
-# gdbus call -y -d com.ctc.igd1 -o /com/ctc/igd1/Diagnostics/HttpDownload -m com.ctc.igd1.Properties.GetAll com.ctc.igd1.SpeedTestFF
 ```
 
+to getting values:
+
+```shell
+# gdbus call -y -d com.ctc.igd1 -o /com/ctc/igd1/Diagnostics/HttpDownload -m com.ctc.igd1.Properties.Get com.ctc.igd1.SpeedTestFF URL
+(<'http://202.107.217.212:16039 '>,)
+
+# gdbus call -y -d com.ctc.igd1 -o /com/ctc/igd1/Diagnostics/HttpDownload -m com.ctc.igd1.Properties.Get com.ctc.igd1.SpeedTestFF Ticket
+(<'0000022222'>,)
+
+# gdbus call -y -d com.ctc.igd1 -o /com/ctc/igd1/Diagnostics/HttpDownload -m com.ctc.igd1.Properties.Get com.ctc.igd1.SpeedTestFF SpeedType
+(<byte 0x00>,)
+
+# gdbus call -y -d com.ctc.igd1 -o /com/ctc/igd1/Diagnostics/HttpDownload -m com.ctc.igd1.Properties.Get com.ctc.igd1.SpeedTestFF Result
+(<uint32 1>,)
+
+# gdbus call -y -d com.ctc.igd1 -o /com/ctc/igd1/Diagnostics/HttpDownload -m com.ctc.igd1.Properties.GetAll com.ctc.igd1.SpeedTestFF
+({'TestingStatus': <true>, 'Result': <uint32 1>, 'Ticket': <'0000022222'>, 'SpeedType': <byte 0x01>, 'URL': <'http://202.107.217.212:16039 '>, 'DW_SPEED_MAX_RATE': <'0'>, 'DW_SPEED_RATE': <'0'>, 'UP_SPEED_MAX_RATE': <'0'>, 'UP_SPEED_RATE': <'0'>, 'BEGIN_TIME': <'2019-11-06 10:26:46'>, 'END_TIME': <'2019-11-06 10:26:56'>},)
+```
+
+**(Note: all those above command can running within Econet's FW. )**
 
 
 
@@ -305,7 +322,7 @@ to register ePon should setting **Base MAC Address ** by  "00:19:CB:0A:05:87" ( 
 
 
 
-#### Capture frame by ePon
+#### Capture frame for ePon in Econet platform
 
 1.  open package mirror :
 
@@ -319,7 +336,7 @@ to register ePon should setting **Base MAC Address ** by  "00:19:CB:0A:05:87" ( 
 
 
 
-#### Capture by gPon
+#### Capture frame for gPon Econet platform
 
 develop with gPon can not use *wireshark* to capture frame directly , to capture frame by following:
 
@@ -599,9 +616,106 @@ ref: [Linux Man Page List ](<http://man7.org/linux/man-pages/dir_all_by_section.
 
 TR069  debug value for  **InternetGatewayDevice.Time.CurrentLocalTime** , source at *hisilicon/gateway/cms/*
 
+the test case as following:
+
+1. display the cwmp's log and capture data
+
 ```shell
 root@OpenWrt:~# cli /home/cli/hal/port/port_mirror_set -v igr 0 egr 0x200 dport 0
 root@OpenWrt:~# log_voice_cli cwmpClient cwmp_log 		(enable or disable TR069 log)
 ```
 
- 
+2. verify the message for TR069
+
+
+
+## 20191104
+
+### To update bob_config.ini
+
+```shell
+root@OpenWrt:~# cd /tmp/ & tftp -g -r bob_config.ini 192.168.1.7
+root@OpenWrt:~# cp ./bob_config.ini /usr/local/factory/bob_config.ini
+root@OpenWrt:~# reboot
+```
+
+### QoS Service test case
+
+setting on H3 gateway, 
+
+***addTrafficToFlow [remoteAddress:String] [remotePort:String] [flow:int]***
+
+***setSpeedLimitByFlow [flow:int] [upSpeed:int] [downSpeed:int]***
+
+***deleteAllTrafficFromFlow [flow:int]***
+
+| Name                       | Paramater                      | Return                       |
+| -------------------------- | ------------------------------ | ---------------------------- |
+| *addTrafficToFlow*         | *[flow:int]* , values from 0-7 | 0 for success , 1 for failed |
+| *setSpeedLimitByFlow*      | *[flow:int]*, values from 0-7  | 0 for success , 1 for failed |
+| *deleteAllTrafficFromFlow* | *[flow:int]*,values from 0-7   | 0 for success , 1 for failed |
+
+
+
+```shell
+root@OpenWrt:~# telnet 127.0.0.1 6666
+____________________________
+Welcome to Apache Felix Gogo
+
+g! addTrafficToFlow "172.25.24.13" "0" 1
+0
+g! setSpeedLimitByFlow 1 2048 2048
+0
+```
+
+
+
+based on *iperf* ,server at 172.25.24.13,
+
+```shell
+michael@michael-HP-Pro-3330-MT:~/Downloads$ iperf -s -w 100M
+```
+
+PC client
+
+```shell
+G:\iperf-2.0.5-win32>iperf.exe -c 172.25.24.13 -i 1 -t 3600
+```
+
+
+
+## 20191111
+
+### Hisilicon USB controller
+
+Kernel USB module source file at *linux-3.18.11/drivers/usb/hsan/* and *linux-3.18.11/arch/arm/mach-hsan/chip* , main for following
+
+```shell
+$ tree linux-3.18.11/drivers/usb/hsan/
+├── hi_ohci.c	(handle for USB1.0)
+├── hi_ehci.c	(handle for USB2.0)
+└── hi_xhci.c	(handle for USB3.0)
+$ tree linux-3.18.11/arch/arm/mach-hsan/chip/
+├── hi_hal_usb.c
+└── ...
+```
+
+Note: ohci  (Open Host Controller Interface) , ehci (Enhanced Host Controller Interface) , xhci (eXtensible Host Controller Interface)
+
+
+
+### umount usb devices with in H3 platfrom
+
+```shell
+root@OpenWrt:~# killall minidlna
+root@OpenWrt:~# umount /tmp/mnt/usb1_1/
+```
+
+**(Note: *minidlna* and *samba* all used to share file-system , but *samba* for about  documentation , *minidlna* can share media. )**
+
+
+
+
+
+
+

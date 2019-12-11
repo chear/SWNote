@@ -97,17 +97,31 @@ Sub-system Interface Introduction
 │	(The source file for gateway operations ,
 │	 while cp to ./openwrt/package/gateway. hi-boot while in this folder .)
 ├── openwrt   
-│     (The main source folder, this folder while generate 
+│   (The main source folder, this folder while generate 
 │	after running "make" or "make chip=sd5116" .)
 ├── solution
-│	( patch of openWRT, and open source software package.)
+│	(patch of openWRT, and open source software package.)
 ├── sysinfo
 │	(The third-part app configeration.)
 ├── toolchain
-│	( toolchain derictory , generate after compile.)
+│	(toolchain derictory , generate after compile.)
 └── Tools 
 
-(  **./App-plugin  ./document   ./hisilicon  ./solution  and  ./sysinfo** are store in trunk , all other folder are genreate by compile )
+(./App-plugin  ./document   ./hisilicon  ./solution  and  ./sysinfo are store in trunk , all other folder are genreate by compile )
+```
+
+
+
+Kernel Building path :
+
+```shell
+$ ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/linux-sd5116_generic/
+```
+
+Rootfs Building path :
+
+```shell
+$ ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/root-sd5116/
 ```
 
 
@@ -115,30 +129,32 @@ Sub-system Interface Introduction
 ### 1.5.1 Download & Building
 
 ```shell
-$svn checkout http://wx-svn.zyxel.cn/SW-31/mld_sg/Hisilicon_trunk/trunk/HSANV200R010C01SPC011
-$make chip=sd5116 V=s 
-( used to make whole target ,  V=s means  to show the  build log. to direct province by 
-'make chip=sd5116 province=heilongjiang V=s' , to H3 by 'make chip=hi5663h V=s' )
+$ svn checkout http://wx-svn.zyxel.cn/SW-31/mld_sg/Hisilicon_trunk/trunk/HSANV200R010C01SPC011
+$ make chip=sd5116 V=s 
+(used to make whole target ,  V=s means  to show the  build log. to direct province by 
+'make chip=sd5116 province=heilongjiang V=s' , 
+for H3 by 'make chip=hi5663h V=s' 
+for H2 by 'make chip=hi5661y V=s' to copmile hi5661 project
+for H2 by 'make chip=sd5116 V=s',to compile hi5662h project.)
 
-$cd openwrt/
-$make package/gateway/{compile,install} V=s
+$ cd openwrt/
+$ make package/gateway/{compile,install} V=s
 ( to build Hisilicon operation module)
 
-$make package/network/services/dnsmasq/{compile,install} V=s
-( to build the opern source module.)
-
+$ make package/network/services/dnsmasq/{compile,install} V=s
+(to build the opern source module.)	
 ```
 
 **Note: if you want to update the code in trunk, please commit the code in directory solution\patch\openwrt\package\network\services\(generate patch)**
 
 ```shell
-$make package/gateway/sdk/hi_boot/{compile,install} V=s
-( to build the hi-boot)
+$ make package/gateway/sdk/hi_boot/{compile,install} V=s
+(to build the hi-boot)
 
-$make target/linux/install V=s
-cd ..
-$make chip=sd5116 image V=s
-( to H3 by 'make chip=hi5663h V=s hitools image factory')
+$ make target/linux/install V=s
+$ cd ..
+$ make chip=sd5116 image V=s
+(to H3 by 'make chip=hi5663h V=s hitools image factory')
 ```
 **Release Image**
 The generated files at ./openwrt/bin/sd5116/
@@ -154,20 +170,22 @@ openwrt/bin/sd5116/
 └── root.squashfs
 ```
 
+
+
 ### 1.5.2 Hi-Boot
 
 ```
 ├── bin
 ├── build_dir
-│	( temporary directory for building )
+│		(Temporary directory for building )
 ├── config
 ├── dl -> /home/chear/HisiliconSource/HSANV200R010C01SPC011/solution/package/openwrt
-│	( downloaded files by the toolchain, target or package)
+│		(Downloaded files by the toolchain, target or package)
 ├── docs
-│	( access "make -C /docs" to generate the openwrt.pdf)
+│		(Access "make -C /docs" to generate the openwrt.pdf)
 ├── include
 ├── package
-│	( main Hisilicon source files)
+│		(Main Hisilicon source files)
 ├── scripts
 ├── staging_dir
 ├── target
@@ -177,26 +195,43 @@ openwrt/bin/sd5116/
 └── vendors
 ```
 
+**hi_boot Building path**
+
+```shell
+$ ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/hi_gateway/sdk/hi_boot/
+```
+
+
+
 ### 1.5.3 kernel
 
 **Kernel Building path at:**
 
 ```shell
-$ls solution/package/openwrt/linux-3.18.11.tar.xz
-	(Linux zip for svn solution)
-$ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/linux-sd5116_generic/
-	(this for building)
+$ ls solution/package/openwrt/linux-3.18.11.tar.xz
+(Linux zip for svn solution)
+$ ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/linux-sd5116_generic/
+(This for building)
 ```
 
 **Rootfs Building path at:**
 
 ```shell
-$ls solution/patch/openwrt/package/base-files/files/
-	(this is for svn solution)
-$ls openwrt/package/base-files/files/etc/shadow
-	(this for openwrt building)
-$ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/root-sd5116/
-	(this for image release)
+$ ls solution/patch/openwrt/package/base-files/files/
+(This is for svn solution)
+$ ls openwrt/package/base-files/files/etc/shadow
+(This for openwrt building)
+$ ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/root-sd5116/
+(This for image release)
+```
+
+**To remove the whole source at ''*build_dir/target-arm-openwrt-linux-uclibcgnueabi/linux-hsan_generic/linux-3.18.11/*''  and want re-building using following command**
+
+```shell
+$ cd openwrt/
+$ make target/linux/{clean,prepare,compile,install} V-s
+$ make package/utils/busybox/{compile,install} V=s 
+(To build busybox only, to get more pls check openwrt/tmp/.packageinfo)
 ```
 
 
@@ -316,7 +351,7 @@ Main functions provided by PLOAM:
 
 6. Power management
 
-![gpon_ploam](img/gpon_ploam.jpg)
+![gpon_ploam](img/gpon_ploam.png)
 
 ​    
 
@@ -338,10 +373,10 @@ to debug gPon within hisilicon platform,
 ```shell
 root@OpenWrt:~# cli /home/cli/log_cmd/klog/cfg_set -v module 0xf9002000 sys 0 dbg 0x0 print 0x10
 root@OpenWrt:~# cli /home/cli/log_cmd/klog/cfg_set -v module 0xf9002000 sys 0 dbg 0x00 print 0x00
-(open or close ploam debug message for gPon)
+(Open or close ploam debug message for gPon)
 
 root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xf2003100 sys 0 dbg 0x38 print 0x38
-(open omci message for gPon)
+(Open omci message for gPon)
 root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xfe000000 sys 0 dbg 0x0 print 0x0
 ( NOTSURE?)
 ```
@@ -356,7 +391,7 @@ disable and enable ACS control for ITMS(RMS) in GUI:
 
 ```shell
 root@OpenWrt:~# hi_cfm test restore 
-(to reset default env in partition /config/worka/*)
+(To reset default env in partition /config/worka/*)
 root@OpenWrt:~# cli /home/cli/cm/cm_ctrl -v value 0x2000000d	(disable)
 root@OpenWrt:~# cli /home/cli/cm/cm_ctrl -v value 0x2000000e	(enable)
 ```

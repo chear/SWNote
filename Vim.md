@@ -27,7 +27,26 @@ ctags: Notice: No options will be read from files or environment
 
 
 
+## quilt
 
+[Quilt](<http://savannah.nongnu.org/projects/quilt>) is a tool to manage a **series of patches** relative to a common code base.
+
+the following command contain whole process to **create ,apply , remove and delete patch** in *open/built-dir/* 
+
+```shell
+$ cd oenwrt/built-dir/
+$ quilt new 01_test.diff
+(Create new patch named 01_test.diff )
+$ quilt edit FILE_NAME
+$ quilt refresh
+(Apply the patch.)
+$ quilt series
+(Display the quilt list)
+$ quilt pop
+(Remove the quilt patch)
+$ quilt delete
+(Remove and delete patch from quilt list )
+```
 
 
 

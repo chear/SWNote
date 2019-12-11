@@ -1,6 +1,7 @@
-## Hardware
+# 1. Hardware & Structure
 
-### En_7528 
+## En_7528
+
 - 32-bit Risc CPU with MMU and cache (write -back D-cache ), optimized to handle layer 2,3 and higher-layer protocols
 - 900 MHz MIPS 1004Kc with dual-core 
 - Per core 32KB 4-way I-cache  , 32KB 4-way D-cache
@@ -8,7 +9,7 @@
 
 
 
-### En_7526
+## En_7526
 
 - 32-bit Risc CPU with MMU and cache (write -back D-cache ), optimized to handle layer 2,3 and higher-layer protocols
 - 900MHz MIPS32Kc with 2 VPEs
@@ -20,12 +21,13 @@
 
 
 
-##　ZyXEL Flash Partition Table
+##  ZyXEL Flash Partition Table
 
 ![zyxel_flash_partition](img/zyxel_flash_partition.bmp)
 
 ```txt
-				    |--------------------|
+		
+        			|--------------------|
                     |                    |
                     |                    |
                     ~                    ~
@@ -82,7 +84,9 @@
 
 
 
-## Files Structure
+# 2. Source File & Building 
+
+## 2.1 Files Structure
 
 **Bootloader Structure**
 
@@ -133,7 +137,7 @@
 
 
 
-## Bootloader building process
+## 2.2 Bootloader building process
 
 process to create loader.img 
 
@@ -151,18 +155,20 @@ tcboot --> loader(loader.img)
 
 
 
-## Makefile Builder arch
+## 2.3 Makefile Builder arch
 
 making process
 
 ```mermaid
 graph LR
-all[Makefile.main] -->boot(bootlzma)
-boot --> bootram(bootram)
+all[Makefile.main] -->|bootlzma| bootram(bootram)
 bootram --> u-boot(u-boot)
 u-boot --> zloader(_zloader)
-all --> zboot(zboot)
-all --> kernel(linux-3.18.21)
+zloader-->loader{loader.img}
+all --> |zboot|zboot(zboot)
+all --> |kernel|kernel(linux3.18)
+zboot --> ras{ras.bin}
+kernel --> ras
 ```
 
 . bootlzma
@@ -205,3 +211,31 @@ $make PROFILE=CCC3
  2. delete item "**HKEY_CURRENT_USER\Software\Scooter Software\Beyond Compare 4\CacheId**" in windows regedit.
 
 [more reference](<https://blog.csdn.net/weixin_42995876/article/details/85049233>)
+
+
+
+# 3. MLD
+
+**MLD (Mitrastar Linux Distribution)** contains:
+
+- Mitrastar CDK - the cross development kit.
+
+- Linux kernel 
+
+- Assorted user-land software  (recompiled by Mitrastar CDK).
+  - Hardened source code from MVista/Gentoo/…
+  - Original source code from official Web/FTP site. 
+  - 
+- Home-grown programs/libraries. 
+
+- System Boot Scripts.
+
+- Build System.
+
+![ccc_img](img/clipboard.png)
+
+
+
+**CCC (Common Configration Center) Architecture Overview:**
+
+![ccc_overview](img/clipboard.png)

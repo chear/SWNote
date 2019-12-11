@@ -21,6 +21,16 @@ XTX-spi-nand flash Array  Organization chart as following:
 
 
 
+### OOB (spare area) Layerout
+
+ OOB 区域的管理各芯片厂商不同，一般都有写保护用户无法直接写入，但是如果关闭 **ECC Protection**则可以对其写入数据。对芯片执行 **write** 操作时，对 *Cache Register(or Cache Page)* 中的 2k 数据计算 ECC，然后在写入实际存储单元既 *Data Register(or Array)*。 在对芯片执行 **read** 操作时，从实际存储单元中读取数据并且存放在到 *Cache Page*, 再计算 *Cache Page* 中 *Main Data* 的 ECC 和实际存储在 *Cache Page oob* 的ECC进行比较,完成校验。
+
+以 xtx_A , xtx_b 以及 江波龙 (Foresee) 为例，比较的 OOB (spare area) 排版:
+
+![layerout](./img/oob_layerout_compare.png)
+
+
+
 ## SLC & MLS
 
    Nand Flash按照内部存储数据单元的电压的不同层次，也就是单个内存单元中，是存储1位数据，还是多位数据，可以分为 **SLC (Single-Level Cell) ** 和 **MLC (Multi-Level Cell)** 。那么软件如何识别系统上使用过的SLC还是MLC呢？ 
@@ -189,6 +199,8 @@ struct hi_fmc_nand_spl_ids_s g_ast_fmc_nand_spl_ids[] =
 ```
 
 **(Note: 在新发布的 hisi 中，诸如 page_size ,block_size , ecc_bit, oob_size, 都是从寄存器中获取。寄存器地址 0x10A20000 )**
+
+
 
 ### Kernel
 

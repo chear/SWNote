@@ -503,6 +503,8 @@ u-boot # nandwr 0 80000000 40000	(write nand flash from 0x0 to 0x40000,sync from
 
 ![econet_upgrade](img/econet_fw_upgrade.png)
 
+
+
 **switch tcboot.bin to loader.img**
 
 1. Rename loader.img to tcboot.bin  (not working) 
@@ -639,7 +641,7 @@ root@OpenWrt:~# cp ./bob_config.ini /usr/local/factory/bob_config.ini
 root@OpenWrt:~# reboot
 ```
 
-### QoS Service test case
+### QoS Service test case (gogo shell)
 
 setting on H3 gateway, 
 
@@ -715,7 +717,49 @@ root@OpenWrt:~# umount /tmp/mnt/usb1_1/
 
 
 
+## 20191129
+
+Note:  *"gcc -E SOURCE_FILE -o OUTPUT_FILE"*  can replace *macro* within source file.
 
 
 
+## 20191204
+
+Upgrade  *zloader* and *zboot*  with xmodem.
+
+to upgrade zloader:
+
+```shell
+u-boot # loadx 0x80000000 			
+(send zloader image with x-modem by serial port)
+u-boot # nander 0 20000				
+(earse nand flash from 0x0 to 0x20000 for 128k)
+u-boot # nandwr 0 80000000 20000	
+(write nand flash from 0x0 to 0x20000,sync from 									memory within 0x80000000 and length for 0x20000 )  
+```
+
+to upgrade zboot:
+
+```shell
+u-boot # loadx 0x80000000 			
+(send zboot image with x-modem by serial port)
+u-boot # nander 20000 40000				
+(earse nand flash from 0x200000 to 0x40000 for 128k, in my case same for loader.img)
+u-boot # nandwr 20000 80000000 20000	
+(write nand flash from 0x0 to 0x20000,sync from	memory within 0x80000000 and length for 0x20000 ) 
+```
+
+Finally use **atur ras.bin** to upgrade whole image.
+
+Note: upgrade zloader by ***loader.img** , upgrade zboot by ***build/zboot.final_oob*** ,  zboot_main start   address at ***go 0x83600000***
+
+
+
+## 20191205
+
+building Econet BSP porting.
+
+```shell
+# 
+```
 

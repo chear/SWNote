@@ -62,13 +62,17 @@ stack to store local variable and parameter value for function
 
 *Commands to see section and headers*
 
-- dumpelf
+- dumpelf (Linux command)
 - elfls -p /bin/ps
 - eu-readelf –section-headers /bin/ps
-- readelf -S /bin/ps
-- objdump -h /bin/ps
+- readelf -S /bin/ps	       (gcc tools)
+- objdump -h /bin/ps    (gcc tools)
+- ld                                   (gcc tool for link)
+- na                                  (gcc too)
 
 
+
+**Note: ZyXEL and Econet toolchain at /opt/trendchip/mips-linux-uclibc-4.9.3/**
 
 #  Kernel oops && panic
 
@@ -198,10 +202,15 @@ dddr2line -e xponmap.o 0x26bc
 
 | Tools   | Description |
 | -------- | ----------- |
-| ar     |             |
-| add2line |  |
-| objdump  |             |
-| readelf  |             |
+| ar     | 建立、修改、提取归档文件。归档文件是包含多个文件内容的一个大文件，其结构保证了可以恢复原始文件内容。 |
+| add2line | 把程序地址转换为文件名和行号。在命令行中给它一个地址和一个可执行文件名，它就会使用这个可执行文件的调试信息指出在给出的地址上是哪个文件以及行号 |
+| objcopy | 把一种目标文件中的内容复制到另一种类型的目标文件中 |
+| objdump | 显示一个或者更多目标文件的信息。使用选项来控制其显示的信息。它所显示的信息通常只有编写编译工具的人才感兴趣 |
+| readelf | 显示 elf 格式可执行文件的信息 |
+| ld | GNU链接器，主要用于确定相对地址，把多个object文件、起始代码段、库等链接起来，并最终形成一个可执行文件。 |
+| nm | nm 的主要功能是列出目标文件中的符号，这样就可以定位和分析执行程序和目标文件中的符号信息和它的属性。 |
+
+**Note:  4 standard of C language,   K&R C  --> ANSI C --> C99 --> C11 **
 
 
 

@@ -105,7 +105,7 @@ Note:
 | SIGXFSZ   | N/A  | Terminate (core dump) | File size limit exceeded                          |
 | SIGWINCH  | N/A  | Ignore                | Terminal window size changed                      |
 
-### Handling Signals
+### Handle Signals
 
 ​	
 

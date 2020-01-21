@@ -1,6 +1,8 @@
-## 1. What about WAN , and why the WAN can inside  bridge or not (while display by brctl )?
+## 1. What about WAN , and is it WAN can inside bridge or not ( display bridge info access *brctl* )?
 
-WAN(Wide Area Network) , 可以在 ip 地址枯竭的时候，临时用以扩充 IP 子网。WAN interface 可以在 bridge 内，也可以不在 brideg 内， 在 bridge 内则是属于桥接模式，对应于网络的二层交换；  如果不在 bridge 内则属于路由模式对应于网络模型的三层路由交换。可以通过以下方式查看。
+WAN(Wide Area Network) , difference between LAN (Local Area Network) used to connect with Internet. Whatever WAN device and LAN device can work within Network or Link layer. 
+
+(Note : WAN interface 可以在 bridge 内，也可以不在 bridge 内， 在 bridge 内则是属于桥接模式，对应于网络的二层交换；  如果不在 bridge 内则属于路由模式对应于网络模型的三层路由交换。可以通过以下方式查看。)
 
 ```shell
 $brctl show 
@@ -239,11 +241,42 @@ root@OpenWrt:~# hi_cfc test restore
 
 
 
-
 ## 8. ebtables & iptables
-[ebtables](<http://ebtables.netfilter.org/misc/ebtables-man.html>) is an application program used to set up and maintain the tables of rules (inside the Linux kernel) that inspect Ethernet frames. It is analogous to the **iptables**application, but less complicated, due to the fact that the Ethernet protocol is much simpler than the IP protocol.  more detail in [ebtables/iptables interaction on a Linux-based bridge](<http://ebtables.netfilter.org/br_fw_ia/br_fw_ia.html>)
 
+### ebtables
 
+[ebtables](<http://ebtables.netfilter.org/misc/ebtables-man.html>) is an application program used to set up and maintain the tables of rules (inside the Linux kernel) that inspect Ethernet frames. It is analogous to the **iptables** application, but less complicated, due to the fact that the Ethernet protocol is much simpler than the IP protocol.  more detail in [ebtables/iptables interaction on a Linux-based bridge](<http://ebtables.netfilter.org/br_fw_ia/br_fw_ia.html>)
 
+![](./img/ebtables.png)
 
+- prerouting：数据进来还未查询路由表之前的规则。
+- input：由外部发往用户空间内部的规则。*(说直白点就是负责过滤目标地址是本机的数据包)*
+- forward：不进入用户空间，进行路由转发的规则。*(负责转发流经主机但不进入本机的数据包)*
+- postrouting：查询完路由表后，将要转发的规则。
+- output：由用户空间内部发往外部的规则。*(负责处理本机发出的数据包)*
 
+**(Note: ebtables每个阶段的的过滤时机都比iptables要早。（这个不是绝对的从本机上层下来的报文经过postrouting是先 iptables 再 ebtables）**
+
+表
+表是内置且固定的，共有三种: filter, nat, broute，用-t选项指定。最常用的就是filter了，所以不设-t时默认就是这个表。
+filter过滤本机流入流出的数据包是默认使用的表，nat用于地址转换-mac地址，broute用于以太网桥-产生一个桥路器。
+链（chains）
+链有内置和自定义两种 。不同的表内置的链不同，这个从数据包的流程图中就可以看出来。所谓自定义的链也是挂接在对应的内置链内的，使用-j让其跳转到新的链中。如果以太网帧没有匹配到当前的规则，就会去检查下一个规则。(实例见使用场景介绍)
+规则也叫目标（targets）
+每个链中有一系列规则，每个规则定义了一些过滤选项。每个数据包都会匹配这些项，一但匹配成功就会执行对应的动作。
+所谓动作，就是过滤的行为了。有四种，ACCEPT，DROP，RETURN和CONTINUE。
+详解一下：
+当帧匹配一个规则(rule)时，下一个动作(action)由target指定。
+
+Usage:
+- chains:
+	There  are  three  ebtables  tables  with built-in chains in the Linux kernel. These tables are used to divide functionality into different sets of rules. Each set of rules is called a chain.  Each  chain  is  an  ordered list of rules that can match Ethernet frames. If a rule matches an Ethernet frame, then a processing specification tells what to do with that matching frame. The processing specification is called a 'target'.  However,if  the frame does not match the current rule in the chain, then the next rule in the chain is examined and so forth.  The user can create new (user-defined) chains that can be used as the 'target' of a rule. User-defined chains are very useful to get better performance over the linear traversal of the rules and are also essential for structuring the filtering rules into well-organized and maintainable sets of rules.
+
+- target:
+    A firewall rule specifies criteria for an Ethernet frame and a frame processing specification called a target.   When  a  frame  matches  a rule, then the next action performed by the kernel is specified by the target.  The  target can be one of these values: ACCEPT, DROP, CONTINUE, RETURN, an 'extension' (see below) or a jump  to  a  user-defined chain.
+	- ACCEPT means to let the frame through.  DROP means the frame has to be dropped. In the BROUTING chain however,
+	- the ACCEPT and DROP target have different meanings (see the info provided for the -t option).
+	- CONTINUE  means   the  next rule has to be checked. This can be handy, f.e., to know how many frames pass a certain point in the  chain, to log those frames or to apply multiple targets on a frame.  RETURN means stop traversing  this  chain  and  resume  at  the next rule in the previous (calling) chain.  For the extension targets please refer to the  TARGET EXTENSIONS section of this man page.
+
+- tables:
+       As stated earlier, there are three ebtables tables in the Linux kernel.  The table names are filter,  nat  and broute.   Of  these  three tables, the filter table is the default table that the command operates on.  If you  are working with the filter table, then you can drop the '-t filter' argument to the ebtables  command.   However,  you  will  need to provide the -t argument for the other two tables.  Moreover, the -t argument must be  the first argument on the ebtables command line, if used.

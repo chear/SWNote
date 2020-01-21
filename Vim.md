@@ -27,7 +27,7 @@ ctags: Notice: No options will be read from files or environment
 
 
 
-## quilt
+## Quilt
 
 [Quilt](<http://savannah.nongnu.org/projects/quilt>) is a tool to manage a **series of patches** relative to a common code base.
 
@@ -50,5 +50,17 @@ $ quilt delete
 
 
 
+## syntax
+**[syntax](<http://vimcdoc.sourceforge.net/doc/syntax.html#:syn-include>)** its internal function within vim.  It used to highlight the keyword for easy to read.  Also the **[filetype](<http://vimcdoc.sourceforge.net/doc/filetype.html#remove-filetype>)** is internal function . Vim can detect the type of file that is edited , This is done by checking the  file name and sometimes by inspecting the contents of the file for specific text. when specify the **filetype**  for edited file means  specify the same for **syntax** , and then should display highlight keyword as defined, such as following.
+
+```vim
+:set filetype=make
+:set filetype=idl
+:set syntax=sh
+```
 
 
+
+## cscope
+
+**cscope** its powerful than **ctags**.

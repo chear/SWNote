@@ -14,15 +14,16 @@
 
 # Makefile 主要参数
 
-| **Parameter**            | **Description**                                 |
-| ------------------------ | ----------------------------------------------- |
-| --debug[=<options>]      | 输出make的调试信息, options 可以是 a, b, v      |
-| -j --jobs                | 同时运行的命令的个数, 也就是多线程执行 Makefile |
-| -r --no-builtin-rules    | 禁止使用任何隐含规则                            |
-| -R --no-builtin-variabes | 禁止使用任何作用于变量上的隐含规则              |
-| -B --always-make         | 假设所有目标都有更新, 即强制重编译              |
-| -f                       | 指定Makefile 文件                               |
-| -C                       | 指定文件夹                                      |
+| **Parameter**            | **Description**                                             |
+| ------------------------ | ----------------------------------------------------------- |
+| --debug[=<options>]      | 输出make的调试信息, options 可以是 a, b, v                  |
+| -j --jobs                | 同时运行的命令的个数, 也就是多线程执行 Makefile             |
+| -r --no-builtin-rules    | 禁止使用任何隐含规则                                        |
+| -R --no-builtin-variabes | 禁止使用任何作用于变量上的隐含规则                          |
+| -B --always-make         | 假设所有目标都有更新, 即强制重编译                          |
+| -f                       | 指定Makefile 文件                                           |
+| -C                       | 指定文件夹                                                  |
+| M                        | M=$(PWD) 表明然后返回到当前目录继续读入、执行当前的Makefile |
 
 [Re1](<http://clarkgrubb.com/makefile-style-guide#phony-targets> ) , [Ref2](<https://www.cnblogs.com/wang_yb/p/3990952.html>)
 
@@ -117,6 +118,8 @@ duplicated in the order they were listed in the makefile .
 
 ref: <https://stackoverflow.com/questions/3220277/what-do-the-makefile-symbols-and-mean>
 
+
+
 ## 4. The makefile execute order , and .PHONY
 
 if did not specified targe ,makefile will execte the first targe in Makefile.
@@ -140,6 +143,8 @@ Now make clean will run as expected even if you do have a file named clean. In t
 
 Ref: makefile使用规则
 
+
+
 ## 5. makefile & shell
 
 1. 在Makefile中只能在target中调用Shell脚本，其他地方不能输出。
@@ -149,7 +154,7 @@ Ref: makefile使用规则
 
 ( 在 Makefile 中编写 shell 脚本需要特别注意隐藏字符，比如回车换行符，如果隐藏字符位置不对可能会导致 Makeile 执行失败，并且较难排除。在 vim 命令模式中 :set invlist 打开或者关闭隐藏字符。 )
 
-```
+```makefile
 #===============================================================================
 # Macro
 #===============================================================================
@@ -200,6 +205,8 @@ bootloader_env:
 	fi;
 	echo "set tags+=$(BOOTLOADER_PATH)/c_tags " > $(BOOTLOADER_PATH)/.previm 
 ```
+
+
 
 ## 6. 'wildcard'
 

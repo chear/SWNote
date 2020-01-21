@@ -200,7 +200,7 @@ $cli /home/cli/cm/cm_ctrl -v value 0x20000010
 speed test command for *httping*
 
 ```shell
-    $httping http://192.168.8.3:51473/170 -d pppoe-wan_3002 -c 1 -G -b --priority 0 --tos 0 -y 0.0.0.0/54326 
+$httping http://192.168.8.3:51473/170 -d pppoe-wan_3002 -c 1 -G -b --priority 0 --tos 0 -y 0.0.0.0/54326 
 ```
 
 - -d : for device name

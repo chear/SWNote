@@ -43,15 +43,15 @@ stack to store local variable and parameter value for function
                     |--------------------| 
                     |Program Header Table|
                     |--------------------| 
-                    |    .Text			 |
+                    |    .Text           |
                     |--------------------| 
-                    |    .rodata		 |
+                    |    .rodata         |
                     |--------------------|
-                    |	   heap			 |
+                    |	   heap          |
                     |--------------------|
-                    |	    ...			 |
+                    |	    ...          |
                     |--------------------|
-                    |	  .data			 |
+                    |	  .data          |
                     |--------------------|
                     |    Section Header  |
                     |    Table optional	 |

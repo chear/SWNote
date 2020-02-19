@@ -64,3 +64,5 @@ $ quilt delete
 ## cscope
 
 **cscope** its powerful than **ctags**.
+
+**(Note: with-in Hisilicon project , cscope  can not recognize symbol like 'hi_void' ,so can not use to find function. )**

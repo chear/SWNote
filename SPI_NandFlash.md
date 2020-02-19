@@ -191,7 +191,7 @@ Nand Flash的位反转现象，主要是由以下一些原因/效应所导致：
 
 To explain **DS35Q1GA** chip from *Dosilicon*  **(mid: 0xE5, dev_id: 0x71)** , spec info defined within Hisilicon, Econet and ZyXEL platfrom as following.
 
-**Hisilicon** platfrom struct below:
+## 4.1 **Hisilicon** platfrom struct below:
 
 ```c
 struct hi_fmc_spi_nand_spl_ids_s
@@ -261,7 +261,9 @@ spec defnation：
 ...
 ```
 
-**Econet** platfrom struct:
+
+
+## 4.2 **Econet** platfrom struct:
 
 ```c
 struct SPI_NAND_FLASH_INFO_T {
@@ -310,7 +312,7 @@ spec info as below:
 
 
 
-**ZyXEL** platfrom struct:
+## 4.3 **ZyXEL** platfrom struct:
 
 ```c
 struct SPI_NAND_FLASH_INFO_T {
@@ -354,7 +356,7 @@ spec info defination:
 
 
 
-## Hisilicon NAND Flash Arch
+## 4.4 Hisilicon NAND Flash Arch
 
 SPI Nand driver in hisi platform based on HSAN arch. The basic specfication loaded within bootloader, and transfor to kernel by  paramater. 
 
@@ -369,7 +371,7 @@ fmc_probe-->|hi_fmc_nand_chip_init|C(get_nand_chip)
 C -->D(Loading nand spec)
  ```
 
-### Hi-Boot
+### 4.4.1 Hi-Boot
 
 hi-boot 中 spec 信息保存在 *drivers/mtd/fmc/hi_fmc_tbl.c*  中， 并且在 *drivers/mtd/flash.c* 中初始化，以 XTX SPI
  NAND Flash 2Gbit (256M)  为例代码如下：
@@ -430,7 +432,7 @@ struct hi_fmc_nand_spl_ids_s g_ast_fmc_nand_spl_ids[] =
 
 
 
-### Kernel
+### 4.4.2 Kernel
 
 #### kernel image consists
 

@@ -40,11 +40,11 @@ decompress SDK and building the source
 root@:# mkdir -p releasebsp
 root@:# cp releasebsp_profilename_relasedate.tgz ./releasebsp
 root@:# tar -xzvf releasebsp_profilename_relasedate.tgz
-root@:# fakeroot make PROFILE=CT_EN7528_LE_7592_7613_JOYME3_demo CUSTOM=CT clean 
-root@:# fakeroot make PROFILE=CT_EN7528_LE_7592_7613_JOYME3_demo CUSTOM=CT All
-root@:# fakeroot make PROFILE=CT_EN7528_LE_7592_7613_JOYME3_demo CUSTOM=CT kernel_clean kernel
-root@:# fakeroot make PROFILE=CT_EN7528_LE_7592_7613_JOYME3_demo CUSTOM=CT bootbase_clean bootbase
-root@:# fakeroot make PROFILE=CT_EN7528_LE_7592_7613_JOYME3_demo CUSTOM=CT buildimage
+root@:# fakeroot make PROFILE=NP_EN7561D_LE_7592_7613_NORD_64M_demo CUSTOM=CT clean 
+root@:# fakeroot make PROFILE=NP_EN7561D_LE_7592_7613_NORD_64M_demo CUSTOM=CT All
+root@:# fakeroot make PROFILE=NP_EN7561D_LE_7592_7613_NORD_64M_demo CUSTOM=CT kernel_clean kernel
+root@:# fakeroot make PROFILE=NP_EN7561D_LE_7592_7613_NORD_64M_demo CUSTOM=CT bootbase_clean bootbase
+root@:# fakeroot make PROFILE=NP_EN7561D_LE_7592_7613_NORD_64M_demo CUSTOM=CT buildimage
 ```
 
 generate image at  ''*releasebsp/Project/images/tcboot.bin* " , "*releasebsp/Project/images/tclinux.bin*"
@@ -102,7 +102,21 @@ prepare[build image] -->|cat * > allinone|cat(padding)
     trx -->|add oob&hard|final[tclinux_allinone_nand]
 ```
 
+misc image laoyout
 
+```shell
+           0x10000000 -------------------|
+                    |     linux  B       |	tclinux.bin,zize=0xE00000
+                    |     rootfs B       |
+             0xB00000 -------------------|
+                    |     linux  A       |
+                    |     rootfs A       |  tclinux.bin size=0x50000
+             0x600000 -------------------|
+                    |     romfile        |  romfile.gz, size=0x40000
+              0x40000 -------------------|
+                    |     boot           |	tcboot.bin, size=0x40000
+              0x00000 -------------------|
+```
 
 ## 5. CFG command
 
@@ -114,10 +128,20 @@ OID [183:1][TelnetEntry]:
 	[telnet_passwd = e8telnet]
 	[telnet_port = 23]
 
+# tcapi set Account_MfgMode Active "Yes"
+(Note: update romfiles)
+# tcapi save
+
 # prolinecmd restore default
 
 # sys led on
 ```
+
+
+
+
+
+## 6. Mfg Mode
 
 
 

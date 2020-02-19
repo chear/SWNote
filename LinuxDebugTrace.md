@@ -37,25 +37,25 @@ stack to store local variable and parameter value for function
 
 ```shell
                     |--------------------| 0xFF                         
-            		|	   stack    	 |
-            		|--------------------|
+                    |	   stack    	 |
+                    |--------------------|
                     |    ELF Header      |
                     |--------------------| 
                     |Program Header Table|
                     |--------------------| 
-                    |    .Text			 |
+                    |    .Text           |
                     |--------------------| 
-                    |    .rodata		 |
-            		|--------------------|
-            		|	   heap			 |
-            		|--------------------|
-                    |	    ...			 |
+                    |    .rodata         |
                     |--------------------|
-                    |	  .data			 |
-            		|--------------------|
+                    |	   heap          |
+                    |--------------------|
+                    |	    ...          |
+                    |--------------------|
+                    |	  .data          |
+                    |--------------------|
                     |    Section Header  |
                     |    Table optional	 |
- 			        |--------------------| 0x00
+                    |--------------------| 0x00
 ```
 
 (Note: Stack/Heap are in-memory structures which are created/modified during run-time so in essence they are not in the file itself - they can't be. Think of them as a special place in memory where each and every program can store run-time data and by run-time data I mean variables. function invocations, return values and all the nitty-gritty stuff that are hapening on the low level.)

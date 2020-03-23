@@ -28,6 +28,8 @@ sst->boot->kernel->preinit->pre1->pre2->xpon->appm->e
 
 
 
+
+
 ## 1.3 Hisilicon Architecture
 
 ![hisilicon_arch](img\hisilicon_arch.png)
@@ -50,6 +52,10 @@ Sub-system Interface Introduction
 | OSGi           |             | Plug-in Bundle        | 提供插件服务                                                 |         |
 
 ![hi_subsystem](img/hi_subsytem_internal_exchange.png)
+
+
+
+
 
 ## 1.4 Hisilicon partition table
 
@@ -112,16 +118,36 @@ Sub-system Interface Introduction
 
 
 
-Kernel Building path :
+**Kernel Solution & Building path**
+
+for 5116:
 
 ```shell
-$ ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/linux-sd5116_generic/
+$ ls openwrt/target/linux/sd5116/files/drivers/mtd/hsan/
+$ ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/linux-sd5116_generic/linux-3.18.11/
 ```
 
-Rootfs Building path :
+for 5663:
 
 ```shell
+$ ls openwrt/target/linux/hsan/files/
+$ ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/linux-hsan_generic/linux-3.18.11/
+```
+
+**Rootfs Solution & Building path**
+
+for 5116
+
+```shell
+$ ls openwrt/staging_dir/target-arm-openwrt-linux-uclibcgnueabi/root-sd5116/
 $ ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/root-sd5116/
+
+```
+for 5663
+
+```shell
+$ ls openwrt/staging_dir/target-arm-openwrt-linux-uclibcgnueabi/root-hsan/
+$ ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/root-hsan/
 ```
 
 
@@ -209,9 +235,12 @@ $ ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/hi_gateway/sdk/hi_
 
 ```shell
 $ ls solution/package/openwrt/linux-3.18.11.tar.xz
-(Linux zip for svn solution)
-$ ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/linux-sd5116_generic/
-(This for building)
+$ ls solution/patch/linux-3.18.11/
+(Linux zip and kernel patch for solution)
+$ ls openwrt/target/linux/hsan/files/
+(solution source to build)
+$ ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/linux-hsan_generic/linux-3.18.11/
+(finally building path)
 ```
 
 **Rootfs Building path at:**

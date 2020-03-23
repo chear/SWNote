@@ -326,7 +326,7 @@ static hi_int32 hi_sfc_probe(hi_uint32 ui_chip_num){
 }
 ```
 
-*driver/mtd/spi/hi_spi.drv.c*
+*driver/mtd/spi/hi_spi_drv.c*
 
 ( SPI Nor Flash 驱动文件，封装芯片的读写，擦除指令，并且将芯片的块大小， 页大小写入特定寄存器， 传入Linux ，Linux 取得上诉信息后即可读写块。)
 
@@ -908,4 +908,35 @@ u-boot 启动环境本身是需要识别 flash 芯片，其中包括 ID, Registe
    
 
 ### 3. 底层设备描述
+
 在c 中基本通过宏定义来描述设备的属性和行为。
+
+
+
+### 4. SPI NAND Driver
+
+Struct NAND driver defination.
+
+```c
+hi_fmc_func_s g_st_fmc_nand_reg =
+{
+    .pf_init      = hi_fmc_nand_drv_init,
+    .pf_reset     = hi_fmc_nand_drv_reset,
+    .pf_erase     = hi_fmc_nand_drv_erase,
+    .pf_read      = hi_fmc_nand_drv_read,
+    .pf_write     = hi_fmc_nand_drv_write,
+    .pf_read_oob  = hi_fmc_nand_drv_read_oob,
+    .pf_write_oob = hi_fmc_nand_drv_write_oob,
+    .pf_read_id   = hi_fmc_nand_drv_read_id,
+    .pf_wp_check  = hi_fmc_nand_drv_wp_check,
+    .pf_write_disable = hi_fmc_nand_drv_write_disable,
+    .pf_write_enable = hi_fmc_nand_drv_write_enable,
+};
+```
+
+
+
+```c
+extern hi_fmc_func_s g_st_fmc_nand_reg;
+```
+

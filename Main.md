@@ -80,7 +80,7 @@ IPv4 路由表
 **TOSA**: Transmitting Optical Sub-Assembly, 光发射组件
 **ROSA**: Receiving Optical Sub-Assembly, 光接收组件
 **BOSA**: Bi-Directional Optical Sub-Assembly, 光发射接收组件
-TOSA 是用[LD](https://www.baidu.com/s?wd=LD&tn=SE_PcZhidaonwhc_ngpagmjz&rsv_dl=gh_pc_zhidao)把电信号转化为光信号发射出去的组件，ROSA是用[PD](https://www.baidu.com/s?wd=PD&tn=SE_PcZhidaonwhc_ngpagmjz&rsv_dl=gh_pc_zhidao)把接受的光信号转化为电信号的组件，把两者组合在一起就是[BOSA](http://www.fiber-optic-transceiver-module.com/brief-introduction-to-tosa-rosa-and-bosa.html)了。
+TOSA 是用 [LD](https://www.baidu.com/s?wd=LD&tn=SE_PcZhidaonwhc_ngpagmjz&rsv_dl=gh_pc_zhidao) 把电信号转化为光信号发射出去的组件，ROSA是用[PD](https://www.baidu.com/s?wd=PD&tn=SE_PcZhidaonwhc_ngpagmjz&rsv_dl=gh_pc_zhidao)把接受的光信号转化为电信号的组件，把两者组合在一起就是[BOSA](http://www.fiber-optic-transceiver-module.com/brief-introduction-to-tosa-rosa-and-bosa.html)了。
 
 
 
@@ -115,14 +115,6 @@ iperf.exe   -c 91.0.0.172 -w 2M -p 5001 -i 1 -t 3600
 ```
 
 **(Note: iperf2 server and iperf3 client dose not work together.)**
-
-
-
-## Main Trunk
-
-<http://wx-svn.zyxel.cn/SW3-1/mld_sg/trunk/product/MT7526G_CMCC>
-
-<http://wx-svn.zyxel.cn/SW3-1/mld_sg/trunk/product/MT7526G_CTC>
 
 
 

@@ -1,4 +1,4 @@
-## 1. What about WAN , and is it WAN can inside bridge or not ( display bridge info access *brctl* )?
+## w1. What about WAN , and is it WAN can inside bridge or not ( display bridge info access *brctl* )?
 
 WAN(Wide Area Network) , difference between LAN (Local Area Network) used to connect with Internet. Whatever WAN device and LAN device can work within Network or Link layer. 
 
@@ -232,11 +232,11 @@ cli /home/cli/hal/port/port_mirror_set -v igr 0x200 egr 0x200 dport 0
 ## 7. Switch the province
 
 ```shell
-root@OpenWrt:~# hi_cfg set sysinfo.province jt
-root@OpenWrt:~# hi_cfg config
+root@OpenWrt:~# hi_cfm set sysinfo.province jt
+root@OpenWrt:~# hi_cfm config
 root@OpenWrt:~# sync
 root@OpenWrt:~# reboot
-root@OpenWrt:~# hi_cfc test restore
+root@OpenWrt:~# hi_cfm test restore
 ```
 
 
@@ -270,13 +270,67 @@ filter过滤本机流入流出的数据包是默认使用的表，nat用于地�
 
 Usage:
 - chains:
-	There  are  three  ebtables  tables  with built-in chains in the Linux kernel. These tables are used to divide functionality into different sets of rules. Each set of rules is called a chain.  Each  chain  is  an  ordered list of rules that can match Ethernet frames. If a rule matches an Ethernet frame, then a processing specification tells what to do with that matching frame. The processing specification is called a 'target'.  However,if  the frame does not match the current rule in the chain, then the next rule in the chain is examined and so forth.  The user can create new (user-defined) chains that can be used as the 'target' of a rule. User-defined chains are very useful to get better performance over the linear traversal of the rules and are also essential for structuring the filtering rules into well-organized and maintainable sets of rules.
-
+  There  are  three  ebtables  tables  with built-in chains in the Linux kernel. These tables are used to divide functionality into different sets of rules. Each set of rules is called a chain.  Each  chain  is  an  ordered list of rules that can match Ethernet frames. If a rule matches an Ethernet frame, then a processing specification tells what to do with that matching frame. The processing specification is called a 'target'.  However,if  the frame does not match the current rule in the chain, then the next rule in the chain is examined and so forth.  The user can create new (user-defined) chains that can be used as the 'target' of a rule. User-defined chains are very useful to get better performance over the linear traversal of the rules and are also essential for structuring the filtering rules into well-organized and maintainable sets of rules.
 - target:
     A firewall rule specifies criteria for an Ethernet frame and a frame processing specification called a target.   When  a  frame  matches  a rule, then the next action performed by the kernel is specified by the target.  The  target can be one of these values: ACCEPT, DROP, CONTINUE, RETURN, an 'extension' (see below) or a jump  to  a  user-defined chain.
-	- ACCEPT means to let the frame through.  DROP means the frame has to be dropped. In the BROUTING chain however,
-	- the ACCEPT and DROP target have different meanings (see the info provided for the -t option).
-	- CONTINUE  means   the  next rule has to be checked. This can be handy, f.e., to know how many frames pass a certain point in the  chain, to log those frames or to apply multiple targets on a frame.  RETURN means stop traversing  this  chain  and  resume  at  the next rule in the previous (calling) chain.  For the extension targets please refer to the  TARGET EXTENSIONS section of this man page.
-
+    - ACCEPT means to let the frame through.  DROP means the frame has to be dropped. In the BROUTING chain however,
+    - the ACCEPT and DROP target have different meanings (see the info provided for the -t option).
+    - CONTINUE  means   the  next rule has to be checked. This can be handy, f.e., to know how many frames pass a certain point in the  chain, to log those frames or to apply multiple targets on a frame.  RETURN means stop traversing  this  chain  and  resume  at  the next rule in the previous (calling) chain.  For the extension targets please refer to the  TARGET EXTENSIONS section of this man page.
 - tables:
        As stated earlier, there are three ebtables tables in the Linux kernel.  The table names are filter,  nat  and broute.   Of  these  three tables, the filter table is the default table that the command operates on.  If you  are working with the filter table, then you can drop the '-t filter' argument to the ebtables  command.   However,  you  will  need to provide the -t argument for the other two tables.  Moreover, the -t argument must be  the first argument on the ebtables command line, if used.
+
+ 
+
+## 9. Linux File System
+
+1. **Romfs** 
+
+   *romfs* is a space-efficient, small, read-only filesystem originally for [Linux](http://www.linux.org/) and used by some Linux based projects. It is a block-based filesystem, that means it makes use of block (or sector) accessible storage driver (like disks, CDs, ROM drives). It is part of stock Linux kernels since about version 2.1.21 (about January, 1997). All current (2.4--2.6) kernel sources contain support for *romfs*, but depending on the distributor, it might not have been compiled in.
+
+    *romfs* makes two shortcuts: first, it's read-only, you can't simply use your disk if it's a *romfs* disk, you must build its image beforehand. Second, it stores only the absolute minimum required from a filing system. No modification dates, no unix permissions. These all might sound as large drawbacks, but they are usually not.
+
+2. **squashfs**
+
+   It is a read-only file system that lets you compress whole file systems or single directories, write them to other devices/partitions or to ordinary files, and then mount them directly (if a device) or using a loopback device (if it is a file). It compressed file systems used for tiny-sized and embedded Linux systems.
+
+   The **mksquashfs** tool, which creates squashed file systems (in a file or on a block device) and the **unsquashfs** tool, which extracts multiple files from an existing squashed file system.
+
+3. **jffs2**
+
+   The ***Journaling Flash File System version 2 (JFFS2)*** was created by Red Hat from JFFS started  . JFFS2 provides a filesystem directly on the flash, rather than emulating a block device, is a log-structured writable file system.
+
+   JFFS2 has a log based structure which works like a Journal. Log based structures perform sequential writes from beginning to end to a log file, or a buffer. Once the space is filled, it performs similar to circular logging. If a file is updated, the old file remains and a new one is placed at the end of the log. When needed, the older file can be overwritten.
+
+4. **ubifs**
+
+   UBIFS is a new flash file system developed by Nokia engineers.In a way, UBIFS may be considered as the next generation of the JFFS2 file-system.
+
+   JFFS2 file system works on top of MTD devices, but UBIFS works on top of UBI volumes and cannot operate on top of MTD devices. In other words, there are 3 subsystems involved:
+
+   (Note: One thing people have to understand when dealing with UBIFS is that UBIFS is very different to any traditional file system - it **does not** work on top of block devices (like `hard drives`, `MMC/SD cards`, `USB flash drives`, `SSDs`, etc). UBIFS was designed to work on top of **raw** flash, which has nothing to do with block devices. This is why UBIFS does not work on `MMC cards` and the like - they look like block devices to the outside world because they implement `FTL` (Flash Translation Layer) support in hardware, which simply speaking emulates a block device on top of the built-in raw flash. Please, make sure you understand the differences between raw flash and, say, MMC flash before dealing with UBIFS.)
+
+   - **MTD** subsystem, which provides uniform interface to access flash chips. MTD provides an notion of MTD devices (e.g., `/dev/mtd0`) which basically represents raw flash;
+
+   - **UBI** subsystem, which is a wear-leveling and volume management system for flash devices; UBI works on top of MTD devices and provides a notion of UBI volumes , UBI volumes are higher level entities than MTD devices and they are devoid of many unpleasant issues MTD devices have (e.g., wearing and bad blocks); see [here](http://www.linux-mtd.infradead.org/doc/ubi.html) for more information;
+
+   - **UBIFS** file system, which works on top of UBI volumes
+
+5. **[cfamfs](http://en.wikipedia.org/wiki/Cramfs)**
+
+    A compressed read-only file system for Linux. The maximum size of CRAMFS is 256MB.
+
+
+
+## 10. LA to measurement SPI nand flash .
+
+MOSI (Master in , Slave out) , MISO (Master out , Slave in)  the master means for MCU , slave means for SPI nand flash diagram as below
+
+![la](./img/la.jpg)
+
+SPI Setting for LA  as below, with in this test , the  *'0x0F 0xC0 0x00'* its get feature command send to nand chip , and then nand response *0x00 0x00 0x01* this means the nand its busy ,can not operate programing  or eraseing.
+
+![la3](./img/la3.bmp)
+
+  
+
+

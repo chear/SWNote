@@ -73,7 +73,7 @@ arch/arm/kernel/vmlinux.lds.S
 
 
 
-## 20190514
+## 20190514  Linux C
 
 ### [different between device_driver and platform_driver](<https://stackoverflow.com/questions/15610570/what-is-the-difference-between-a-linux-platform-driver-and-normal-device-driver>).
 
@@ -149,8 +149,7 @@ iounmap(vaddr_base);
 
 
 
-
-## 20190703
+## 20190703  Hisi HTTP Speed test
 
 ### Hisilicon 移动下载仿真测试 (httping)
 
@@ -218,8 +217,7 @@ fsutil file createnew null.txt 5278350000
 
 
 
-
-## 20190719
+## 20190719   Speed Testing
 
 ###  MTK En_7528 speed test :
 
@@ -289,7 +287,7 @@ to getting values:
 
 
 
-## 20190812
+## 20190812  Mitrastar's FW Debug
 
 ### MfgMode
 
@@ -370,7 +368,7 @@ AsicSetSyncModeAndEnable(): NotSupportedFunc for this arch(HIF_MT)!
 
 
 
-## 20190816
+## 20190816   Linux Debug
 
 ### econet 7526 crash info
 
@@ -441,7 +439,8 @@ Segmentation fault
 
 
 
-## 20190826
+## 20190826  
+
 ### system crash (without any response) when plug-in usb-flash disc
 
 sample script to running *dd*  command within 11 times to testing the USB hung issue.
@@ -470,11 +469,11 @@ umount: can't umount /mnt/usb1_1/: Device or resource busy
 
 
 
-## 20190828
+## 20190828 Econet command
 
 ### econet original image login
 
-original econet FW use  *boa* to be web server, local file at */boaroot/cgi-bin/*
+econet's FW web server based on  **boa** , binary local file at */boaroot/cgi-bin/*
 ```shell
 # prolinecmd xponmode set epon 	(or gpon, to switch ePon or gPon) 
 # sys wan2lan on 15
@@ -483,9 +482,9 @@ original econet FW use  *boa* to be web server, local file at */boaroot/cgi-bin/
 
 
 
-## 20190917
+## 20190917  Replace FW
 
-### Switch FW image between Ecnet and Mitrashar within en7528 chip
+### Switch FW between Econet and Mitrastar within en7528 chip
 
 Econet for *tcboot.bin & tclinux.bin* ,and  Mitrashar for *loader.img & ras.bin* , the more important its both boot-loader with same size for 256k.
 
@@ -515,13 +514,13 @@ u-boot # nandwr 0 80000000 40000	(write nand flash from 0x0 to 0x40000,sync from
 
 ```
 
+(No Complete)
 
 
 
+## 20190919 kernel hook for net filte
 
-## 20190919
-
-### kernel hook for net filter.
+source  code:
 
 ```c
 struct nf_sockopt_ops
@@ -556,9 +555,9 @@ static struct nf_hook_ops httpd_hooks = {
 
 
 
-## 20190925
+## 20190925  Hisi child-process count
 
-### count child-process for mini_httpd
+### Hisi count child-process for mini_httpd
 
 re-move the child-process when "mini_httpd" crate by *fork()*.
 
@@ -582,9 +581,9 @@ to count the TCP connection while "mini_httped" listened , hex '1F90' convert de
 
 
 
-## 20190927
+## 20190927  system() and popen() difference
 
-### different between *system()* and *popen()*
+### system() and popen() difference in Linux C
 
 both *[system()](<http://man7.org/linux/man-pages/man3/system.3.html>)* and *[popen()](<http://man7.org/linux/man-pages/man3/popen.3.html>)* are source in glibc for  POSIX library , 
 
@@ -601,7 +600,7 @@ ref: [Linux Man Page List ](<http://man7.org/linux/man-pages/dir_all_by_section.
 
 
 
-## 20191017
+## 20191017  Quilt patch management
 
 *[quilt](<<http://www.shakthimaan.com/downloads/glv/quilt-tutorial/quilt-doc.pdf>)*  command used to manage patch.
 
@@ -614,7 +613,7 @@ ref: [Linux Man Page List ](<http://man7.org/linux/man-pages/dir_all_by_section.
 
 
 
-## 20191018
+## 20191018  Hisi debug
 
 TR069  debug value for  **InternetGatewayDevice.Time.CurrentLocalTime** , source at *hisilicon/gateway/cms/*
 
@@ -623,7 +622,7 @@ the test case as following:
 1. display the cwmp's log and capture data
 
 ```shell
-root@OpenWrt:~# cli /home/cli/hal/port/port_mirror_set -v igr 0 egr 0x200 dport 0
+root@OpenWrt:~# cli /home/cli/hal/port/port_mirror_set -v igr 0x200 egr 0x200 dport 0
 root@OpenWrt:~# log_voice_cli cwmpClient cwmp_log 		(enable or disable TR069 log)
 ```
 
@@ -631,7 +630,7 @@ root@OpenWrt:~# log_voice_cli cwmpClient cwmp_log 		(enable or disable TR069 log
 
 
 
-## 20191104
+## 20191104  Hisi bob config
 
 ### To update bob_config.ini
 
@@ -686,7 +685,7 @@ G:\iperf-2.0.5-win32>iperf.exe -c 172.25.24.13 -i 1 -t 3600
 
 
 
-## 20191111
+## 20191111  Hisi usb
 
 ### Hisilicon USB controller
 
@@ -717,13 +716,13 @@ root@OpenWrt:~# umount /tmp/mnt/usb1_1/
 
 
 
-## 20191129
+## 20191129  display detail macro source with-in compile
 
 Note:  *"gcc -E SOURCE_FILE -o OUTPUT_FILE"*  can replace *macro* within source file.
 
 
 
-## 20191204
+## 20191204  ZyClip zloader & zboot
 
 Upgrade  *zloader* and *zboot*  with xmodem.
 
@@ -755,11 +754,57 @@ Note: upgrade zloader by ***loader.img** , upgrade zboot by ***build/zboot.final
 
 
 
-## 20191205
+## 20191205  Econet building command
 
 building Econet BSP porting.
 
 ```shell
-# 
+# fakeroot make PROFILE=[PROFILE_FOLDER_NAME] CUSTOM=CT clean all
+# fakeroot make PROFILE=NP_EN7561D_LE_7592_7613_NORD_64M_demo CUSTOM=CT kernel_clean kernel buildimage
 ```
+
+
+
+## 20200226  SCSI System
+
+**SCSI (Small Computer System Interface  Linux)**  is a standard for parallel interfaces , and is one of the most commonly used interface for disk drives that was first completed in 1982.  SCSI include SCSI-1 , SCSI-2 , SCSI-3 standard , supports up to seven peripheral devices, such as hard drive , CD-ROM , and scanner , SCSI even early more than Linux.
+
+[SCSI](<https://www.ibm.com/developerworks/cn/linux/l-scsi-subsystem/>) arch for linux :
+
+![linux_scsi](img/linux_scsi.gif)
+
+
+
+## 20200306  Hisi GUI can't login
+
+Encounter question for GUI can not login when change the ip address  for bridge , such like *192.168.1.1*  to *192.168.200.1* .  Then change the values to set  *ucStatus = 0* and  *ucResult = 1* with-in *REMOTEMGT_LOID_REG_ATTR_TAB* and *REMOTEMGT_PASSWORD_REG_ATTR_TAB* can fix this issue. 
+
+(Note : this question only find out JiangSu province.)
+
+
+
+
+
+## 20200309  Hisi mstc8.bin
+
+
+
+
+
+## 20200312 Hisi nand read& write
+
+to test nand flash write , **nand read** 8 byte from block 0 page 0 to memory address at 0x88000000, then write those 8 byte to block 8 page 0.
+
+```shell
+hi # nand read 0x88000000 0x0 0x8
+OK
+hi # md 0x88000000
+88000000: ea00000e e59ff014 ffffffff ffffffff    ................
+88000010: ffffffff ffffffff ffffffff ffffffff    ................
+88000020: ffffffff ffffffff ffffffff ffffffff    ................
+88000030: ffffffff ffffffff ffffffff ffffffff    ................
+hi # nand write 0x88000000 0x100000 0x8
+```
+
+
 

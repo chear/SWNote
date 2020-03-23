@@ -16,15 +16,20 @@ root@michael-HP-Pro-3330-MT:/home/michael/Code/michael/7528/org# tree ./ -d -L 1
 ├── bootrom
 │	(bootloader source file)
 ├── doc
+│	( DO NOT CARE.s)
 ├── filesystem
+│	( the generate fs at 'filesystem/usr/')
 ├── global_inc
 ├── kernel_ext
 ├── lib_install
 ├── linux-3.18.21
-│	(linux kernel)
+│	( linux kernel source .)
 ├── linux-ecnt
+│	( Econet kernel source files ,should be copy and replace with-in 'linux-3.18.21' 
+│	 by same folder.)
 ├── modules
 ├── Project
+│	( platform configuration files.)
 ├── tools
 ├── version
 └── windows_rndis_driver
@@ -55,8 +60,6 @@ to build misc image by following:
 root@:# ./addoob tclinux_allinone_nand tclinux_allinone_nand_ecc 2048 64
 root@:# ./addhdr tclinux_allinone_nand_ecc ap_mstc.bin
 ```
-
-
 
 
 
@@ -117,6 +120,8 @@ misc image laoyout
                     |     boot           |	tcboot.bin, size=0x40000
               0x00000 -------------------|
 ```
+
+
 
 ## 5. CFG command
 

@@ -352,10 +352,6 @@ spec info defination:
 
 
 
-
-
-
-
 ## 4.4 Hisilicon NAND Flash Arch
 
 SPI Nand driver in hisi platform based on HSAN arch. The basic specfication loaded within bootloader, and transfor to kernel by  paramater. 
@@ -370,6 +366,8 @@ hi_flash_init -->|&g_st_fmc_spi_nand_reg|fmc_probe(fmc_probe)
 fmc_probe-->|hi_fmc_nand_chip_init|C(get_nand_chip)
 C -->D(Loading nand spec)
  ```
+
+
 
 ### 4.4.1 Hi-Boot
 
@@ -522,6 +520,19 @@ hi # md 0x88000000 0x100
 880000f0: 683d656c 6f625f69 645f746f 622e6762    le=hi_boot_dbg.b
 88000100: 5e77ffe5 f9e3b6bf f3bffd3b fbecaeff    ..w^....;.......
 ```
+
+Read oob data from flash
+
+```shell
+hi # nand read dump.oob 1
+*t OOB:
+	ff ff ff ff ff ff ff ff
+	ff ff ff ff ff ff ff ff
+	ff ff ff ff ff ff ff ff
+	ff ff ff ff ff ff ff ff
+```
+
+
 
 
 
@@ -715,6 +726,16 @@ hi # nand write 0x84000000 0x0  0x16a10
 hi # nand read 0x88000000 0x20000 0x40000
 hi # md 0x88000000 0x100
   
+```
+
+
+
+### 6. verify the bad block on burner
+
+```shell
+[Michael]#spinand probe 1
+[Michael]#load 3
+[Michael]#spinand verify
 ```
 
 

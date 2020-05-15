@@ -1,5 +1,7 @@
 # 1. Basic Info
 
+[TOC]
+
 ![nand_flash_layout](./img/nand_flash_layout.png)
 
 
@@ -13,6 +15,8 @@ Note:
 CA ( Columen Address ) : The 12-bit address is capable of addressing from 0 ~ 4095 bytes , however only 0 ~ 2111 are valid. Byte 2112 through 4095 of each page are "out of bounds" , do not exist in the device , and can not be addressed.
 
 RA ( Row Address )  : RA < 5 : 0 > select a page inside block , and RA < 16 : 6 > select block.
+
+Most NAND flash I/O frequency about 80 - 108 MHz ( Etron 80 MHz , XTX 90 MHz , Fudan Micro 104 MHz ,Dosilicon 84 MHz , Foresee 108 MHz ) , the MCU frequency maybe 250 MHz.
 
 
 
@@ -86,6 +90,8 @@ XTX-spi-nand flash Array  Organization chart as following:
 
 The NAND datasheet gives the ECC requirement for the NAND device. For **SLC device 1/4 bits per 512 bytes** are common currently. For **MLC devices with 4/8/16 bits per 512 bytes ECC** requirements.
 
+(Note: OOB layout just careful for burner , the Hisilicon or Econet ,even MLD not need.)
+
 ### Metadata
 
 For every **Page** within each **Block** , contains main area and oob area ,while corresponde for stored data and ecc data, the [Layout](<https://processors.wiki.ti.com/index.php/TI81XX_PSP_UBOOT_User_Guide#BCH_Flash_OOB_Layout>) like the following :
@@ -155,7 +161,11 @@ nand erase
 
 对芯片执行 **write** 操作时，对 *Cache Register(or Cache Page)* 中的 2k 数据计算 ECC，然后在写入实际存储单元既 *Data Register(or Array)*。 在对芯片执行 **read** 操作时，从实际存储单元中读取数据并且存放在到 *Cache Page*, 再计算 *Cache Page* 中 *Main Data* 的 ECC 和实际存储在 *Cache Page oob* 的ECC进行比较,完成校验。
 
+signal captured for reading flash:
 
+![capture](./img/capture.bmp)
+
+(Note: previous captured signal based command ``spinand readp 1 0`` while to read block 0 ,page 1 in flash.)
 
 
 
@@ -265,50 +275,73 @@ spec defnation：
 
 ## 4.2 **Econet** platfrom struct:
 
+Econet use *./linux-ecnt/drivers/mtd/chips/spi_nand_flash_table.c* to configure spi nand flash both in bootload and kernel, those  struct define as following.
+
 ```c
 struct SPI_NAND_FLASH_INFO_T {
-    const u8                            mfr_id;
-    const u8                            dev_id;
-    const u8                            *ptr_name;
-    u32                                 device_size;    /* Flash total Size */
-    u32                                 page_size;      /* Page Size        */
-    u32                                 erase_size;     /* Block Size       */
-    u32                                 oob_size;       /* Spare Area (OOB) Size */
-    SPI_NAND_FLASH_READ_DUMMY_BYTE_T    dummy_mode;
-    u32                                 read_mode;
-    u32                                 write_mode;
-    struct spi_nand_flash_ooblayout     *oob_free_layout;
-    u32                                 feature;
-}; 
+	const u8								mfr_id;
+	const u8								dev_id;
+	const u8								*ptr_name;
+	u32										device_size;	/* Flash total Size */
+	u32										page_size;		/* Page Size 		*/
+	u32										erase_size;		/* Block Size 		*/
+	u32										oob_size;		/* Spare Area (OOB) Size */
+	SPI_NAND_FLASH_READ_DUMMY_BYTE_T		dummy_mode;
+	SPI_NAND_FLASH_READ_SPEED_MODE_T		read_mode;
+	struct spi_nand_flash_ooblayout			*oob_free_layout;
+	u8										die_num;
+	SPI_NAND_FLASH_WRITE_SPEED_MODE_T		write_mode;
+	u32										feature;
+	struct SPI_NAND_ECC_FAIL_CHECK_INFO_T	ecc_fail_check_info;
+	SPI_NAND_FLASH_WRITE_EN_TYPE_T			write_en_type;
+	struct SPI_NAND_UNLOCK_BLOCK_INFO_T		unlock_block_info;
+	struct SPI_NAND_QUAD_EN_INFO_T			quad_en;
+	struct SPI_NAND_ECC_EN_INFO_T			ecc_en;
+	char									otp_page_num;
+};
 ```
 
 spec info as below:
 
 ```c
 ...
-/* ===== Dosilicon ===== */
+/* only use user meta data with ECC protected */
+struct spi_nand_flash_ooblayout ooblayout_fm = {
+	.oobsize = 64, 
+	.oobfree = {{0,16} , {16,16}, {32,16}, {48,16}}
+};
+/* Mitrastar update to suit Fudan Micron Chip for type "FM25S01A" */
 {
-    mfr_id:                     _SPI_NAND_MANUFACTURER_ID_DOSILICON,
-    dev_id:                     _SPI_NAND_DEVICE_ID_DS35Q1GA,
-    ptr_name:                   "_SPI_NAND_DEVICE_ID_DS35Q1GA",
-    device_size:                _SPI_NAND_CHIP_SIZE_1GBIT,
-    page_size:                  _SPI_NAND_PAGE_SIZE_2KBYTE,
-    oob_size:                   _SPI_NAND_OOB_SIZE_64BYTE,
-    erase_size:                 _SPI_NAND_BLOCK_SIZE_128KBYTE,
-    dummy_mode:                 SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
-    read_mode:                  SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
-    write_mode:                 SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
-    oob_free_layout :           &ooblayout_type19,
-    feature:                    SPI_NAND_FLASH_FEATURE_NONE,
-    die_num:                    1,
-    ecc_fail_check_info:        {0x3C, 0x20},
-    write_en_type:              SPI_NAND_FLASH_WRITE_LOAD_FIRST,
-    unlock_block_info:          {0x38, 0x0},
-    quad_en:                    {0x01, 0x01},
-    ecc_en:                     {_SPI_NAND_ADDR_FEATURE, 0x10, 0x10},
+	mfr_id: 					_SPI_NAND_MANUFACTURER_ID_FM,
+	dev_id: 					_SPI_NAND_DEVICE_ID_FM25S01A,
+	ptr_name:					"_SPI_NAND_DEVICE_ID_FM25S01A",
+	device_size:				_SPI_NAND_CHIP_SIZE_1GBIT,
+	page_size:					_SPI_NAND_PAGE_SIZE_2KBYTE,
+	oob_size:					_SPI_NAND_OOB_SIZE_64BYTE,
+	erase_size: 				_SPI_NAND_BLOCK_SIZE_128KBYTE,
+	dummy_mode: 				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
+	read_mode:					SPI_NAND_FLASH_READ_SPEED_MODE_SINGLE,
+	write_mode:					SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
+	oob_free_layout :			&ooblayout_fm, 	
+	feature:					SPI_NAND_FLASH_FEATURE_NONE,
+	die_num:					1,
+	ecc_fail_check_info:		{0x30, 0x30},
+	write_en_type:				SPI_NAND_FLASH_WRITE_LOAD_FIRST,
+	unlock_block_info:			{0x78, 0x0},
+	quad_en:					{0x01, 0x01},
+	ecc_en:						{_SPI_NAND_ADDR_FEATURE, 0x10, 0x10},
+#ifdef TCSUPPORT_NAND_FLASH_OTP
+	otp_page_num:				-1,
+#endif
 },
 ...
 ```
+
+
+
+spi flash spec table reference diagram:
+
+![spec](./img/ecnot_spec.png)
 
 
 
@@ -440,17 +473,11 @@ struct hi_fmc_nand_spl_ids_s g_ast_fmc_nand_spl_ids[] =
 
 
 
-mtd 信息通过 HSAN 模块传递给 kernel，其传递方式与 SPI Nor Flash Dr
+mtd 信息通过 HSAN 模块传递给 kernel，其传递方式与 SPI Nor Flash Driver 相似，都是通过在hi-boot 中Tag写入内存地址 **0x5441000A**， 之后在 kernel中解析得到诸如，page_size, black_size, earse_size 等信息并且保存于全局变量 *g_pc_flash_info* 中。解析代码位于 *solution/patch/linux-3.18.11/arch/arm/kernel/atags_parse.c* 
 
 
 
-
-
-iver 相似，都是通过在hi-boot 中Tag写入内存地址 **0x5441000A**， 之后在 kernel中解析得到诸如，page_size, black_size, earse_size 等信息并且保存于全局变量 *g_pc_flash_info* 中。解析代码位于 *solution/patch/linux-3.18.11/arch/arm/kernel/atags_parse.c* 
-
-
-
-## Debug command for nand flash
+##  4.5 Hisilicon nand Debug command for nand flash
 
 ### 1. Downloading file and write to flash
 
@@ -740,10 +767,32 @@ hi # md 0x88000000 0x100
 
 
 
+## 4.6 Econet Nand Flash Debug Command
 
+to get  status by send get feature command ( *0F* ) within flash chip , *spinand_set_dbg*  [0,1,2,3] to setting debug level.
 
+```shell
+bldr> spinand_status
+Die 0:
+  0xa0:0x44
+  0xb0:0x10
+  0xc0:0x0
+bldr> spinand_set_dbg 1
+```
 
+read page from nand flash ,  within this command  *0x80* its page number, its ctromfile for this image, *0x800*  means whole page , *0* read mode in this means signal read,  second *0* to convert *[Addr]* , or 1 means direct read data from cache page in flash ( *00 00 80*  followed by 13h command)
 
+```shell
+bldr> spinand_read 80 800 0 1
+```
 
+*spinand_read [Addr] [Len] [READ_MODE (0,1)] [Address_Type(0,1)]*
+
+```shell
+bldr> bldr> spinand_write 40000 1 0 a
+
+SPI NAND Write to 0x40000, len 0x1, speed=0x0
+```
 
  
+

@@ -12,36 +12,46 @@ PLOAM (Physical Layer OAM)，OMCI (ONU Management and Control Interface)，OAM�
 
 ## 1.2 Frame Forward
 
-| Sub-Module                   | Description                    | Command Path                               |
-| ---------------------------- | ------------------------------ | ------------------------------------------ |
-| NNI/Pon                      | 网络侧端口                     | /home/cli/chip/nni                         |
-| UNI                          | 用户侧端口 FE, GE              | /home/cli/chip/uni                         |
-| SEC (Security)               | 安全模块                       | /home/cli/hal/sec                          |
-| PDU (Protocol Data Unit)     |                                | /home/cli/chip/pdu                         |
-| ifc (input flow controller)  | 流分类                         | /home/cli/hal/flow/ifc_*                   |
-| ofc (output flow controller) | 流分类                         | /home/cli/hal/flow/ofc_*                   |
-| NniMap (Nni)                 |                                |                                            |
-| L2                           | 芯片交换 L2 模块，用于二层转发 | /home/cli/chip/l2                          |
-| L3                           | 芯片交换 L3 转发，用于三层转发 | /home/cli/chip/l3                          |
-| QoS                          | 质量服务                       | /home/cli/chip/qos , /home/cli/hal/qos/    |
-| CNT                          | 统计                           | /home/cli/hal/cnt/* , /home/cli/chip/cnt/* |
+| Sub-Module                         | Description                           | Command Path                               |
+| ---------------------------------- | ------------------------------------- | ------------------------------------------ |
+| NNI/Pon (Nature Network Interface) | 网络侧端口                            | /home/cli/chip/nni                         |
+| UNI(User Network Interface)        | 用户侧端口 FE(Fast Eth), GE(Giga Eth) | /home/cli/chip/uni                         |
+| SEC (Security)                     | 安全模块                              | /home/cli/hal/sec                          |
+| PDU (Protocol Data Unit)           | 特殊报文                              | /home/cli/chip/pdu                         |
+| ifc (input flow controller)        | 流分类                                | /home/cli/hal/flow/ifc_*                   |
+| ofc(output flow controller)        | 流分类                                | /home/cli/hal/flow/ofc_*                   |
+| NniMap (Nni)                       |                                       |                                            |
+| L2                                 | 芯片交换 L2 模块，用于二层转发        | /home/cli/chip/l2                          |
+| L3                                 | 芯片交换 L3 转发，用于三层转发        | /home/cli/chip/l3                          |
+| QoS                                | 质量服务                              | /home/cli/chip/qos , /home/cli/hal/qos/    |
+| CNT                                | 统计                                  | /home/cli/hal/cnt/* , /home/cli/chip/cnt/* |
+
+
 
 ### 1.2.1 Switch Exchange Forward
 
 ![image](E:/Resource/MitrastarNote/img/hisi_data_path.png)
-	Hisi 数据交换流程包括从交换芯片到Linux 协议栈再到用户空间程序的过程。(注：511xs 不支持L3模块 )
+**Note: Hisi 数据交换流程包括从交换芯片到Linux 协议栈再到用户空间程序的过程。(注：511xs 不支持L3模块 )**
 
 1. UNI --> SEC: 对报文进行 vlan 过滤，源mac过滤，ip过滤
+
 2. SEC --> PDU: 依据配置对报文进行捕获，丢弃。 
+
 3. PDU --> ifc : 可以执行的动作主要有报文编辑（tag 切换操作、IP MAC 切换等）及后续操作指示（丢弃、指定
    出口转发、L3 转发、入口流car 操作、统计等）。
+
 4. ifc - -> Bridge : 报文经过入口流分类处理后，根据转发指示进入bridge 二层桥接转发或者L3 三层转发模块。报文在bridge 转发模块主要依据报文的vlan 及mac 地址，进行目的端口查找转发处理，同时如果是多播报文，在此进行转发复制操作，多播报文的识别包括基于mac 地址或
    mac 地址和vlan 进行复制。
+
 5. Bridge --> ofc : 报文在ofc 出口流分类模块主要依据报文的出端口、vlan、pri、dscp 等信息对报文进行匹配分类，满足规则报文进行编辑和转发等处理，其动作与ifc 基本一致
+
 6. ofc --> Nnimap : 处理后，对于出口非PON 的报文，直接进入Qos|Queue 模块进行发送。若发送出口为PON 口，则还需要进入Nnimap 模块进行上行映射查表，找到G/Epon 模块配置的tcont 或者llid。
+
 7. Qos --> NNI : 在QoS 模块，报文将依据之前模块的car 标记以及配置的car 模块进行car 处理(Ifc,ofc
    均可以指定报文做car)。Car 处理完成后进入队列，在调度器调度下进行出队列发送到
    实际转发出口。
+
+   
 
 ### 1.2.2 ARM Forward
 
@@ -71,6 +81,8 @@ PLOAM (Physical Layer OAM)，OMCI (ONU Management and Control Interface)，OAM�
 ### 1.2.4 Router Forward
 
 路由转发报文的 dmac 必须是对应的具有  IP 转发能力网络接口本身的 mac 。 对于lan 侧，只有桥网络接口具有 ip 转发能力 （br-lan 有 ip ，桥下的其他网络接口不允许有 ip ），br-lan 统一处理 ip 转发。 故上行数据流的 dmac 是 br-lan 的mac ，由桥转发流程可知，对于 dmac 为桥的报文，直接由 br-lan 接受并送到 ip 协议栈。 ip 协议栈内， 按报文的 Dip (Destination ip) 查找路由表，若为本地报文，则由本地接受。否则找到出口 dev 以及下一跳， 通过 ARP 协议获取下一条的 mac 地址，组装报文发出。
+
+![route_forword](./img/route_forword.bmp)
 
 
 
@@ -115,17 +127,7 @@ PBS (Peak Burst Size)
 
 ## 1.5 Hisilicon Command
 
-### 1.5.1 Debug Command
-
-| Command Nme                                                  | Description                                                  |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| hi_cfm set sysinfo.gateway_mac 00:00:23:e2:04:01             | 修改网络信息，设备MAC地址，                                  |
-| hi_cfm test restore                                          | 回复出产设置                                                 |
-| cli /home/cli/hal/port/port_mirror_set -v igr 0x200 egr 0x200 dport 0 | 镜像 PON 口的包到 lan 0 侧, (values should be reset when powoff) |
-
-
-
-### 1.5.2 General Command
+### 1.5.1 General Command
 
 | Name                                    | Description                    | Note                                                         |
 | --------------------------------------- | ------------------------------ | ------------------------------------------------------------ |
@@ -165,7 +167,9 @@ Port 和 QID 对应表
 |        | TCONT6 (LLID 6) |           |
 |        | TCONT7 (LLID 7) | 73 ~ 80   |
 
-### 1.5.3 Switch Table Search Command
+
+
+### 1.5.2 Switch Table Search Command
 
 | Command                                   | Description          | Note                                                         |
 | ----------------------------------------- | -------------------- | ------------------------------------------------------------ |
@@ -187,20 +191,32 @@ Port 和 QID 对应表
 | cli /home/cli/cfe/dia/hook_add            | 指定点进行报文打印   | pos ：要打印的未知(参见表3-2) cnt ：打印报文个数             |
 | cli /home/cli/cfe/dia/hook_clear          | 清除打印 hook        |                                                              |
 
-### 1.5.4 Debug Control Command
 
-| Command                                | Description                 | Note                                                         |
-| -------------------------------------- | --------------------------- | ------------------------------------------------------------ |
-| cli /home/cli/log_cmd/log/cfg_set      | WAN  Dbg                    | -v module 0xf6003000 sys 1 dbg 0xff print 0xff flag 0        |
-| cli /home/cli/log_cmd/log/cfg_set      | LAN Dbg                     | -v module 0xf6007000 sys 1 dbg 0xff print 0xff               |
-| cli /home/cli/log_cmd/log/cfg_set      | QoS Dbg                     | -v module 0xf6006000 sys 1 dbg 0xff print 0xff               |
-| cli /home/cli/log_cmd/log/cfg_set      | MC Dbg                      | -v module 0xf6005000 sys 1 dbg 0xff print 0xff               |
-| cli /home/cli/log_cmd/log/cfg_set      | gPon OMCI ( dbg to console) | -v module 0xf2003100 sys 0 dbg 0x38 print 0x38               |
-| cli /home/cli/log_cmd/log/cfg_set      | gPon OMCI ( dbg to file)    | -v module 0xf2003e00 sys 0 dbg 0x10f    cat /log/hisi/hi_omci.log |
-| cli /home/cli/log_cmd/log/cfg_set      | gPon PLOAM                  | -v module 0xf9002000 sys 0 dbg 0x0 print 0x10                |
-| cli /home/cli/log_cmd/log/cfg_set      | ePon OAM                    | -v module 0xf20200000 sys 0 dbg 0x11                         |
-| cli /home/cli/hal/port/port_mirror_set | 镜像报文                    | 3                                                            |
-| log_voice_cli cwmpClient cwmp_log      | TR069                       | debug for TR069                                              |
+
+### 1.5.3 Debug Control Command
+
+| Command                                                      | Description                 | Note                                                         |
+| ------------------------------------------------------------ | --------------------------- | ------------------------------------------------------------ |
+| cli /home/cli/log_cmd/log/cfg_set -v module 0xf6003000 sys 1 dbg 0xff print 0xff flag 0 | WAN  Dbg                    |                                                              |
+| cli /home/cli/log_cmd/log/cfg_set -v module 0xf6007000 sys 1 dbg 0xff print 0xff | LAN Dbg                     |                                                              |
+| cli /home/cli/log_cmd/log/cfg_set -v module 0xf6006000 sys 1 dbg 0xff print 0xff | QoS Dbg                     |                                                              |
+| cli /home/cli/log_cmd/log/cfg_set -v module 0xf6005000 sys 1 dbg 0xff print 0xff | MC Dbg                      |                                                              |
+| cli /home/cli/log_cmd/log/cfg_set -v module 0xf2003100 sys 0 dbg 0x38 print 0x38 | gPon OMCI ( dbg to console) |                                                              |
+| cli /home/cli/log_cmd/log/cfg_set                            | gPon OMCI ( dbg to file)    | -v module 0xf2003e00 sys 0 dbg 0x10f    cat /log/hisi/hi_omci.log |
+| cli /home/cli/log_cmd/log/cfg_set -v module 0xf9002000 sys 0 dbg 0x0 print 0x10 | gPon PLOAM                  |                                                              |
+| cli /home/cli/log_cmd/log/cfg_set -v module 0xf20200000 sys 0 dbg 0x11 | ePon OAM                    |                                                              |
+
+
+
+### 1.5.1 Debug Command
+
+| Command Nme                                                  | Description                                                  |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| hi_cfm set sysinfo.gateway_mac 00:00:23:e2:04:01             | 修改网络信息，设备MAC地址，                                  |
+| hi_cfm test restore                                          | 回复出产设置                                                 |
+| cli /home/cli/hal/port/port_mirror_set -v igr 0x200 egr 0x200 dport 0 | 镜像 PON 口的包到 lan 0 侧, (values should be reset when powoff) |
+| log_voice_cli cwmpClient cwmp_log                            | debug for TR069                                              |
+| log_voice_cli odl odl_log                                    | debug CM                                                     |
 
 
 

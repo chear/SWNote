@@ -1,3 +1,5 @@
+
+
 ## Hisilicon CM (Config Management)
 
 ### CM Introduction
@@ -24,15 +26,23 @@ CM could be :
 ### CM Architecture
 CM Contains two part: 
 
-**mib** (source at:  HSANV200R010C01SPC011/hisilicon/gateway/service/cm/mib/) 
+- **mib** (source at:  HSANV200R010C01SPC011/hisilicon/gateway/service/cm/mib/) 
 
 ​	To store the data , loading , initialize and maintenance database in memory.
 
-**odl** (source at:  HSANV200R010C01SPC011/hisilicon/gateway/service/cm/odl/)
+- **odl** (source at:  HSANV200R010C01SPC011/hisilicon/gateway/service/cm/odl/)
 
 ​	To operating the data , logical verify ,event callback.
 
-**(Note:  "log_voice_cli odl odl_log" to open CM Logs , log file at /tmp/log/message) **
+**(Note:  to debug CM while typed "log_voice_cli odl odl_log" to open CM Logs , log file at /tmp/log/message . )**
+
+```shell
+root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF2040000 dbg 0xff print 0xff sys 1
+root@OpenWrt:~# log_voice_cli odl odl_log
+root@OpenWrt:~# tail -f -n 100 /tmp/log/messages
+```
+
+Files structure  as below
 
 ```shell
 hisilicon/gateway/service/cm/

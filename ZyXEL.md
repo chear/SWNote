@@ -228,7 +228,6 @@ $make PROFILE=CCC3
 - Assorted user-land software  (recompiled by Mitrastar CDK).
   - Hardened source code from MVista/Gentoo/…
   - Original source code from official Web/FTP site. 
-  - 
 - Home-grown programs/libraries. 
 
 - System Boot Scripts.

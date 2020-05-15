@@ -83,7 +83,7 @@ cc -c -o main.o main.c
 
 ## 2. what [Makefile.am](http://Makefile.am) and [Makefile.in](http://Makefile.in)?
 
-[Makefile.am](http://Makefile.am) is a programmer-defined file and is used by automake to generate the Makefile.infile (the .am stands for automake). The configure script typically seen in source tarballs will use the [Makefile.in](http://Makefile.in) to generate a Makefile. The configure script itself is generated from a programmer-defined file named either [configure.ac](http://configure.ac) or [configure.in](http://configure.in) (deprecated). I prefer .ac (for autoconf) since it differentiates it from the generated [Makefile.in](http://Makefile.in) files and that way I can have rules such as make dist-cleanwhich runs rm -f *.in. Since it is a generated file, it is not typically stored in a revision system such as Git, SVN, Mercurial or CVS, rather the .ac file would be.
+[Makefile.am](http://Makefile.am) is a programmer-defined file and is used by automake to generate the Makefile.in file (the .am stands for automake). The configure script typically seen in source tarballs will use the [Makefile.in](http://Makefile.in) to generate a Makefile. The configure script itself is generated from a programmer-defined file named either [configure.ac](http://configure.ac) or [configure.in](http://configure.in) (deprecated). I prefer .ac (for autoconf) since it differentiates it from the generated [Makefile.in](http://Makefile.in) files and that way I can have rules such as make dist-cleanwhich runs ``rm -f *.in`` . Since it is a generated file, it is not typically stored in a revision system such as Git, SVN, Mercurial or CVS, rather the .ac file would be.
 
 ref: aclocal_autoconf_diff.md
 

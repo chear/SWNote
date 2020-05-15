@@ -1,4 +1,6 @@
-# 1.  Arch Introduction
+[TOC]
+
+# 	1.  Arch Introduction
 
 ![econet_arch](img/econet_arch.bmp)
 
@@ -93,9 +95,16 @@ bootrom/
 
 (Note: the Econet's boot-loader same as u-boot, driver's source files at  *bootrom/bootram* )
 
+whole bootloader make command:
+
+```Makefile
+make -C bootram  TCSUPPORT_SECURE_BOOT_AES=0 TCSUPPORT_BB_CHECK=1 TCSUPPORT_BB_FIX_UNOPEN=1 TCSUPPORT_SPI_CONTROLLER_ECC=1 TCSUPPORT_SPI_NAND_FLASH_ECC_DMA=1 TCSUPPORT_MIPS_1004K=1 L2CACHE_LOCK_CODE=1 TC3262=1 SIS_DDR_PHY=1 RT63365=1 MT75XX_REDUCE_SIZE=1 TCSUPPORT_CPU_EN7528=1 MT75XX_REDUCE_SIZE=1 TCSUPPORT_CPU_EN7512=1 64M=1 TR068_LED=1 TCSUPPORT_FREE_BOOTBASE=1 CONFIG_DUAL_IMAGE=1 TCSUPPORT_BB_256KB=1 MT75XX_NAND=1 EN7512_NAND=1 TCSUPPORT_10G_FPGA_DDR4=1 SPI_NAND_FLASH_DEBUG=1 SPI_CONTROLLER_DEBUG=0 SPI_ECC_DEBUG=0 SPI_NFI_DEBUG=0 BOOT_LZMA_SUPPORT=1
+
+```
 
 
-## 4. Make flash misc image
+
+## 4. Image process
 
 ```mermaid
 graph LR
@@ -105,7 +114,11 @@ prepare[build image] -->|cat * > allinone|cat(padding)
     trx -->|add oob&hard|final[tclinux_allinone_nand]
 ```
 
-misc image laoyout
+```Makefile
+cat tcboot.bin padding_b ctromfile.cfg padding_f tclinux.bin > tclinux_allinone
+```
+
+misc image layout (based on en7528)
 
 ```shell
            0x10000000 -------------------|
@@ -114,11 +127,22 @@ misc image laoyout
              0xB00000 -------------------|
                     |     linux  A       |
                     |     rootfs A       |  tclinux.bin size=0x50000
-             0x600000 -------------------|
-                    |     romfile        |  romfile.gz, size=0x40000
+              0x80000 -------------------|
+                    |     romfile        |  romfile.gz, size=0x40000 (256k)
               0x40000 -------------------|
-                    |     boot           |	tcboot.bin, size=0x40000
+                    |     boot           |	tcboot.bin, size=0x40000 (256k)
               0x00000 -------------------|
+```
+
+## 4.1 process to building tclinux.bin
+
+making tclinux.bin based for en7528 , profile based CT_EN7561D_LE_7592_7613_AP_demo
+
+```Makefile
+make -j 16 -C /home/chear/MTK/tclinux_phoenix_ctc_20200308/linux-3.18.21 linux.7z
+../tools/lzma e linux.bin linux.7z
+../tools/trx/trx -f linux.7z -o linux.7z.trx -c ../tools/trx/trx_config
+../../tools/trx/trx -k 4149365 -r 15364054 -u 0x80002000 -f tclinux -o tclinux.bin -c ../../tools/trx/trx_config
 ```
 
 
@@ -142,11 +166,19 @@ OID [183:1][TelnetEntry]:
 # sys led on
 ```
 
+**(Note:  default backup romfile path: userfs/romfile.cfg , running romfile path: /dev/mtdblock1 )**
 
 
 
 
-## 6. Mfg Mode
 
 
+
+Econet restore default command:
+
+```shell
+# prolinecmd romfileselect set ctromfile_prd.cfg
+# tcapi show System_Entry 
+# prolinecmd restore default
+```
 

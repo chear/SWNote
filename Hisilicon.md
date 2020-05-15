@@ -10,7 +10,7 @@ ARM ARMv7 , 667 Hz , 1 Core, Memory 256M ,
 
 
 
-## 1.2 Startup
+## 	1.2 Startup
 
 
 ```flow
@@ -85,7 +85,9 @@ Sub-system Interface Introduction
  	          0x00000 -------------------|
 ```
 
+CMS xml reading process
 
+![cms](./img/cms.png)
 
 
 
@@ -154,6 +156,8 @@ $ ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/root-hsan/
 
 ### 1.5.1 Download & Building
 
+``openwrt/package/*`` contained all of the apps including gateway from Hisilicon and GPL programs.
+
 ```shell
 $ svn checkout http://wx-svn.zyxel.cn/SW-31/mld_sg/Hisilicon_trunk/trunk/HSANV200R010C01SPC011
 $ make chip=sd5116 V=s 
@@ -166,9 +170,14 @@ for H2 by 'make chip=sd5116 V=s',to compile hi5662h project.)
 $ cd openwrt/
 $ make package/gateway/{compile,install} V=s
 ( to build Hisilicon operation module)
+```
 
+To build third part GPL open source program such as 'dnsmasq' , 'httping'  like following
+
+```shell
+$ cd openwrt
 $ make package/network/services/dnsmasq/{compile,install} V=s
-(to build the opern source module.)	
+$ make package/apps/httping/{compile,install} V=s
 ```
 
 **Note: if you want to update the code in trunk, please commit the code in directory solution\patch\openwrt\package\network\services\(generate patch)**
@@ -195,6 +204,14 @@ openwrt/bin/sd5116/
 ├── root.jffs2-128k
 └── root.squashfs
 ```
+
+device and make table;
+
+| Device Type | MCU    | Make Chip         |
+| ----------- | ------ | ----------------- |
+| H-1         | sd5116 | chip=sd5116       |
+| H-2         | hi5662 | chip=sd5116       |
+| H-3         | hi5663 | chip=hsan or Null |
 
 
 
@@ -367,6 +384,7 @@ OMCI used to management and control ONT configuration by ME(Managed Entity) inst
 
 
 ### 1.7.2  PLOAM (Physical layer OAM)
+
 Main functions provided by PLOAM:
 1. Configuration of upstream burst
 
@@ -407,7 +425,21 @@ root@OpenWrt:~# cli /home/cli/log_cmd/klog/cfg_set -v module 0xf9002000 sys 0 db
 root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xf2003100 sys 0 dbg 0x38 print 0x38
 (Open omci message for gPon)
 root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xfe000000 sys 0 dbg 0x0 print 0x0
-( NOTSURE?)
+(debug for spring adapter, NOTSURE?)
+
+root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF0001000 dbg 0xff print 0xff sys 0
+
+root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF6003000 dbg 0xff print 0xff sys 0
+(to debug wan.)
+
+root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF0004000 dbg 0xff print 0xff sys 1
+(to debug sal emu service , such like hi_emu_speed.)
+
+root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF7003000 dbg 0xff print 0xff sys 1
+(to debug hal )
+
+root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF600c000 dbg 0xff print 0xff sys 1
+(to debug wlan )
 ```
 
 

@@ -1,4 +1,4 @@
-## w1. What about WAN , and is it WAN can inside bridge or not ( display bridge info access *brctl* )?
+## 1. What about WAN , and is it WAN can inside bridge or not ( display bridge info access *brctl* )?
 
 WAN(Wide Area Network) , difference between LAN (Local Area Network) used to connect with Internet. Whatever WAN device and LAN device can work within Network or Link layer. 
 
@@ -10,7 +10,7 @@ $brctl show
 
 
 
-## 2. switch bewteen with ePon and gPon 
+## 2. switch bewteen with ePon and gPon within MLD
 
 | Type  | Working Mode | OLT Server          |
 | ----- | ------------ | ------------------- |
@@ -178,7 +178,7 @@ configure.ac ----------------------->|autoconf|------> configure ----->autoconfi
 
 
 
-## 4. Print sal log for Hisilicon platfrom 
+## 4. Print sal debug info for Hisilicon platfrom
 
 ``` shell
 root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF0001000 dbg 0xff print 0xff sys 0
@@ -186,10 +186,17 @@ root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF0001000 dbg 0xff 
 root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF6003000 dbg 0xff print 0xff sys 0
 (to debug wan.)
 
+root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF0004000 dbg 0xff print 0xff sys 1
+(to debug sal emu service , such like hi_emu_speed.)
+
 root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF7003000 dbg 0xff print 0xff sys 1
+(to debug hal )
+
+root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF600c000 dbg 0xff print 0xff sys 1
+(to debug wlan )
 ```
 
-
+(Note: all debug macro defined at ``drivers/include/common/hi_sysdef.h``)
 
 ## 5. Transfer data with in Hisilicon platform
 
@@ -323,7 +330,9 @@ Usage:
 
 ## 10. LA to measurement SPI nand flash .
 
-MOSI (Master in , Slave out) , MISO (Master out , Slave in)  the master means for MCU , slave means for SPI nand flash diagram as below
+MOSI (Master in , Slave out) , MISO (Master out , Slave in)  the master means for MCU , slave means for SPI nand flash diagram as below.
+
+(Note: when encounter data missing for in MISO , check the its that noise ,connect VSS for the connected wired should be avoid noise.)
 
 ![la](./img/la.jpg)
 
@@ -334,3 +343,7 @@ SPI Setting for LA  as below, with in this test , the  *'0x0F 0xC0 0x00'* its ge
   
 
 
+
+## 11. svn revert & svn upload -r [VERSION]
+
+both ```svn revert``` and ```svn upload -r``` are reload version 

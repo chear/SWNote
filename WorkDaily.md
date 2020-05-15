@@ -1,4 +1,8 @@
-## Mitrastar Info:
+## Mitra
+
+[TOC]
+
+## star Info:
 
 make menuconfig
 General setup  --->  
@@ -640,21 +644,25 @@ root@OpenWrt:~# cp ./bob_config.ini /usr/local/factory/bob_config.ini
 root@OpenWrt:~# reboot
 ```
 
-### QoS Service test case (gogo shell)
 
-setting on H3 gateway, 
 
-***addTrafficToFlow [remoteAddress:String] [remotePort:String] [flow:int]***
+### QoS Service test case (Gogo shell)
 
-***setSpeedLimitByFlow [flow:int] [upSpeed:int] [downSpeed:int]***
+setting on H3 gateway to limit speed for download or upload, 
 
-***deleteAllTrafficFromFlow [flow:int]***
+````shell
+# addTrafficToFlow [remoteAddress:String] [remotePort:String] [flow:int]
+# setSpeedLimitByFlow [flow:int] [upSpeed:int] [downSpeed:int]
+# deleteAllTrafficFromFlow [flow:int]
+````
+
+Description:
 
 | Name                       | Paramater                      | Return                       |
 | -------------------------- | ------------------------------ | ---------------------------- |
 | *addTrafficToFlow*         | *[flow:int]* , values from 0-7 | 0 for success , 1 for failed |
 | *setSpeedLimitByFlow*      | *[flow:int]*, values from 0-7  | 0 for success , 1 for failed |
-| *deleteAllTrafficFromFlow* | *[flow:int]*,values from 0-7   | 0 for success , 1 for failed |
+| *deleteAllTrafficFromFlow* | *[flow:int]*, values from 0-7  | 0 for success , 1 for failed |
 
 
 
@@ -779,13 +787,62 @@ building Econet BSP porting.
 
 Encounter question for GUI can not login when change the ip address  for bridge , such like *192.168.1.1*  to *192.168.200.1* .  Then change the values to set  *ucStatus = 0* and  *ucResult = 1* with-in *REMOTEMGT_LOID_REG_ATTR_TAB* and *REMOTEMGT_PASSWORD_REG_ATTR_TAB* can fix this issue. 
 
-(Note : this question only find out JiangSu province.)
+(Note : this question only find out when config by JiangSu province.)
+
+*solution/patch/openwrt/vendors/config/cmcc_smart_jt_4_0_1_8_1.xml*
+
+```xml
+<Dir Name="REMOTEMGT_LOID_REG_ATTR_TAB"> <!--index=0-->
+ <Value Name="ucStatus" Value="99"/>
+ <Value Name="ucResult" Value="99"/>
+ ...
+</Dir>
+<Dir Name="REMOTEMGT_PASSWORD_REG_ATTR_TAB"> <!--index=0-->
+ <Value Name="ucStatus" Value="99"/>
+ <Value Name="ucResult" Value="99"/>
+ ...
+</Dir>
+```
 
 
 
 
 
 ## 20200309  Hisi mstc8.bin
+
+HSAN mstc8.bin make process:
+
+
+
+
+
+HSAN partition info based on H2-3
+
+```text
+                    |--------------------|-----------------------------------
+                    |       Java B       |	java.bin,zize=0xE00000
+            0x6000000 -------------------|
+                    |       Java A       |	
+            0x4200000 -------------------|-----------------------------------
+                    |                    |
+                    |		rootfs B	 |  root.squshfs,size=0x1900000              
+            0x2900000 -------------------|
+                    |                    |
+                    |        rootfs A	 |	root.squshfs,size=0x1900000
+ 	        0x1000000 -------------------|-----------------------------------
+                    |                    |
+                    |	  	kernel B	 |	kernel.images size=0x50000
+             0xB00000 -------------------|
+                    |                    |
+                    |       kernel A     |  
+             0x600000 -------------------|-----------------------------------
+                    |		ENV          |	env.bin, size=0xA0000
+ 	          0xc0000 -------------------|
+                    |     	ENV          |  env.bin, size=0xA0000
+ 	          0x20000 -------------------|-----------------------------------
+                    |    	HI_Boot      |	hi_boot.bin,size=0x20000
+ 	          0x00000 -------------------|
+```
 
 
 
@@ -804,7 +861,193 @@ hi # md 0x88000000
 88000020: ffffffff ffffffff ffffffff ffffffff    ................
 88000030: ffffffff ffffffff ffffffff ffffffff    ................
 hi # nand write 0x88000000 0x100000 0x8
+hi # nand dump 0
+(to print whole page include ecc)
 ```
+
+
+
+## 20200326 HSAN loopback issue
+
+cfe & sal startup process:
+
+source file at ``/hisilicon/gateway/service/sal/intf/source/hi_sal_diag.c``
+
+
+
+
+
+
+
+
+
+## 20200329  Gogo shell download speed test
+
+Gogo shell source at ``hisilicon/gateway/cms/cmcc_smart/osgi/com.chinamobile.smartgateway.implement/src/main/java/com/chinamobile/smartgateway/accessservices/impl/HttpDownloadDiagnosticsServiceImpl.java``
+
+``hisilicon/gateway/cms/cmcc_smart/libs/jni/src/source/com_chinamobile_smartgateway_accessservices_impl_HttpDownloadDiagnosticsServiceImpl.c``
+
+speed diagnose command by following.
+
+```shell
+root@OpenWrt:~# telnet 127.0.0.1 6666
+g! startHttpDownloadDiagnosticsj 2 "http://120.196.167.30:9070/speed/2000000.data" "MeasurementOffset:0,TestDuration:30,NumberOfConnections:1"
+g! getHttpDownloadDiagnosticsResult
+```
+
+(Note: when downloading  100M file with 100M/bps band net, the TestDuration as small as possible , and  loading ktcpdiag_unused.ko not ktcpdiag.ko while the last one used to accelerate to speed fast. )
+
+
+
+Debug to hi_emu_speed for SAL 
+
+```shell
+root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF0004000 dbg 0xff print 0xff sys 1
+succ.
+```
+
+(Note: above cmd should print sal debug info for emu modules ,  and display total bytes received and )
+
+```c
+typedef struct
+{
+    hi_uint32           ui_dir;
+    hi_char8            ac_ifname[HI_EMU_IFNAME_LEN];
+    hi_char8            ac_url[HI_EMU_URL_LEN];
+    hi_uint32           ui_dscp;
+    hi_uint32           ui_prioty;
+    hi_uint32           ui_state;
+    struct timeval      st_rom_time;
+    struct timeval      st_bom_time;
+    struct timeval      st_eom_time;
+    hi_ulong64          ull_test_bytes;
+    hi_ulong64          ull_total_bytes;
+    struct timeval      st_tcp_req_time;
+    struct timeval      st_tcp_rsp_time;
+    hi_char8            ac_sample[HI_EMU_SPEED_SAMPLE_LEN];
+    hi_char8            ac_totalsample[HI_EMU_SPEED_SAMPLE_LEN];
+    hi_uint32           ui_max_time;
+    hi_uint32           ui_sample_time;
+} hi_emu_speed_cfg_s;
+```
+
+
+
+
+
+## 20200407  bob default configuration
+
+``/usr/local/factory/bob_config.ini`` mount pointed at  */dev/mtdblock3* by JFFS2.  (block device for ``/dev/mtdblock3`` , char device for ``/dev/mtd3`` ) , and created by kernel cmd parser (key word by **mtdparts**),   config by following within *hsan* platform. 
+
+(Note: those mtd devices contained within *kernel.images*)
+
+```Makefile
+config MTD_CMDLINE_PARTS
+	tristate "Command line partition table parsing"
+	depends on MTD
+	---help---
+	  Allow generic configuration of the MTD partition tables via the kernel
+	  command line. Multiple flash resources are supported for hardware where
+	  different kinds of flash memory are available.
+
+	  You will still need the parsing functions to be called by the driver
+	  for your particular device. It won't happen automatically. The
+	  SA1100 map driver (CONFIG_MTD_SA1100) has an option for this, for
+	  example.
+
+	  The format for the command line is as follows:
+
+	  mtdparts=<mtddef>[;<mtddef]
+	  <mtddef>  := <mtd-id>:<partdef>[,<partdef>]
+	  <partdef> := <size>[@offset][<name>][ro]
+	  <mtd-id>  := unique id used in mapping driver/device
+	  <size>    := standard linux memsize OR "-" to denote all
+	  remaining space
+	  <name>    := (NAME)
+
+	  Due to the way Linux handles the command line, no spaces are
+	  allowed in the partition definition, including mtd id's and partition
+	  names.
+
+	  Examples:
+
+	  1 flash resource (mtd-id "sa1100"), with 1 single writable partition:
+	  mtdparts=sa1100:-
+
+	  Same flash, but 2 named partitions, the first one being read-only:
+	  mtdparts=sa1100:256k(ARMboot)ro,-(root)
+
+	  If unsure, say 'N'.
+#
+# MTD block device support is select'ed if needed
+#
+config MTD_BLKDEVS
+	tristate
+
+config MTD_BLOCK
+	tristate "Caching block device access to MTD devices"
+	depends on BLOCK
+	select MTD_BLKDEVS
+	---help---
+	  Although most flash chips have an erase size too large to be useful
+	  as block devices, it is possible to use MTD devices which are based
+	  on RAM chips in this manner. This block device is a user of MTD
+	  devices performing that function.
+
+	  At the moment, it is also required for the Journalling Flash File
+	  System(s) to obtain a handle on the MTD device when it's mounted
+	  (although JFFS and JFFS2 don't actually use any of the functionality
+	  of the mtdblock device).
+
+	  Later, it may be extended to perform read/erase/modify/write cycles
+	  on flash chips to emulate a smaller block size. Needless to say,
+	  this is very unsafe, but could be useful for file systems which are
+	  almost never written to.
+
+	  You do not need this option for use with the DiskOnChip devices. For
+	  those, enable NFTL support (CONFIG_NFTL) instead.
+
+```
+
+
+
+```shell
+root@OpenWrt:~# cat /proc/cmdline 
+console=ttyAMA1,115200 r quiet mtdparts=hi_nfc:256K(boot),1M(enva),1M(envb),2M(fac),2M(cfga),2M(cfgb),2816K(log),5M(kernela),5M(kernelb),25M(rootfsa),25M(rootfsb),35M(fwka),35M(fwkb),110M(app),-(other) root=/dev/mtdblock9 rootfstype=squashfs mem=248M console_off=0
+
+```
+
+*/usr/local/factory/bob_config.ini* created by following
+
+```mermaid
+graph LR
+A[bob ux3320] --> |/usr/local/factory/|B(bob_config.ini Exists)
+    B --> C{Yes or No?}
+    C -->|NO| D[cp from /etc/bob/UX3320.ini]
+    C -->|Yes| E[Reading on flash]
+```
+
+
+
+## 20200421  boa web server for hisi openwrt
+
+Http boa  access ``config.js`` , ``language_cn.js`` and  ``menucustomize.js``  to layout the web page . ( define web page widget within ``config.js`` such as text  , checkbox ,radio etc,   display info and message  defined within  ``language_cn.js``  , the *menucustomize.js* used to layout the web page and menu.  
+
+Web page post data to CMS access jason , each page has also defined a  ``*_action.js``  to react the widget  property and event for those page , web page send  ``*.cgi``  to the ``hisilicon/gateway/cms/web/src/cyg_cgi.c``  for each operation    , such like  ``Net_WLAN_action.js`` etc.
+
+​	
+
+![boa_cgi](img\hisi_cgi.png)
+
+
+
+To debug the GUI page, should by below
+
+![cgi_debug](./img/hisi_cfg_debug.bmp)
+
+
+
+## 20200511 share wlan connect
 
 
 

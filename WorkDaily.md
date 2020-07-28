@@ -1,8 +1,6 @@
-## Mitra
-
 [TOC]
 
-## star Info:
+## Mitrastar Info:
 
 make menuconfig
 General setup  --->  
@@ -639,10 +637,39 @@ root@OpenWrt:~# log_voice_cli cwmpClient cwmp_log 		(enable or disable TR069 log
 ### To update bob_config.ini
 
 ```shell
-root@OpenWrt:~# cd /tmp/ & tftp -g -r bob_config.ini 192.168.1.7
+root@OpenWrt:~# cd /tmp/ && tftp -g -r bob_config.ini 192.168.1.7
 root@OpenWrt:~# cp ./bob_config.ini /usr/local/factory/bob_config.ini
 root@OpenWrt:~# reboot
 ```
+
+for bob chip **GN25L95** , check the value of table_2 0xA4, and make sure it’s 0x35, fail if not.
+
+```shell
+root@OpenWrt:~# cli /home/cli/bob/get_reg_data -v tab 2 reg 0xA4
+real tab idx:2!
+tab : 0x2
+reg : 0xa4
+val : 0x35
+succ.
+```
+
+bob default calibration files at ``/etc/bob/bob_config_default.ini`` and ``/usr/local/factory/bob_config.ini``  , contains by following
+
+```shell
+root@OpenWrt:~# hexdump -C /usr/local/factory/bob_config.ini 
+00000000  02 a0 80 00 00 00 00 00  01 00 00 01 0d 00 14 c8  |................|
+000000ff  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+... ([A2] section , 256 bytes)
+00000100  64 00 ce 00 5f 00 d3 00  90 88 71 48 8e 94 73 3c  |d..._.....qH..s<|
+00000170  00 00 00 ff 00 00 ff ff  00 00 ff ff ff ff ff 02  |................|
+... ([BiasLUT] section. 128 bytes)
+00000180  ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff  |................|
+00000220  6a 1b 70 9a 35 03 61 41  96 3e 80 3e 80 f9 f8 df  |j.p.5.aA.>.>....|
+000002f0  66 80 68 00 69 c0 6b c0  6d c0 6f c0 72 40 74 80  |f.h.i.k.m.o.r@t.|
+...	([A2_TAB2] section. 128 bytes, 0x35 is value for reg 0xA4)
+```
+
+ ([MODLUT] section, not sure , [APDLUT] section,not sure)
 
 
 
@@ -1047,7 +1074,80 @@ To debug the GUI page, should by below
 
 
 
-## 20200511 share wlan connect
 
 
+## 20200622  dpi HTTP 精细流插件
+
+overall : cfe, qos,gogo-shell  
+
+
+
+
+
+```shell
+g! addHTTPTrafficProcessRuleJ "" 80 UP E4:E7:49:3B:12:42 "GET,POST" "" "User-Agent" com.chinamobile.smartgateway.cmccdpi
+```
+
+
+
+### 1. getHTTPTrafficProcessRuleInfo
+
+select and start dpi  plugin , and then this plug-in should   ``addHTTPTrafficProcessRuleJ`` , get info as following:
+
+```shell
+g! lb
+...
+   26|Active     |   90|HguDpi (2.2.2)|2.2.2
+g! start 26
+g! getHTTPTrafficProcessRuleInfo
+{
+        "Result":       0,
+        "List": [{
+                        "RemoteAddress":        "",
+                        "RemotePort":   "80",
+                        "Direction":    "UP",
+                        "HostMAC":      "D0:BF:9C:57:FB:31",
+                        "MethodList":   ["GET", "POST"],
+                        "HeaderList":   ["User-Agent"],
+                        "StatuscodeList":       [],
+                        "BundleName":   "com.chinamobile.smartgateway.cmccdpi"
+                }]
+}
+```
+
+### 2. iptables rules
+
+``addHTTPTrafficProcessRuleJ``  command as following.
+
+```shell
+g! addHTTPTrafficProcessRuleJ "www.mirrors.163.com" 80 ALL D0:BF:9C:57:FB:31 "GET,POST" "" "User-Agent" com.chinamobile.smartgateway.cmccdpi 
+```
+
+using ``cli /home/cli/log_cmd/log/cfg_set -v module 0xF600d000 dbg 0xff print 0xff sys 1`` can get mote detail log for this, finally this commands should add two rule into ``iptables -t mangle`` 
+
+```shell
+root@OpenWrt:~# iptables -t mangle -nvL
+Chain PREROUTING (policy ACCEPT 4281 packets, 319K bytes)
+ 1817  140K TRAFFIC    tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            tcp dpt:80 TRAFFIC rule index :256 
+ TRAFFIC rule imode :1 
+
+   64  4676 TRAFFIC    tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            MAC D0:BF:9C:57:FB:31 tcp dpt:80 TRAFFIC rule index :256 
+ TRAFFIC rule imode :0 
+
+   64  4676 MARK       tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            MAC D0:BF:9C:57:FB:31 tcp dpt:80 MARK or 0x80000000
+
+Chain POSTROUTING (policy ACCEPT 2873 packets, 1528K bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+ 1428 1469K MARK       tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            tcp spt:80 MARK or 0x80000000
+```
+
+
+
+### 3.
+
+```shell
+root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF600d000 dbg 0xff print 0xff sys 1
+root@OpenWrt:~# cli /home/cli/cfe/lrn/lrn_setcfg -v lrn 10
+root@OpenWrt:~# cli /home/cli/cm/traffic_detail_process_srv_get_all
+```
 

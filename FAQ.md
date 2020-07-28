@@ -51,8 +51,8 @@ more loid for register:
 | LOID            | atbp Mac          | Real Mac       |
 | --------------- | ----------------- | -------------- |
 | mstcwxsw3loid26 | 00:19:CB:0A:05:57 | 0019-CB0A-0560 |
-| mstcwxsw3loid27 | 00:19:CB:0A:05:67 | 0019-CB0A-0570 |
 | mstcwxsw3loid29 | 00:19:CB:0A:05:87 | 0019-CB0A-0590 |
+| mstcwxsw3loid27 | 00:19:CB:0A:05:67 | 0019-CB0A-0570 |
 
 ### **xgPon Register**
 
@@ -194,9 +194,14 @@ root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF7003000 dbg 0xff 
 
 root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF600c000 dbg 0xff print 0xff sys 1
 (to debug wlan )
+
+root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF600d000 dbg 0xff print 0xff sys 1
+(to debug traffic )
 ```
 
 (Note: all debug macro defined at ``drivers/include/common/hi_sysdef.h``)
+
+
 
 ## 5. Transfer data with in Hisilicon platform
 
@@ -347,3 +352,6 @@ SPI Setting for LA  as below, with in this test , the  *'0x0F 0xC0 0x00'* its ge
 ## 11. svn revert & svn upload -r [VERSION]
 
 both ```svn revert``` and ```svn upload -r``` are reload version 
+
+( Note: when uploading files to svn trunk with Linux was better than Windows. ``svn add --no-ignore``  )
+

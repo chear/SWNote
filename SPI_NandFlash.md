@@ -345,7 +345,7 @@ spi flash spec table reference diagram:
 
 
 
-## 4.3 **ZyXEL** platfrom struct:
+## 4.3 ZyXEL  (MLD) platfrom struct:
 
 ```c
 struct SPI_NAND_FLASH_INFO_T {
@@ -469,7 +469,14 @@ struct hi_fmc_nand_spl_ids_s g_ast_fmc_nand_spl_ids[] =
 
 ![kernel](img/kernel_bootloader.gif)
 
+mtd 分区通过 mtdparts 参数的形式传给 kernel，之后再 mtd driver 里面建立分区，并建立文件系统。
 
+```shell
+
+mtdparts=hi_nfc:256K(boot),1M(enva),1M(envb),2M(fac),2M(cfga),2M(cfgb),2816K(log),5M(kernela),5M(kernelb),25M(rootfsa),25M(rootfsb),35M(fwka),35M(fwkb),110M(app),-(other)
+rootfstype=squashfs
+commandline=console=ttyAMA1,115200 r quiet
+```
 
 
 
@@ -479,7 +486,7 @@ mtd 信息通过 HSAN 模块传递给 kernel，其传递方式与 SPI Nor Flash 
 
 ##  4.5 Hisilicon nand Debug command for nand flash
 
-### 1. Downloading file and write to flash
+### 4.5.1 Downloading file and write to flash
 
 Downloading  hi_boot.bin to memory address at **0x84000000**, then writing to address at **0x20000**  in flash , then next to read and display **0x100**(256) byte at first head, **0x88000000** its memory address to display with it.
 
@@ -518,7 +525,7 @@ hi # md 0x88000000 0x100
 
 
 
-### 2. read content from flash and display it
+### 4.5.2 read content from flash and display it
 
 Read  flash address from 0x20000 length for 0x100 (256 byte) to memory 0x88000000 and display is. 
 
@@ -563,7 +570,7 @@ hi # nand read dump.oob 1
 
 
 
-### 3. direct dump date from flash chip
+### 4.5.3 direct dump date from flash chip
 
 ```shell
 hi # nand dump 0x20000 1
@@ -636,7 +643,7 @@ OOB:
 
 
 
-### 4. reading data from burner machine
+### 4.5.4 reading data from burner machine
 
 To read flash addresss for 0x20000 which on  burner such like
 
@@ -733,7 +740,7 @@ ADDR  00 01 02 03 04 05 06 07-08 09 0a 0b 0c 0d 0e 0f         ASCII
 
 
 
-### 5. erase date in flash
+### 4.5.5 erase date in flash
 
 To  erase address 0x20000  in chip , 0x40000 for length while means 1M，then write 0x0 to it and next to read and display with it.
 
@@ -757,7 +764,7 @@ hi # md 0x88000000 0x100
 
 
 
-### 6. verify the bad block on burner
+### 4.5.6 verify the bad block on burner
 
 ```shell
 [Michael]#spinand probe 1
@@ -795,4 +802,33 @@ SPI NAND Write to 0x40000, len 0x1, speed=0x0
 ```
 
  
+
+## 4.7 SMT image build
+
+SMT image different to generated FW image file while is used to mirrored FW to the board flash one bit by one bit , the generated FW image should be **revert byte (Big-Endian or Little-Endian),  increase oob area and fill verify data within it , and add header info to final output image**.
+
+The Econet and MLD Header contains following info , store data in structure ``hdrNandHeader_t`` ,  and ``hdrPartInfo_t``:
+
+```c
+typedef struct hdrPartInfo_s {
+	unsigned long addr;
+	unsigned long partSize;
+	unsigned long imgSize;
+	unsigned long imgVersion;
+	unsigned char  reserve_p;
+    unsigned char  error_bit;
+	unsigned short Good_blocks;
+} hdrPartInfo_t;
+
+typedef struct hdrNandHeader_s {
+	hdrNandInfo_t nand;
+	char productVersion[32];
+	unsigned char reserve[4];
+	unsigned short CGBP0;
+	unsigned char Bad_block0;
+	unsigned char Reserve_Area[3];
+	unsigned char swap_flag;
+	unsigned char partQTY;
+} hdrNandHeader_t ;
+```
 

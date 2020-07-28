@@ -12,7 +12,7 @@
 
 
 
-# Makefile 主要参数
+## Makefile 主要参数
 
 | **Parameter**            | **Description**                                             |
 | ------------------------ | ----------------------------------------------------------- |
@@ -65,6 +65,16 @@ cc -c -o main.o main.c
 | AR           | ar             |
 | CC           | cc             |
 | CXX          | g++            |
+
+
+
+## Automake
+
+
+
+
+
+
 
 
 
@@ -220,3 +230,7 @@ objects := $(patsubst %.c,%.o,$(wildcard *.c))
 foo : $(objects)
 cc -o foo $(objects)
 ```
+
+
+
+ 

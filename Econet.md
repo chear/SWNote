@@ -121,18 +121,35 @@ cat tcboot.bin padding_b ctromfile.cfg padding_f tclinux.bin > tclinux_allinone
 misc image layout (based on en7528)
 
 ```shell
-           0x10000000 -------------------|
-                    |     linux  B       |	tclinux.bin,zize=0xE00000
-                    |     rootfs B       |
-             0xB00000 -------------------|
-                    |     linux  A       |
-                    |     rootfs A       |  tclinux.bin size=0x50000
-              0x80000 -------------------|
+       0x000007000000 -------------------|
+                    |    reservearea     |
+       0x000006dc0000 -------------------|
+                    |     ...            |
+       0x000005280000 -------------------|
+                    |     plugin         |
+       0x000004e80000 -------------------|
+                    |     log            |
+       0x000004c80000 -------------------|
+                    |     ubifs          |
+       0x000003880000 -------------------|
+                    |     opt1           |
+       0x000003880000 -------------------|
+                    |     opt0           |
+          0x002880000 -------------------|------------------------------------
+                    |     linux  B       |	tclinux_slave.bin,zize=0x1400000
+                    |     rootfs B       |  (20M)
+          0x001480000 -------------------|------------------------------------
+                    |     rootfs A       |                      
+           			| -------------------|  tclinux.bin size=0x50000
+                    |     kernel A       |  (20M)
+             0x080000 -------------------|------------------------------------
                     |     romfile        |  romfile.gz, size=0x40000 (256k)
-              0x40000 -------------------|
-                    |     boot           |	tcboot.bin, size=0x40000 (256k)
-              0x00000 -------------------|
+             0x040000 -------------------|------------------------------------
+                    |     bootloader     |	tcboot.bin, size=0x40000 (256k)
+             0x000000 -------------------|------------------------------------
 ```
+
+
 
 ## 4.1 process to building tclinux.bin
 
@@ -168,7 +185,7 @@ OID [183:1][TelnetEntry]:
 
 **(Note:  default backup romfile path: userfs/romfile.cfg , running romfile path: /dev/mtdblock1 )**
 
-
+​	
 
 
 

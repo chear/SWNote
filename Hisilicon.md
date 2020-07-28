@@ -91,6 +91,31 @@ CMS xml reading process
 
 
 
+## 1.5.1  Hisilicon system configuration files
+
+``board.xml`` contains  GPIO  map , LED  , optical setting.  source at ``sulotion/patch/openwrt/vendors/${manufacturer}/${chip_id}/``
+
+```mermaid
+graph LR
+B("board.tar")-->E("${chip_id}/board_${board_id}.xml")
+E-->D("/etc/board/board.xml")
+```
+
+``sysinfo.xml``  contains LOID info , mac addr , province .etc
+
+```mermaid
+graph LR
+A("/config/conf/sysinfo.xml")-->B("/config/work/sysinfo.xml")
+```
+
+
+
+*lastgood.xml*   restored command by ``hi_cfm config`` , and  file named ``${operator}_smart_${province}_${ui_ge_num}_${ui_fe_num}_${ui_voice_num}_${${ui_wlan24_num}+${ui_wlan58_num}}_${${ui_usb2_num} + ${ui_usb3_num}}.xml``   compress at   ``/config/cfm/config.tar`` by command ``hi_cfm config`` , for example  *cmcc_smart_jiangsu_1_3_1_0_2.xml*  for hi_5662y type 1 .
+
+
+
+
+
 ## 1.5 Source Files Structure
 
 **./root Structure**
@@ -167,27 +192,24 @@ for H3 by 'make chip=hi5663h V=s'
 for H2 by 'make chip=hi5661y V=s' to copmile hi5661 project
 for H2 by 'make chip=sd5116 V=s',to compile hi5662h project.)
 
-$ cd openwrt/
-$ make package/gateway/{compile,install} V=s
+$ make -C openwrt package/gateway/{prepare,config,compile,install} V=s
 ( to build Hisilicon operation module)
 ```
 
 To build third part GPL open source program such as 'dnsmasq' , 'httping'  like following
 
 ```shell
-$ cd openwrt
-$ make package/network/services/dnsmasq/{compile,install} V=s
-$ make package/apps/httping/{compile,install} V=s
+$ make -C openwrt package/network/services/dnsmasq/{prepare,config,compile,install} V=s
+$ make -C openwrt package/apps/httping/{prepare,config,compile,install} V=s
 ```
 
 **Note: if you want to update the code in trunk, please commit the code in directory solution\patch\openwrt\package\network\services\(generate patch)**
 
 ```shell
-$ make package/gateway/sdk/hi_boot/{compile,install} V=s
+$ make -c openwrt package/gateway/sdk/hi_boot/{prepare,config,compile,install} V=s
 (to build the hi-boot)
 
-$ make target/linux/install V=s
-$ cd ..
+$ make -C openwrt target/linux/install V=s
 $ make chip=sd5116 image V=s
 (to H3 by 'make chip=hi5663h V=s hitools image factory')
 ```
@@ -349,21 +371,21 @@ hi # upg javaa
 
 **举例：将内存中0x8700000****的数据写入到nand flash**
 
-a)写数据0x12345678到内存0x87000000，长度0x40000，即256k
+- a. 写数据0x12345678到内存0x87000000，长度0x40000，即256k
 
-相关命令：**mw 0x87000000 0x12345678 0x40000** 
+  相关命令：``mw 0x87000000 0x12345678 0x40000``
 
-b)擦除flash 1M的内容
+- b. 擦除flash 1M的内容
 
-相关命令：**nand erase 0x100000 0x40000** 
+  相关命令：``nand erase 0x100000 0x40000``
 
-c)flash 写：将内存0x87000000的内容写入flash 1M的地址，写入长度256k
+- c. flash 写：将内存0x87000000的内容写入flash 1M的地址，写入长度256k
 
-相关命令：**nand write 0x87000000 0x100000 0x40000** 
+  相关命令：``nand write 0x87000000 0x100000 0x40000``
 
-d)flash 读：读flash 1M地址内容到内存0x88000000.
+- d. flash 读：读flash 1M地址内容到内存0x88000000.
 
-相关命令：**nand read 0x88000000 0x100000 0x40000** 
+  相关命令：``nand read 0x88000000 0x100000 0x40000``
 
 实际操作如下图：
 
@@ -463,3 +485,4 @@ disable and enable TR069 wan control in GUI:
 root@OpenWrt:~# cli /home/cli/cm/cm_ctrl -v value 0x2000000f	(disable)
 root@OpenWrt:~# cli /home/cli/cm/cm_ctrl -v value 0x20000010	(enable) 
 ```
+

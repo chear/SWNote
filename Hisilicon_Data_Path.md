@@ -12,19 +12,20 @@ PLOAM (Physical Layer OAM)，OMCI (ONU Management and Control Interface)，OAM�
 
 ## 1.2 Frame Forward
 
-| Sub-Module                         | Description                           | Command Path                               |
-| ---------------------------------- | ------------------------------------- | ------------------------------------------ |
-| NNI/Pon (Nature Network Interface) | 网络侧端口                            | /home/cli/chip/nni                         |
-| UNI(User Network Interface)        | 用户侧端口 FE(Fast Eth), GE(Giga Eth) | /home/cli/chip/uni                         |
-| SEC (Security)                     | 安全模块                              | /home/cli/hal/sec                          |
-| PDU (Protocol Data Unit)           | 特殊报文                              | /home/cli/chip/pdu                         |
-| ifc (input flow controller)        | 流分类                                | /home/cli/hal/flow/ifc_*                   |
-| ofc(output flow controller)        | 流分类                                | /home/cli/hal/flow/ofc_*                   |
-| NniMap (Nni)                       |                                       |                                            |
-| L2                                 | 芯片交换 L2 模块，用于二层转发        | /home/cli/chip/l2                          |
-| L3                                 | 芯片交换 L3 转发，用于三层转发        | /home/cli/chip/l3                          |
-| QoS                                | 质量服务                              | /home/cli/chip/qos , /home/cli/hal/qos/    |
-| CNT                                | 统计                                  | /home/cli/hal/cnt/* , /home/cli/chip/cnt/* |
+| Sub-Module                         | Description                                                  | Command Path                               |
+| ---------------------------------- | ------------------------------------------------------------ | ------------------------------------------ |
+| NNI/Pon (Nature Network Interface) | 网络侧端口                                                   | /home/cli/chip/nni                         |
+| UNI(User Network Interface)        | 用户侧端口 FE(Fast Eth), GE(Giga Eth)                        | /home/cli/chip/uni                         |
+| SEC (Security)                     | 安全模块                                                     | /home/cli/hal/sec                          |
+| PDU (Protocol Data Unit)           | 特殊报文                                                     | /home/cli/chip/pdu                         |
+| ifc (input flow controller)        | 流分类                                                       | /home/cli/hal/flow/ifc_*                   |
+| ofc(output flow controller)        | 流分类                                                       | /home/cli/hal/flow/ofc_*                   |
+| NniMap (Nni)                       |                                                              |                                            |
+| L2                                 | 芯片交换 L2 模块，用于二层转发                               | /home/cli/chip/l2                          |
+| L3                                 | 芯片交换 L3 转发，用于三层转发                               | /home/cli/chip/l3                          |
+| QoS                                | 质量服务                                                     | /home/cli/chip/qos , /home/cli/hal/qos/    |
+| CNT                                | 统计                                                         | /home/cli/hal/cnt/* , /home/cli/chip/cnt/* |
+| CFE                                | 核心转发引擎，用于实现业务报文的软、硬加速转发功能，对上层软件提供控制 API。 | /home/cli/cfe/*                            |
 
 
 
@@ -177,7 +178,7 @@ Port 和 QID 对应表
 | cli /home/cli/hal/flow/ifc_dump           | IFC 入口流分类规则   | 入口流 分类的表项。 主要有匹配和动作两个部分 。              |
 | cli /home/cli/hal/mc/mc_dump              | 组播转发表项         |                                                              |
 | cli /home/cli/hal/l2/l2_mac_dump          | L2 MAC学习表项       |                                                              |
-| cli /home/cli/hal/l3/l3_ip_session_dump   | 硬件NAPT表项(L3数据) | 查看硬件加速的五元组匹配表 ,其和 l3 _act_get _act_get 结合起来看，可以确定一条流的行为. |
+| cli /home/cli/hal/l3/l3_ip_session_dump   | 硬件NAPT表项(L3数据) | 查看硬件加速的五元组匹配表 ,其和 l3 _act_get  结合起来看，可以确定一条流的行为. |
 | cli /home/cli/hal/l3/l3_act_get           | 硬件NAPT表项动作     |                                                              |
 | cli /home/cli/hal/nni/nni_pon_map_dump    | 上行映射表           |                                                              |
 | cli /home/cli/hal/nni/nni_gpon_tcont_dump | GPON模式Tcont        |                                                              |

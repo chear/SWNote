@@ -1,8 +1,8 @@
 ## Linux Netfilter
 
-### Netfilter Base
+### Netfilter Hook
 
-[Netfilter](<https://netfilter.org/documentation/HOWTO//netfilter-hacking-HOWTO-3.html>) is merely a series of hooks in various points in a protocol stack (at this stage, IPv4, IPv6 and DECnet). The (idealized) IPv4 traversal diagram looks like the following:
+[Netfilter](<https://netfilter.org/documentation/HOWTO//netfilter-hacking-HOWTO-3.html>) is merely a series of hooks in various points in a protocol stack ( include  *IPv4*, *IPv6* , *ARP*, and *DECnet*). The general and idealized *IPv4* traversal diagram looks like the following:
 
 ```text
 A Packet Traversing the Netfilter System:
@@ -18,12 +18,17 @@ A Packet Traversing the Netfilter System:
                     |  Conntrack     ^  Mangle
                     |  Mangle        |  NAT (Dst)
                     v                |  Filter		
+           |--------------------------------|
+           |		Protocol Stack 			|           
+           |--------------------------------|
+                    
+                    
                  
-[1]: NF_IP_PRE_ROUTING  having passed the simple sanity checks
-[2]: NF_IP_LOCAL_IN
-[3]: NF_IP_FORWARD
-[4]: NF_IP_POST_ROUTING
-[5]: NF_IP_LOCAL_OUT 	
+[1]: NF_IP_PRE_ROUTING:  having passed the simple sanity checks.
+[2]: NF_IP_LOCAL_IN:  destined for the box itself, the netfilter called _IP_LOCAL_IN [2] hook, before being passed to the process.
+[3]: NF_IP_FORWARD:	 destined to pass to another interface instead, the netfilter called the NF_IP_FORWARD hook.
+[4]: NF_IP_POST_ROUTING:  packet then passes a final netfilter NF_IP_POST_ROUTING hook.
+[5]: NF_IP_LOCAL_OUT: The NF_IP_LOCAL_OUT hook is called for packets that are created locally
 ```
 
 
@@ -39,6 +44,50 @@ Kernel modules can register to listen at any of these hooks. A module that regis
 ![linux_nf](./img/linux_nf.png)
 
 
+
+### Netfileter Table & Chain
+
+ A packet selection system called *IP Tables* has been built over the net-filter framework. It is a direct descendent of **ipchains** ( which where from *kernel 2.2* , and replaced by **iptables** since *kernel 2.4* ,that came from **ipfwadm**, that came from BSD's **ipfw** IIRC), with extensibility. 
+
+The **[iptables](<https://blog.csdn.net/longbei9029/article/details/53056744>)** has the following 4 built-in tables. **Filter, NAT, Mangle, Raw**  ,for the chain in other word the **chain = hook** 
+
+![netfileter_tables](./img/netfilter_tables.png)
+
+
+
+### NAT , Mangle
+
+command description for **iptables** rules, and based on hi_5662:
+
+```shell
+root@OpenWrt:~# iptables -t mangle -A PREROUTING  -p tcp  -m DOMAIN --name "www.toutiao.com" --match-dir 1 --j TRAFFIC --index 257 --mode 1
+	-t			:if no -t option is default for 'filter'
+	-A			:Append one or more rules to the end of the selected chain.
+	-p 			:The  protocol of the rule or of the packet to check.
+	-m 			:Specifies  a  match  to  use, that is, an extension module that tests 	                for a specific property. " -m matchname "	
+	--match-dir	:DIR    IP address of Domain in direction(1 for up, 2 for down, 3 for both(default)
+	--match-type :TYPE   Match type, 1 for ip address in NO DNS Pkt , 2 domain name in DNS pkt, 3 for both(default)
+	--match-mode :MODE   Match mode, 0 for full match(default), 1 for sub match
+	--name 		 :NAME   Match a domain name in dns reply pkt\n
+	--j			 :This specifies the target of the rule;
+
+TAFFIC target options:
+	--index		 :The index of rule ,this will return to APP
+	--mode		 :MODE 0: http process 1: mirror process
+	
+MARK target options:	
+	--set-mark   :Set nfmark value\n"
+  	--and-mark   :Binary AND the nfmark with value\n"
+	--or-mark    :Binary OR  the nfmark with value\n"
+	
+	
+root@OpenWrt:~# iptables -t mangle -A PREROUTING  -p tcp  -m DOMAIN --name "www.toutiao.com" --match-dir 1 --j MARK --or-mark 0x80000000
+root@OpenWrt:~# iptables -t mangle -A POSTROUTING -p tcp   -m DOMAIN --name "www.toutiao.com" --match-dir 2 --j MARK --or-mark 0x80000000
+```
+
+
+
+### self defined chain
 
 ### Linux Netfilter Defination
 
@@ -162,7 +211,7 @@ static unsigned int wlan_share_option82_func(
 }
 ```
 
-![nc](./img/linux_packet.png)
+![	nc](./img/linux_packet.png)
 
 ([Note](<https://blog.csdn.net/wuruixn/article/details/7957368>) : 数据在协议栈里的发送过程中，从上至下依次是“加头”的过程，每到达一层数据就被会加上该层的头部；与此同时，接受数据方就是个“剥头”的过程，从网卡收上包来之后，在往协议栈的上层传递过程中依次剥去每层的头部，最终到达用户那儿的就是裸数据了。)
 

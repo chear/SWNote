@@ -29,17 +29,22 @@
 
 
 
-**target，condition and command**
+**target，prerequisites and recipe **
+
+**target** its bases, **prerequisites** means condition for dependence, and **recipe** means for command , one of  the *target , prerequistites and recipe* compose for a **rule** .
+
+*(Note: Makefile的基本规则，归纳起来既 . **"当一个TARGET （欲生成的目标）比它的任何一个DEPENDENCES（依赖的文件）旧时，这个TARGET就要重新生成"** .)*
 
 ```makefile
-target_1 target_2 target_3 ... : condition_1 condition_2 condition_3...
-command_1
-command_2
-command_3
-...
+target_1 target_2 ... : prerequisites_1 prerequisites_2...
+            recipe1
+            recipe2
+            ...
 ```
 
-**依赖**
+
+
+**依赖 (prerequisites ,dependence)**
 
 对于Makefile，主要的是目标，条件和命令三大要素。目标 ,是要产生的东西或者要做的事情; 条件,是用于产生目标需要的文件; 命令,就是用条件转换为目标的方法。
 
@@ -234,3 +239,21 @@ cc -o foo $(objects)
 
 
  
+
+## 7. 'FORCE'
+
+If a rule has no prerequisites or recipe, and the target of the rule is a nonexistent file, then `make` imagines this target to have been updated whenever its rule is run. This implies that all targets depending on this one will always have their recipe run.  This rule can call anyname ,  in this case just call ``FORCE``.
+
+```makefile
+file = test.txt
+all: generate-a-file
+generate-a-file: $(file) 
+ 
+#FORCE means running target everytime
+$(file): FORCE  
+	@echo "Force to generate a test file for every make ..."
+	rm -rf $(file) && echo `date "+%Y-%m-%d %H:%M:%S"` > $(file)
+ 
+FORCE:
+.PHONY: FORCE
+```

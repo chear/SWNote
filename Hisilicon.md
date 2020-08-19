@@ -8,7 +8,7 @@ ARM ARMv7 , 667 Hz , 1 Core, Memory 256M ,
 
 [OpenWRT](https://openwrt.org/docs/guide-user/start) is embedded operation system  for Linux distribution based on GPL License .  OpenWRT did not contain any source code , this composed by each patch and zip, other word OpenWRT almost everything is an ".ipk ",  the ".ipk" is other name for ".tar.gz" . 
 
-
+(Note: the static var for each package defined within ``open/tmp/*`` )
 
 ## 	1.2 Startup
 
@@ -59,6 +59,8 @@ Sub-system Interface Introduction
 
 ## 1.4 Hisilicon partition table
 
+flash layout table for hi_boot.
+
 ```shell
                     |--------------------|
             		|       Java B       |	java.bin,zize=0xE00000
@@ -85,6 +87,29 @@ Sub-system Interface Introduction
  	          0x00000 -------------------|
 ```
 
+,and *mtd_<num>* for partition table in linux
+
+```shell
+dev:    size   erasesize  name
+mtd0: 00040000 00020000 "boot"
+mtd1: 00100000 00020000 "enva"
+mtd2: 00100000 00020000 "envb"
+mtd3: 00200000 00020000 "fac"
+mtd4: 00200000 00020000 "cfga"
+mtd5: 00200000 00020000 "cfgb"
+mtd6: 002c0000 00020000 "log"
+mtd7: 00500000 00020000 "kernela"
+mtd8: 00500000 00020000 "kernelb"
+mtd9: 01900000 00020000 "rootfsa"
+mtd10: 01900000 00020000 "rootfsb"
+mtd11: 02300000 00020000 "fwka"
+mtd12: 02300000 00020000 "fwkb"
+mtd13: 06e00000 00020000 "app"
+mtd14: 00500000 00020000 "other"
+```
+
+
+
 CMS xml reading process
 
 ![cms](./img/cms.png)
@@ -93,7 +118,7 @@ CMS xml reading process
 
 ## 1.5.1  Hisilicon system configuration files
 
-``board.xml`` contains  GPIO  map , LED  , optical setting.  source at ``sulotion/patch/openwrt/vendors/${manufacturer}/${chip_id}/``
+*board.xml*  contains  GPIO  map , LED  , optical setting.  source at ``sulotion/patch/openwrt/vendors/${manufacturer}/${chip_id}/``
 
 ```mermaid
 graph LR
@@ -101,7 +126,7 @@ B("board.tar")-->E("${chip_id}/board_${board_id}.xml")
 E-->D("/etc/board/board.xml")
 ```
 
-``sysinfo.xml``  contains LOID info , mac addr , province .etc
+*sysinfo.xml*  contains LOID info , mac addr , province .etc
 
 ```mermaid
 graph LR
@@ -110,7 +135,7 @@ A("/config/conf/sysinfo.xml")-->B("/config/work/sysinfo.xml")
 
 
 
-*lastgood.xml*   restored command by ``hi_cfm config`` , and  file named ``${operator}_smart_${province}_${ui_ge_num}_${ui_fe_num}_${ui_voice_num}_${${ui_wlan24_num}+${ui_wlan58_num}}_${${ui_usb2_num} + ${ui_usb3_num}}.xml``   compress at   ``/config/cfm/config.tar`` by command ``hi_cfm config`` , for example  *cmcc_smart_jiangsu_1_3_1_0_2.xml*  for hi_5662y type 1 .
+*lastgood.xml*   restored command by ``hi_cfm config`` , and  file named ``${operator}_smart_${province}_${ui_ge_num}_${ui_fe_num}_${ui_voice_num}_${${ui_wlan24_num}+${ui_wlan58_num}}_${${ui_usb2_num} + ${ui_usb3_num}}.xml``   compress at   */config/cfm/config.tar* by command ``hi_cfm config`` , for example  *cmcc_smart_jiangsu_1_3_1_0_2.xml*  for hi_5662y type 1 .
 
 
 
@@ -145,7 +170,7 @@ A("/config/conf/sysinfo.xml")-->B("/config/work/sysinfo.xml")
 
 
 
-**Kernel Solution & Building path**
+**Kernel Solution & Builded path**
 
 for 5116:
 
@@ -161,7 +186,7 @@ $ ls openwrt/target/linux/hsan/files/
 $ ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/linux-hsan_generic/linux-3.18.11/
 ```
 
-**Rootfs Solution & Building path**
+**Rootfs Solution & Builded path**
 
 for 5116
 
@@ -449,9 +474,9 @@ root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xf2003100 sys 0 dbg
 root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xfe000000 sys 0 dbg 0x0 print 0x0
 (debug for spring adapter, NOTSURE?)
 
-root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF0001000 dbg 0xff print 0xff sys 0
+root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF0001000 dbg 0xff print 0xff sys 1
 
-root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF6003000 dbg 0xff print 0xff sys 0
+root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF6003000 dbg 0xff print 0xff sys 1
 (to debug wan.)
 
 root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF0004000 dbg 0xff print 0xff sys 1
@@ -462,6 +487,9 @@ root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF7003000 dbg 0xff 
 
 root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF600c000 dbg 0xff print 0xff sys 1
 (to debug wlan )
+
+root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF5005000 dbg 0xff print 0xff sys 1
+(to debug hsan led driver )
 ```
 
 
@@ -484,5 +512,14 @@ disable and enable TR069 wan control in GUI:
 ```shell
 root@OpenWrt:~# cli /home/cli/cm/cm_ctrl -v value 0x2000000f	(disable)
 root@OpenWrt:~# cli /home/cli/cm/cm_ctrl -v value 0x20000010	(enable) 
+```
+
+GPIO control (this part have not been open source from hisi.):
+
+```shell
+root@OpenWrt:~# cli /home/cli/hal/chip/gpio_read -v gpio 0
+(reading value of GPIO_0, within hi5662y GPIO_0 for internet_led ) 
+root@OpenWrt:~# cli /home/cli/hal/chip/gpio_write -v gpio 0 level 1
+(setting GPIO_0 to 1)
 ```
 

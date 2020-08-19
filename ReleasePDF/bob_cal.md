@@ -11,7 +11,7 @@ root@OpenWrt:~# tftp -p -l bob_config_default.ini 192.168.1.7
 
 ![tftp](../img/tftp.bmp)
 
-检查校准文件是否正确，可以通过查看  000220 地址的 第四位是否为 0x35 来判断。既此位为 reg 0xa4 的值。
+检查校准文件是否正确，可以通过查看地址  0x224 的值是否为 0x35 来判断。既此位为 reg 0xa4 的值。
 
 ![bob_config_default](../img/bob_config_default.bmp)
 

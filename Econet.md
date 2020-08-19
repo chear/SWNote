@@ -79,7 +79,7 @@ bootrom/
 │	(main bootbase driver such as network ,flash and bootbase command.)
 ├── ddr_cal_en7512/
 │	( )	
-├── spram_ext/
+├── spram_ext/	
 ├── lzma/
 ├── unopen_img/
 ├── verify/

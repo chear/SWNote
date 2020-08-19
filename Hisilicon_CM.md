@@ -42,6 +42,19 @@ root@OpenWrt:~# log_voice_cli odl odl_log
 root@OpenWrt:~# tail -f -n 100 /tmp/log/messages
 ```
 
+**Tips:  Both CM and Web all use ``/sbin/syslogd`` to store logging message while is based on busybox, default store at /etc/log/message , want display CM debug message stream to console by: **
+
+```shell
+root@OpenWrt:~# killall syslogd && /sbin/syslogd -l 7 -O /dev/console && log_voice_log odl odl_log
+```
+
+**by display web debug info by:**
+
+```shell
+root@OpenWrt:~# echo 1 > /config/work/weblog.txt
+root@OpenWrt:~# killall syslogd && /sbin/syslogd -l 8 -O /dev/console
+```
+
 Files structure  as below
 
 ```shell

@@ -1,6 +1,6 @@
 # Flash Basic
 
-![flash](img\flash.png)
+![flash](../img/flash.png)
 
 *Note: What follows is a high-level description of the generic behaviour of flash. There are thousands of different NAND chips available, each potentially with slightly different instruction sets, block/page sizes, performance characteristics etc.*
 

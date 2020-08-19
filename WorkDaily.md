@@ -490,7 +490,7 @@ econet's FW web server based on  **boa** , binary local file at */boaroot/cgi-bi
 
 Econet for *tcboot.bin & tclinux.bin* ,and  Mitrashar for *loader.img & ras.bin* , the more important its both boot-loader with same size for 256k.
 
-**switch loader.img to tcboot.bin**
+#### switch loader.img to tcboot.bin
 
 1. login to u-boot, and download *tcboot.bin* to memory  , then write to flash. 
 
@@ -506,7 +506,7 @@ u-boot # nandwr 0 80000000 40000	(write nand flash from 0x0 to 0x40000,sync from
 
 
 
-**switch tcboot.bin to loader.img**
+#### switch tcboot.bin to loader.img
 
 1. Rename loader.img to tcboot.bin  (not working) 
 
@@ -671,8 +671,6 @@ root@OpenWrt:~# hexdump -C /usr/local/factory/bob_config.ini
 
  ([MODLUT] section, not sure , [APDLUT] section,not sure)
 
-
-
 ### QoS Service test case (Gogo shell)
 
 setting on H3 gateway to limit speed for download or upload, 
@@ -691,8 +689,6 @@ Description:
 | *setSpeedLimitByFlow*      | *[flow:int]*, values from 0-7  | 0 for success , 1 for failed |
 | *deleteAllTrafficFromFlow* | *[flow:int]*, values from 0-7  | 0 for success , 1 for failed |
 
-
-
 ```shell
 root@OpenWrt:~# telnet 127.0.0.1 6666
 ____________________________
@@ -703,8 +699,6 @@ g! addTrafficToFlow "172.25.24.13" "0" 1
 g! setSpeedLimitByFlow 1 2048 2048
 0
 ```
-
-
 
 based on *iperf* ,server at 172.25.24.13,
 
@@ -837,11 +831,27 @@ Encounter question for GUI can not login when change the ip address  for bridge 
 
 ## 20200309  Hisi mstc8.bin
 
-HSAN mstc8.bin make process:
+chief process to make HSAN mstc8.bin , script at *Tools/hitools/hi_makeimage/mkp*
 
+```shell
+### 1. update env
+update_env $partition_list $env_bin $partition_table
+dos2unix $partition_table
 
+### 2. generate pad file make FF padding file, size 128MB 
+make_padding_file $pad_file
 
+### 3. concact files with env binary handled
+concact_file_and_env $env_bin $factory_bin $images_dir $pad_file $partition_table
 
+### 4. call addecc proc
+./addecc -i $factory_bin -p 2048 -b 8 -s 64 -o $factory_ecc_64oob_bin
+
+### 5. reverse 32byte in block0 page0 and page1 to fit the special FMC request 
+./page_reverse -e $nand_ecc_mode -s 64 -b 64 -p 2048 -f $factory_ecc_64oob_reverse_bin
+./gen_partition $factory_ecc_64oob_reverse_bin $factory_part_bin
+./convert $factory_part_bin $factory_ecc_64oob_reverse_bin $mstc8_bin  2
+```
 
 HSAN partition info based on H2-3
 
@@ -899,10 +909,6 @@ hi # nand dump 0
 cfe & sal startup process:
 
 source file at ``/hisilicon/gateway/service/sal/intf/source/hi_sal_diag.c``
-
-
-
-
 
 
 
@@ -1056,6 +1062,8 @@ A[bob ux3320] --> |/usr/local/factory/|B(bob_config.ini Exists)
 
 
 
+
+
 ## 20200421  boa web server for hisi openwrt
 
 Http boa  access ``config.js`` , ``language_cn.js`` and  ``menucustomize.js``  to layout the web page . ( define web page widget within ``config.js`` such as text  , checkbox ,radio etc,   display info and message  defined within  ``language_cn.js``  , the *menucustomize.js* used to layout the web page and menu.  
@@ -1080,15 +1088,9 @@ To debug the GUI page, should by below
 
 overall : cfe, qos,gogo-shell  
 
-
-
-
-
 ```shell
 g! addHTTPTrafficProcessRuleJ "" 80 UP E4:E7:49:3B:12:42 "GET,POST" "" "User-Agent" com.chinamobile.smartgateway.cmccdpi
 ```
-
-
 
 ### 1. getHTTPTrafficProcessRuleInfo
 
@@ -1141,13 +1143,33 @@ Chain POSTROUTING (policy ACCEPT 2873 packets, 1528K bytes)
  1428 1469K MARK       tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            tcp spt:80 MARK or 0x80000000
 ```
 
-
-
-### 3.
+### 3. Hisilicon 硬件加速
 
 ```shell
 root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF600d000 dbg 0xff print 0xff sys 1
 root@OpenWrt:~# cli /home/cli/cfe/lrn/lrn_setcfg -v lrn 10
 root@OpenWrt:~# cli /home/cli/cm/traffic_detail_process_srv_get_all
 ```
+
+
+
+
+
+## 20200818 gPon LOID Authentication
+
+![epon_loid_register](./img/gPon_loid_registed.bmp)
+
+**Authentication status**，标识ONU 的认证的状态，ONU 缺省值为0x00。ONU 重启后该属性应恢复成0x00（W，R） （1bytes）(mandatory)
+
+- 0x00： 初始状态
+
+- 0x01： 认证成功
+- 0x02： LOID 不存在
+- 0x03： LOID 存在，但是password 错误
+- 0x04： LOID 冲突，即已有该LOID 的ONU 认证成功。
+- 0x05-0xff：Reserved
+
+
+
+
 

@@ -245,6 +245,7 @@ cli /home/cli/hal/port/port_mirror_set -v igr 0x200 egr 0x200 dport 0
 
 ```shell
 root@OpenWrt:~# hi_cfm set sysinfo.province jt
+root@OpenWrt:~# rm -f /usr/local/factory/factory.txt
 root@OpenWrt:~# hi_cfm config
 root@OpenWrt:~# sync
 root@OpenWrt:~# reboot
@@ -354,4 +355,17 @@ SPI Setting for LA  as below, with in this test , the  *'0x0F 0xC0 0x00'* its ge
 both ```svn revert``` and ```svn upload -r``` are reload version 
 
 ( Note: when uploading files to svn trunk with Linux was better than Windows. ``svn add --no-ignore``  )
+
+
+
+
+
+## 12. reset board var for Hisilicon
+
+After Recover default environment within hi_boot ,board value ``console`` will change to ``off`` , this value can cause console stop output stream, then should change this value to ``on``
+
+```shell
+hi # setenv console on
+hi # saveenv
+```
 

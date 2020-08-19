@@ -87,7 +87,7 @@ stack to store local variable and parameter value for function
 **epc: exception program counter 异常程序计数器** ,
 **ra :   return address   返回地址**
 
-![kernel_trace_mips2](img\kernel_tarce_mips_2.png)
+![kernel_trace_mips2](../img/kernel_tarce_mips_2.png)
 
 
 ### Step 2.
@@ -125,7 +125,7 @@ make modules
 
 , 通过上面 crash 信息得到 crash 点的偏移为 **0x3c** ,因此真正crash的点为 **0x658c**
 
-![obj_dump](img/obj_dump.png)
+![obj_dump](../img/obj_dump.png)
 
 ### Step  4.
 
@@ -135,7 +135,7 @@ make modules
 /opt/trendchip/mips-linux-uclibc-4.9.3/usr/bin/mips-linux-addr2line -e ra_nat.o 658c
 ```
 
-![add2line](img/add2line.png)
+![add2line](../img/add2line.png)
 
 ### Step  5.
 
@@ -146,7 +146,7 @@ make modules
 list
 ```
 
-![obj_dump2](img/obj_dump2.png)
+![obj_dump2](../img/obj_dump2.png)
 
 ### Step  6.
 
@@ -157,7 +157,7 @@ list
 list
 ```
 
-![obj_dump3](img/obj_dump3.png)
+![obj_dump3](../img/obj_dump3.png)
 
 
 

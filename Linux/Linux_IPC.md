@@ -4,9 +4,9 @@ IPC ( Inter-Process Communication) , the **Software Program** is image for machi
 
 The ways for Linux IPCs  such like **Signal** , **Pipe /FIFO** , **Message queue** , **Semaphore**, **Share Memory** ect. more detail check the [following url](https://beej.us/guide/bgipc/).
 
-![ipc1](img/ipc_1.bmp)
+![ipc1](../img/ipc_1.bmp)
 
-![ipc2](img/ipc_2.bmp)
+![ipc2](../img/ipc_2.bmp)
 
 ## Signal
 

@@ -385,7 +385,7 @@ spec info defination:
 
 
 
-## 4.4 Hisilicon NAND Flash Arch
+## 4.4 His`ilicon NAND Flash Arch
 
 SPI Nand driver in hisi platform based on HSAN arch. The basic specfication loaded within bootloader, and transfor to kernel by  paramater. 
 

@@ -41,7 +41,7 @@ Kernel modules can register to listen at any of these hooks. A module that regis
 4. NF_QUEUE: queue the packet (usually for userspace handling).
 5. NF_REPEAT: call this hook again.
 
-![linux_nf](./img/linux_nf.png)
+![linux_nf](../img/linux_nf.png)
 
 
 
@@ -211,11 +211,11 @@ static unsigned int wlan_share_option82_func(
 }
 ```
 
-![	nc](./img/linux_packet.png)
+![nc](../img/linux_packet.png)
 
 ([Note](<https://blog.csdn.net/wuruixn/article/details/7957368>) : 数据在协议栈里的发送过程中，从上至下依次是“加头”的过程，每到达一层数据就被会加上该层的头部；与此同时，接受数据方就是个“剥头”的过程，从网卡收上包来之后，在往协议栈的上层传递过程中依次剥去每层的头部，最终到达用户那儿的就是裸数据了。)
 
-![nf](./img/linux_nf_1.png)
+![nf](../img/linux_nf_1.png)
 
 
 

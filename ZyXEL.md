@@ -200,8 +200,16 @@ $rm -Rf ../build
 $find sysapps/private/mitrastar/ccc3.0 -name *.cprep |xargs rm -f
 $find sysapps/private/mitrastar/ccc3.0 -name *.cprep2 |xargs rm -f
 $make PROFILE=CCC3
+```
 
+**Note: to building ccc4.0 as project as following**
 
+```shell
+$svn checkout https://svn.mitrastar.com/svn/MLD_CPE/MLD-PI-1.0.0/product/2020/HGW-500TX2X2-E
+$cd dev/trunk-utils/MLD_Scripts
+$./all.sh HGW-500TX2X2-E
+$cd ../../makecode/
+$make clean;make all
 ```
 
 
@@ -241,3 +249,8 @@ $make PROFILE=CCC3
 **CCC (Common Configration Center) Architecture Overview:**
 
 ![ccc_overview](img/clipboard.png)
+
+
+
+# 4. PI Project
+

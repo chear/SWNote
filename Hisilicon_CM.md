@@ -12,10 +12,13 @@ CM could be :
 
 - Operating business logical 
   provide  API  , received and collect configure message from WEB , Tr069  or other module , to forward and convert the format to SAL.
-
 - Store data
-
 - Initialize configuration ,CM loading configurations  by sequence and dependency  when device  startup 
+
+mib configuration loading priority:
+
+![cfg_load_priority](./img/cm_cfg_loading_priority.png)
+
 
 
 **CM Flow Process**
@@ -37,7 +40,7 @@ CM Contains two part:
 **(Note:  to debug CM while typed "log_voice_cli odl odl_log" to open CM Logs , log file at /tmp/log/message . )**
 
 ```shell
-root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF2040000 dbg 0xff print 0xff sys 1
+root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF2040000 dbg 0xff print 0xff sys 1 
 root@OpenWrt:~# log_voice_cli odl odl_log
 root@OpenWrt:~# tail -f -n 100 /tmp/log/messages
 ```

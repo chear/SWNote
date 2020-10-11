@@ -108,7 +108,14 @@ mtd13: 06e00000 00020000 "app"
 mtd14: 00500000 00020000 "other"
 ```
 
+System environment loading flow:
 
+```mermaid
+graph LR
+A("enva")-->B("envb")
+B-->C("hi_boot.bin (g_uc_release_env)")
+```
+**Note: Recover default environment var should erase 'enva' and 'envb' partitions.**
 
 CMS xml reading process
 
@@ -122,7 +129,8 @@ CMS xml reading process
 
 ```mermaid
 graph LR
-B("board.tar")-->E("${chip_id}/board_${board_id}.xml")
+A("/usr/bin/factory/board.xml")-->B("board.tar")
+B-->E("${chip_id}/board_${board_id}.xml")
 E-->D("/etc/board/board.xml")
 ```
 
@@ -137,7 +145,14 @@ A("/config/conf/sysinfo.xml")-->B("/config/work/sysinfo.xml")
 
 *lastgood.xml*   restored command by ``hi_cfm config`` , and  file named ``${operator}_smart_${province}_${ui_ge_num}_${ui_fe_num}_${ui_voice_num}_${${ui_wlan24_num}+${ui_wlan58_num}}_${${ui_usb2_num} + ${ui_usb3_num}}.xml``   compress at   */config/cfm/config.tar* by command ``hi_cfm config`` , for example  *cmcc_smart_jiangsu_1_3_1_0_2.xml*  for hi_5662y type 1 .
 
+```mermaid
+graph LR
+A("/etc/defaultconfig.xml")-->B("config.tar")
+B-->E("/usr/local/factory/defaultconfig.xml")
+E-->F("/config/work/lastgood.xml")
+```
 
+**(Note: priority of configuration at /usr/bin/board_upgrade )**
 
 
 
@@ -490,6 +505,9 @@ root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF600c000 dbg 0xff 
 
 root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF5005000 dbg 0xff print 0xff sys 1
 (to debug hsan led driver )
+
+root@OpenWrt:~# cli /home/cli/log_cmd/log/cfg_set -v module 0xF6007000 dbg 0xff print 0xff sys 1
+(to debug hsan vxlan )
 ```
 
 

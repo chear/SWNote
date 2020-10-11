@@ -2,9 +2,27 @@
 
 # Linux ELF
 
-Linux ELF (**[Executable and Linkable Format](<https://ctf-wiki.github.io/ctf-wiki/executable/elf/elf-structure-zh/>)**)  defines the structure for binaries, libraries, and core files. The formal specification allows the operating system to interpreter its underlying machine instructions correctly. ELF files are typically the output of a compiler or linker and are a binary format. With the right tools, such file can be analyzed and better understood. 
 
-(Tips: for windows platform using **PE ([Portable Executable](<https://en.wikibooks.org/wiki/X86_Disassembly/Windows_Executable_Files>)**) format )
+
+![gun](E:\Resource\MitrastarNote\img\gun_elf.jpg)
+
+**Object Files** are typically created by the  assembler and link editor , and are a binary format  representations of programs intended to be executed directly on a processor. Programs that require other abstract machines, such as shell scripts, are excluded. 
+
+There are three main types of object files
+
+- relocatable files  (*.o)
+
+- executable files 
+
+- shared  object ( *.so , *.a)
+
+  ![object_file](../img/object_file.png)
+
+The **[Object File](<https://refspecs.linuxbase.org/elf/gabi4+/ch4.intro.html>)** format are **ELF( [Executable and Linkable Format](<https://ctf-wiki.github.io/ctf-wiki/executable/elf/elf-structure-zh/>) )**  , while	defines the structure for binaries, libraries, and core files such like   *.so , *.axf , *.bin , *.elf , *.o , *.prx , *.puff , *.ko , *.mod and *.so etc.
+
+The formal specification allows the operating system to interpreter its underlying machine instructions correctly. With the right tools, such file can be analyzed and better understood. 
+
+(**Tips:**  **Windows** platform using **PE ([Portable Executable](<https://en.wikibooks.org/wiki/X86_Disassembly/Windows_Executable_Files>)**) format, **Mac OS-X** used for **[Mach-O](<https://zhuanlan.zhihu.com/p/24858664>)** )
 
 The **type** field tells us what the purpose of the file is. There are a few common file types.
 

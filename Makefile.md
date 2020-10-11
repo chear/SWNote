@@ -73,9 +73,9 @@ cc -c -o main.o main.c
 
 
 
-## Automake
+## automake
 
-
+[automake](<http://www.gnu.org/software/automake/manual/automake.html>) use to generate Makefile.in for configure from Makefile.am
 
 
 

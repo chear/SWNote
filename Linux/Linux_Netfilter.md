@@ -2,7 +2,7 @@
 
 ### Netfilter Hook
 
-[Netfilter](<https://netfilter.org/documentation/HOWTO//netfilter-hacking-HOWTO-3.html>) is merely a series of hooks in various points in a protocol stack ( include  *IPv4*, *IPv6* , *ARP*, and *DECnet*). The general and idealized *IPv4* traversal diagram looks like the following:
+[Netfilter](<https://netfilter.org/documentation/HOWTO//netfilter-hacking-HOWTO-3.html>) is framework of kernel module for the linux , to provide  merely a series of hooks in various points in a protocol stack ( include  *IPv4*, *IPv6* , *ARP*, and *DECnet*), to support such as *[iptables](<http://www.zsythink.net/archives/1199>)*, The general and idealized *IPv4* traversal diagram looks like the following:
 
 ```text
 A Packet Traversing the Netfilter System:
@@ -25,8 +25,9 @@ A Packet Traversing the Netfilter System:
                     
                  
 [1]: NF_IP_PRE_ROUTING:  having passed the simple sanity checks.
-[2]: NF_IP_LOCAL_IN:  destined for the box itself, the netfilter called _IP_LOCAL_IN [2] hook, before being passed to the process.
-[3]: NF_IP_FORWARD:	 destined to pass to another interface instead, the netfilter called the NF_IP_FORWARD hook.
+[2]: NF_IP_LOCAL_IN:  destined for the box itself, the netfilter called _IP_LOCAL_IN 
+	 				 hook, before being passed to the process.
+[3]: NF_IP_FORWARD:	 destined to pass to another interface instead, the netfilter 						 called the NF_IP_FORWARD hook.
 [4]: NF_IP_POST_ROUTING:  packet then passes a final netfilter NF_IP_POST_ROUTING hook.
 [5]: NF_IP_LOCAL_OUT: The NF_IP_LOCAL_OUT hook is called for packets that are created locally
 ```
@@ -51,7 +52,7 @@ Kernel modules can register to listen at any of these hooks. A module that regis
 
 The **[iptables](<https://blog.csdn.net/longbei9029/article/details/53056744>)** has the following 4 built-in tables. **Filter, NAT, Mangle, Raw**  ,for the chain in other word the **chain = hook** 
 
-![netfileter_tables](./img/netfilter_tables.png)
+![netfileter_tables](../img/netfilter_tables.png)
 
 
 

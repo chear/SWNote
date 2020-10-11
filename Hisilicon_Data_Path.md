@@ -196,16 +196,16 @@ Port 和 QID 对应表
 
 ### 1.5.3 Debug Control Command
 
-| Command                                                      | Description                 | Note                                                         |
-| ------------------------------------------------------------ | --------------------------- | ------------------------------------------------------------ |
-| cli /home/cli/log_cmd/log/cfg_set -v module 0xf6003000 sys 1 dbg 0xff print 0xff flag 0 | WAN  Dbg                    |                                                              |
-| cli /home/cli/log_cmd/log/cfg_set -v module 0xf6007000 sys 1 dbg 0xff print 0xff | LAN Dbg                     |                                                              |
-| cli /home/cli/log_cmd/log/cfg_set -v module 0xf6006000 sys 1 dbg 0xff print 0xff | QoS Dbg                     |                                                              |
-| cli /home/cli/log_cmd/log/cfg_set -v module 0xf6005000 sys 1 dbg 0xff print 0xff | MC Dbg                      |                                                              |
-| cli /home/cli/log_cmd/log/cfg_set -v module 0xf2003100 sys 0 dbg 0x38 print 0x38 | gPon OMCI ( dbg to console) |                                                              |
-| cli /home/cli/log_cmd/log/cfg_set                            | gPon OMCI ( dbg to file)    | -v module 0xf2003e00 sys 0 dbg 0x10f    cat /log/hisi/hi_omci.log |
-| cli /home/cli/log_cmd/log/cfg_set -v module 0xf9002000 sys 0 dbg 0x0 print 0x10 | gPon PLOAM                  |                                                              |
-| cli /home/cli/log_cmd/log/cfg_set -v module 0xf20200000 sys 0 dbg 0x11 | ePon OAM                    |                                                              |
+| Command                                                      | Description                 | Note          |
+| ------------------------------------------------------------ | --------------------------- | ------------- |
+| cli /home/cli/log_cmd/log/cfg_set -v module 0xF6003000 sys 1 dbg 0xff print 0xff flag 0 | WAN  Dbg                    |               |
+| cli /home/cli/log_cmd/log/cfg_set -v module 0xF6007000 sys 1 dbg 0xff print 0xff | LAN Dbg                     |               |
+| cli /home/cli/log_cmd/log/cfg_set -v module 0xF6006000 sys 1 dbg 0xff print 0xff | QoS Dbg                     |               |
+| cli /home/cli/log_cmd/log/cfg_set -v module 0xF6005000 sys 1 dbg 0xff print 0xff | MC Dbg                      |               |
+| cli /home/cli/log_cmd/log/cfg_set -v module 0xF2003100 sys 0 dbg 0x38 print 0x38 | gPon OMCI ( dbg to console) |               |
+| cli /home/cli/log_cmd/log/cfg_set -v module 0xf2003e00 sys 0 dbg 0x10f    cat /log/hisi/hi_omci.log | gPon OMCI ( dbg to file)    | write to file |
+| cli /home/cli/log_cmd/log/cfg_set -v module 0xF9002000 sys 0 dbg 0x0 print 0x10 | gPon PLOAM                  |               |
+| cli /home/cli/log_cmd/log/cfg_set -v module 0xF20200000 sys 0 dbg 0x11 | ePon OAM                    |               |
 
 
 

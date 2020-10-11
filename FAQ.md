@@ -360,12 +360,17 @@ both ```svn revert``` and ```svn upload -r``` are reload version
 
 
 
-## 12. reset board var for Hisilicon
+## 12. reset board environment for Hisilicon platform
 
-After Recover default environment within hi_boot ,board value ``console`` will change to ``off`` , this value can cause console stop output stream, then should change this value to ``on``
+After Recover default environment within hi_boot ,board environment value ``console`` will change to ``off`` , this value can cause console stop output message stream, then should change this value to ``on``
 
 ```shell
 hi # setenv console on
 hi # saveenv
 ```
 
+
+
+## 13 'eabi' and 'oabi' for the gun
+
+eabi (embedded application binary interface )  oabi (old application binary interface)

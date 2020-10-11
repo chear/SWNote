@@ -3,3 +3,8 @@
 [SCSI](<https://www.ibm.com/developerworks/cn/linux/l-scsi-subsystem/>) arch for linux :
 
 ![linux_scsi](../img/linux_scsi.gif)
+
+
+
+[USB for Linux](<http://tech.it168.com/a2010/0510/884/000000884174_all.shtml>)
+

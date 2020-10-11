@@ -628,7 +628,7 @@ root@OpenWrt:~# cli /home/cli/hal/port/port_mirror_set -v igr 0x200 egr 0x200 dp
 root@OpenWrt:~# log_voice_cli cwmpClient cwmp_log 		(enable or disable TR069 log)
 ```
 
-2. verify the message for TR069
+2. verify the message for TR069 at ``/var/log/message``
 
 
 
@@ -1170,6 +1170,160 @@ root@OpenWrt:~# cli /home/cli/cm/traffic_detail_process_srv_get_all
 - 0x05-0xff：Reserved
 
 
+
+## 20200903  Hisi VxLan ping incorrect
+
+### 1.  to building new SDK from Hisilicon
+
+```shell
+michael@michael-HP-Pro-3330-MT: unzip HSANV200R011C01SPC050TB014.zip && cd HSANV200R011C01SPC050TB014
+michael@michael-HP-Pro-3330-MT: make V=s -j1
+```
+
+Note:  1. check open source zip files at  ``solution/package/openwrt``  ; 2. check the patch file at ``\solution\patch\openwrt\package\apps\gsoap\patches\001-gsoap-Makefile.patch`` ; 3. check the missing file for the SDK.
+
+
+
+### 2. VxLan verify utility usage:
+
+ip, ebtables, 
+
+```shell
+root@OpenWrt:~# ebtables -t filter -L
+Bridge table: filter
+
+Bridge chain: INPUT, entries: 5, policy: ACCEPT
+-p IPv6 -j DEF_WAN_DHCPV6_IN
+-p IPv4 -j DEF_WAN_DHCP_IN
+-p IPv6 -i wan+ --ip6-proto udp --ip6-dport 546:547 -j DROP 
+-p IPv4 -i wan+ --ip-proto udp --ip-dport 67:68 -j DROP 
+-i ! wan+ -j BOUND_IN
+
+Bridge chain: FORWARD, entries: 12, policy: ACCEPT
+-i lan1 -j VXLAN1_FWD
+-i vxlan1 -j VXLAN1_FWD
+-i ! wan+ -o vap1 -j DROP 
+-i vap1 -o ! wan+ -j DROP 
+-p IPv6 -j DEF_WAN_DHCPV6_FWD
+-p IPv4 -j DEF_WAN_DHCP_FWD
+-p IPv6 -i ! wan+ --ip6-proto udp --ip6-dport 546:547 -j DROP 
+-p IPv4 -i ! wan+ --ip-proto udp --ip-dport 67:68 -j DROP 
+-i vap+ -o wan+ -j BOUND
+-i wan+ -o vap+ -j BOUND
+-i vap+ -o wan+ -j BOUND_DEF
+-i wan+ -o vap+ -j BOUND_DEF
+
+Bridge chain: OUTPUT, entries: 3, policy: ACCEPT
+-p IPv6 -j DEF_WAN_ICMPV6_OUT
+-p IPv4 -o wan+ --ip-proto udp --ip-dport 68 -j DROP 
+-p IPv6 -o wan+ --ip6-proto ipv6-icmp --ip6-icmp-type router-advertisement -j DROP 
+
+Bridge chain: BOUND_IN, entries: 12, policy: ACCEPT
+-i lan1 -j mark --mark-or 0x10 --mark-target ACCEPT
+-i lan2 -j mark --mark-or 0x20 --mark-target ACCEPT
+-i lan3 -j mark --mark-or 0x30 --mark-target ACCEPT
+-i lan4 -j mark --mark-or 0x40 --mark-target ACCEPT
+-i vap0 -j mark --mark-or 0x50 --mark-target ACCEPT
+-i vap1 -j mark --mark-or 0x60 --mark-target ACCEPT
+-i vap2 -j mark --mark-or 0x70 --mark-target ACCEPT
+-i vap3 -j mark --mark-or 0x80 --mark-target ACCEPT
+-i vap4 -j mark --mark-or 0x90 --mark-target ACCEPT
+-i vap5 -j mark --mark-or 0xa0 --mark-target ACCEPT
+-i vap6 -j mark --mark-or 0xb0 --mark-target ACCEPT
+-i vap7 -j mark --mark-or 0xc0 --mark-target ACCEPT
+
+Bridge chain: BOUND, entries: 0, policy: RETURN
+
+Bridge chain: BOUND_DEF, entries: 0, policy: DROP
+
+Bridge chain: DEF_WAN_DHCP_IN, entries: 0, policy: RETURN
+
+Bridge chain: DEF_WAN_DHCPV6_IN, entries: 0, policy: RETURN
+
+Bridge chain: DEF_WAN_DHCP_FWD, entries: 0, policy: RETURN
+
+Bridge chain: DEF_WAN_DHCPV6_FWD, entries: 0, policy: RETURN
+
+Bridge chain: DEF_WAN_ICMPV6_OUT, entries: 0, policy: RETURN
+
+Bridge chain: VXLAN1_FWD, entries: 2, policy: DROP
+-o vxlan1 -j ACCEPT 
+-o lan1 -j ACCEPT 
+```
+
+
+
+
+
+## 20200915 SemTech GPon BSP-Porting for hi-5682t
+
+building new sdk for 'V100R012C02SPC001TB016'
+
+```shell
+chear@sw3-cbs-233:$ make V=s
+(to building whole)
+chear@sw3-cbs-233:$ make mod=hisilicon/gateway V=s
+(to building sub-modules path file at 'hisilicon/gateway/Makefile.hsan')
+```
+
+spec defnation
+
+```c
+/*
+	| 7| 6|     5      | 4| 3| 2| 1| 0|
+	|  |  | APD_LUT_EN |  |  |  |  |  |
+ */
+#define APD_LUT_CTRL 0xB6
+/*
+	| 7               | 6| 5| 4| 3| 2| 1| 0|
+	| APD_PWM_PIN_OEN |  |  |  |  |  |  |  |
+ */
+#define APD_CONTROLLER_1 0xD0
+/*
+	| 7| 6| 5| 4| 3| 2| 1| 0|
+	|Reserved| APD_OFFSET   |
+ */
+#define APD_OFFSET 0xD5
+/*
+	| 15   -    6| 5| 4| 3| 2| 1| 0|
+	|APD_RAMP_TGT|     Reserved    |
+ */
+#define APD_RAMP_TGT 0xE1
+/*
+	|15        0 |
+	|ADC_RX_POWER|
+ */
+#define ADC_RX_POWER 0xE8
+#define APD_DAC_LUT 0xC0
+```
+
+### Debug SemTech GN28L97 with i2c
+
+Read & Write OFFSET:
+
+```shell
+( read APD_OFFSET 0xD5 )
+$ cli /home/cli/hal/chip/i2c_cmd_write -v dev_addr 0x51 reg_addr 0x7f data 0x80 && cli /home/cli/hal/chip/i2c_cmd_read -v dev_addr 0x51 reg_addr 0xd5
+
+( write APD_OFFSET 0xD5 ,value for 0x11 )
+$ cli /home/cli/hal/chip/i2c_cmd_write -v dev_addr 0x51 reg_addr 0x7f data 0x80 && cli /home/cli/hal/chip/i2c_cmd_write -v dev_addr 0x51 reg_addr 0xd5 data 0x11
+```
+
+Read & Write  RAMP:
+
+```shell
+( read APD_RAMP_TGT 0xE1 )
+$ cli /home/cli/hal/chip/i2c_cmd_write -v dev_addr 0x51 reg_addr 0x7f data 0x80 && cli /home/cli/hal/chip/i2c_data_burst_receive -v dev_addr 0x51 reg_addr 0xe1 wr_mode 1 length 2
+
+( write APD_RAMP_TGT 0xE1 by burst mode, value for 0x24c0 )
+$ cli /home/cli/hal/chip/i2c_cmd_write -v dev_addr 0x51 reg_addr 0x7f data 0x80 && cli /home/cli/hal/chip/i2c_data_burst_send -v dev_addr 0x51 reg_addr 0xe1 pucdata 0x24c0 wr_mode 1 length 2
+```
+
+Read RX_POWER:
+
+```shell
+$ cli /home/cli/hal/chip/i2c_cmd_write -v dev_addr 0x51 reg_addr 0x7f data 0x81 && cli /home/cli/hal/chip/i2c_data_burst_receive -v dev_addr 0x51 reg_addr 0xe8 wr_mode 1 length 2
+```
 
 
 

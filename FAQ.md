@@ -371,6 +371,81 @@ hi # saveenv
 
 
 
-## 13 'eabi' and 'oabi' for the gun
+## 13. 'eabi' and 'oabi' for the gun
 
 eabi (embedded application binary interface )  oabi (old application binary interface)
+
+
+
+## 14. [CPU IRQ Affinity](<https://zhuanlan.zhihu.com/p/38541212>)
+
+At first stop the IRQ binding service  , then bind the IRQ for eth0  to CPU1 ,  step as following
+
+```shell
+# echo "2" > /proc/irq/90/smp_affinity
+# cat /proc/interrupts 
+           CPU0       CPU1       
+  0:  918926335          0    IO-APIC-edge  timer
+  1:          2          0    IO-APIC-edge  i8042
+  8:          0          0    IO-APIC-edge  rtc
+  9:          0          0   IO-APIC-level  acpi
+ 12:          4          0    IO-APIC-edge  i8042
+ 14:    8248017          0    IO-APIC-edge  ide0
+ 50:        194          0   IO-APIC-level  ohci_hcd:usb2
+ 58:      31673          0   IO-APIC-level  sata_nv
+ 90:    1070374          0         PCI-MSI  eth0
+233:         10          0   IO-APIC-level  ehci_hcd:usb1
+NMI:       5077       2032 
+LOC:  918809969  918809894 
+ERR:          0
+MIS:          0
+```
+
+
+
+## 15. Regular Expression
+
+$1,$2 ... is match content in the "()",  $1 means match the first "()"  , $2 means match the second "( )"
+
+```Shell
+# Example 1
+gainover123 
+# /gai([\w]+?)over([\d]+)/ 
+# $1 = n ; $2 = 123
+
+# Example 2
+PROVINCE_HUN
+PROVINCE_TAJ
+PROVINCE_HUB
+# require replase 	'PROVINCE_HUN' to 'PROVINCE_HUN hun'
+#					'PROVINCE_TAJ' to 'PROVINCE_TAJ taj'
+# 					'PROVINCE_HUB' to 'PROVINCE_HUB hub'
+# 
+# Find 		"PROVINCE_([A-Z])([A-Z])([A-Z])"
+# Replace 	"PROVINCE_$1$2$3 \L$1$2$3"
+```
+
+
+
+
+
+## 16 .Variable Scope for Shell script
+
+local variable, global variable and environment variable
+
+```shell
+#!/bin/bash
+
+function funcA(){
+	# define local variable 'var', only useful with in 'funcA'
+    local var=99;	
+	# define global variable, working on this script.
+    var2=100;
+}
+# define for environment variable.
+export var3=200
+
+echo $var2
+echo $var3
+```
+

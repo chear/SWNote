@@ -165,7 +165,16 @@ Ref: makefile使用规则
 1. 在Makefile中只能在target中调用Shell脚本，其他地方不能输出。
 2. Makefile中的shell，每一行是一个进程，不同行之间变量值不能传递。所以，Makefile中的shell不管多长也要写在一行。
 3. Makefile中的变量以$开头， 所以，为了避免和shell的变量冲突，shell的变量以$$开头
-4. '@'' 代表执行命令不需要返回结果
+4. '@' 代表执行命令不需要返回结果 , '-'  代表创建或者删除文件，如果碰到文件不存在或者已经创建，那么希望忽略掉这个错误，继续执行， '$' 代表Makefile扩展变量
+5. 在 Makefile 中定义变量需要注意
+
+```Makefile
+env = var 		# Makefile veriable
+targt:
+	env1=var1	# Shell veriable
+```
+
+
 
 ( 在 Makefile 中编写 shell 脚本需要特别注意隐藏字符，比如回车换行符，如果隐藏字符位置不对可能会导致 Makeile 执行失败，并且较难排除。在 vim 命令模式中 :set invlist 打开或者关闭隐藏字符。 )
 

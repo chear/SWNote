@@ -3,6 +3,8 @@
 id, R00499 ,  tel 15148
 ecnet pdf pwd: mstcecnt
 e-school: zyxel\R00499 /pwd
+email: qwasQWAS1234
+
 
 
 

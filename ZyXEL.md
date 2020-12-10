@@ -208,11 +208,23 @@ $make PROFILE=CCC3
 $svn checkout https://svn.mitrastar.com/svn/MLD_CPE/MLD-PI-1.0.0/product/2020/HGW-500TX2X2-E
 $cd dev/trunk-utils/MLD_Scripts
 $./all.sh HGW-500TX2X2-E
+(This script should be sync the config settings.)
 $cd ../../makecode/
 $make clean;make all
 ```
 
 
+
+ccc configuration files.
+
+```mermaid
+graph LR
+all.sh(all.sh HGW-500TX2X2-E)  -->predef.xml
+all.sh -->sysdef.xml
+config.xml --> lzma(lzma to rom file)
+predef.xml --> xml2rdm(CCC rdm)
+sysdef.xml --> xml2rdm
+```
 
 
 
@@ -230,25 +242,31 @@ $make clean;make all
 **MLD (Mitrastar Linux Distribution)** contains:
 
 - Mitrastar CDK - the cross development kit.
-
 - Linux kernel 
-
 - Assorted user-land software  (recompiled by Mitrastar CDK).
   - Hardened source code from MVista/Gentoo/…
   - Original source code from official Web/FTP site. 
 - Home-grown programs/libraries. 
-
 - System Boot Scripts.
-
 - Build System.
 
-![ccc_img](img/clipboard.png)
+
+
+``rdm_object.h`` error could be update by following:
+
+```shell
+# rm -Rf ../build/sysapps/ccc ../build/sysapps/libccc
+# make sysapps/private/mitrastar/ccc
+# make sysapps/public/other/libccc
+```
 
 
 
 **CCC (Common Configration Center) Architecture Overview:**
 
 ![ccc_overview](img/clipboard.png)
+
+
 
 
 

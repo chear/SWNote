@@ -2,6 +2,20 @@
 
 [TOC]
 
+# Introduction
+
+NAND flash contains **Raw NAND Flash (并行接口)** , **Serial NAND Flash (串行接口)**
+
+
+
+**ONFI 		Open Nand Flash Interface**
+
+
+
+
+
+
+
 ![nand_flash_layout](./img/nand_flash_layout.png)
 
 
@@ -385,7 +399,7 @@ spec info defination:
 
 
 
-## 4.4 His`ilicon NAND Flash Arch
+## 4.4 Hisilicon NAND Flash Arch
 
 SPI Nand driver in hisi platform based on HSAN arch. The basic specfication loaded within bootloader, and transfor to kernel by  paramater. 
 

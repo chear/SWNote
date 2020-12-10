@@ -83,6 +83,73 @@ The file loader.img compose by following :
 
 **(Note: above files based on EN_7528, not for EN_7580.)**
 
+``tcboot.bin`` compose: 
+
+![tcboot_compose](./img/compos_tcboot.png)
+
+``ras.bin`` compose of:
+
+![ras_bin](./img/ras_bin.png)
+
+ZyClip Header defination at ``zyclipHeader.h``
+
+```c
+typedef struct zyClipImHeader_s {
+    unsigned int magicNumber;               /* Provided by Makefile */
+    unsigned char chipId[CHIP_ID_LEN];      /* Provided by Makefile */
+    unsigned char boardId[BOARD_ID_LEN];        /* Provided by Makefile */
+    unsigned int modelId;                   /* Provided by Makefile */
+    unsigned int totalImageLen;
+    unsigned int rootfsAddress;
+    unsigned int rootfsLen;
+    unsigned int kernelAddress;
+    unsigned int kernelLen;
+    unsigned int defcfgAddress;
+    unsigned int defcfgLen;
+    unsigned int imageSequence;
+    unsigned char swVersionInt[SW_VERSION_LEN]; /* Provided by Makefile */
+    unsigned char swVersionExt[SW_VERSION_LEN]; /* Provided by Makefile */
+    unsigned int rootfsChksum;
+    unsigned int kernelChksum;
+    unsigned int defcfgChksum;
+} zyClipImHeader_t, *pzyClipImHeader_t;
+```
+
+trx_header at ``trx.h``
+
+```c
+struct trx_header {
+	unsigned int magic;			/* "HDR0" */
+	unsigned int header_len;    /*Length of trx header*/
+	unsigned int len;			/* Length of file including header */
+	unsigned int crc32;			/* 32-bit CRC from flag_version to end of file */
+	unsigned char version[32];  /*firmware version number*/
+	unsigned char customerversion[32];  /*firmware version number*/
+//	unsigned int flag_version;	/* 0:15 flags, 16:31 version */
+	unsigned int kernel_len;	//kernel length
+	unsigned int rootfs_len;	//rootfs length
+    unsigned int romfile_len;	//romfile length
+	unsigned char Model[32];
+	unsigned int decompAddr;//kernel decompress address
+	unsigned int saflag;
+	unsigned int saflen;
+	unsigned int reserved[30];  /* Reserved field of header */
+	unsigned char chipId[CHIP_ID_LEN];		/* Provided by Makefile */
+	unsigned char boardId[BOARD_ID_LEN];		/* Provided by Makefile */
+	unsigned int modelId;					/* Provided by Makefile */
+	unsigned int defcfg_len;	//default config length
+	unsigned int imageSequence;
+	unsigned char swVersionInt[SW_VERSION_LEN];	/* Provided by Makefile */
+	unsigned char swVersionExt[SW_VERSION_LEN];	/* Provided by Makefile */
+ 	unsigned int rootfsChksum;
+	unsigned int kernelChksum;
+	unsigned int defcfgChksum;
+    unsigned int headerChksum;
+};
+```
+
+
+
 
 
 ## 1.2 MRD
@@ -333,9 +400,75 @@ based on  *CT_EN7528_LE_7592_7613_JOYME3_demo.profile*
 
 
 
-## 2.1 Econet Booting Process
+## 2.1 ZyClib Bootbase making
 
 
 
-## 2.2 Econet
+## 2.2 ZyClib mtd partition table
+
+```c
+/***           flash boot:128KB          ***/
+/*  start.o        from 0x0                */
+/*  move_data.img  less than 0x800         */
+/*  boot2.img                              */
+/*  lzma.img                               */
+/*  spram.img      less than 0xFF00        */
+/*  mi.conf        from 0xFF00 to 0xFFFF   */
+/*  bootram.img    from 0x10000 to 0x1FFFB */
+/*  CRC32          from 0x1FFFC to 0x1FFFF */
+/*******************************************/
+
+/***           flash boot:256KB          ***/
+/*  start.o        from 0x0                */
+/*  move_data.img  less than 0x800         */
+/*  boot2.img                              */
+/*  spram.img      less than 0xFF00        */
+/*  constant data  from 0xFF00 to 0xFFFF   */
+/*  lzma.img       from 0x10000 to 0x1FFFB */
+/*  CRC32          from 0x1FFFC to 0x1FFFF */
+/*  bootram.img    from 0x20000 to 0x3FDFB */
+/*  mi.conf        from 0x3FDFC to 0x3FFFB */
+/*  CRC32          from 0x3FFFC to 0x1FFFF */
+/*******************************************/
+```
+
+
+
+```c
+/*  -------------------------------------- 0x00000000
+*  |        tcboot.bin(zld.bin)         |
+*  |             (256KB)                |  (default using 2 blocks)
+*  +------------------------------------+  0x00040000
+*  |         romfile (256KB)            |  (default using 2 blocks)
+*  +------------------------------------+  0x00080000
+*  |                                    |
+*  |       tclinux.bin(ras.bin)         |
+*  |                                    |
+*  @@@@@@@ECONET current design@@@@@@@@@@  0x00080000 + (nand_logic_size/2)
+*  @@@@@@@ZyXEL plane to change@@@@@@@@@@  (nand_logic_size-
+*  |                                    |  (0x80000+0x80000+romd_size+
+*  |                                    |  data_size+wwanpackage_size))/2
+*  |                                    |
+*  |       tclinux.bin(ras.bin)         |
+*  |         (for dual image)           |
+*  +------------------------------------+  nand_logic_size -
+*  |                                    | (0x80000+romd_size+data_size+
+*  |                                    |  wwanpackage_size)
+*  |         wwanpackage (1024KB)       |  (default using 8 blocks)
+*  +------------------------------------+  nand_logic_size -
+*  |                                    |  (0x80000+romd_size+data_size)
+*  |           data(4096KB)             |  (default using 20 blocks)
+*  +------------------------------------+  nand_logic_size -(0x80000+romd_size)
+*  |          romd (1024KB)             |  (default using 8 blocks)
+*  +------------------------------------+  nand_logic_size -0x80000
+*  |         reserve area (512KB)       |  (default using 4 blocks)(TCSUPPORT_RESERVEAREA_BLOCK*block_size)                     
+*  +------------------------------------+  nand_logic_size = (system_block_count -
+*  |                                    |  init_bbt.badblock_count)*block_size
+*  |       BMT replace pool (10MB)      |  (default using 81 blocks for 
+*  |                                    |  128MB NAND flash)
+*  |                                    |  (bmt_block_count =
+*  |                                    |   total_block*POOL_GOOD_BLOCK_PERCENT(0.08))
+*  +------------------------------------+  max.size 
+*/       
+```
 

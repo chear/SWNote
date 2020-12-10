@@ -27,6 +27,31 @@ ctags: Notice: No options will be read from files or environment
 
 
 
+### Ctags ignore files
+
+``--exclude=@.ctagsignore``  to specify excluded dir for the ``catgs``  , for ``-R .``  should be setting absolute path :
+
+```shell
+# cd makecode/sysapps/private/mitrastar/libCmd/
+# ctags --options=NONE --options=/home/chear/.vim_runtime/ctags_parser/linux.ctags --langmap=c:+.h --extras=+q --if0=no -o c_tags --verbose=true --exclude=@.ctagsignore -R .
+# cat .ctagsignore
+BROADCOM/* 
+```
+
+``-R `pwd` `` should be setting for full path ,
+
+```shell
+# ctags --options=NONE --options=/home/chear/.vim_runtime/ctags_parser/linux.ctags --langmap=c:+.h --extras=+q --if0=no -o c_tags --verbose=true --exclude=@.ctagsignore -R `pwd`
+
+/home/chear/HGW-500TX2X2-E/dev/makecode/sysapps/private/mitrastar/libCmd/BROADCOM/*
+```
+
+
+
+
+
+
+
 ## Quilt
 
 [Quilt](<http://savannah.nongnu.org/projects/quilt>) is a tool to manage a **series of patches** relative to a common code base.

@@ -1327,3 +1327,19 @@ $ cli /home/cli/hal/chip/i2c_cmd_write -v dev_addr 0x51 reg_addr 0x7f data 0x81 
 
 
 
+## 20201210  MTD test
+
+The various MTD tests into compilation. The tests should normally be compiled as kernel modules. The modules perform	  various checks and verifications when loaded. 
+
+```Makefile
+CONFIG_MTD=y
+CONFIG_MTD_TESTS=m
+```
+
+command to running MTD test:
+
+```shell
+# insmod mtd_stresstest.ko dev=9 count=1000
+( 'dev=9' specify the number for mtd block device to test)
+```
+

@@ -1264,6 +1264,8 @@ chear@sw3-cbs-233:$ make V=s
 (to building whole)
 chear@sw3-cbs-233:$ make mod=hisilicon/gateway V=s
 (to building sub-modules path file at 'hisilicon/gateway/Makefile.hsan')
+chear@sw3-cbs-233:$ make source mod=opensrc/dnsmasq V=s
+chear@sw3-cbs-233:$ make source mod=kernel V=s
 ```
 
 spec defnation
@@ -1342,4 +1344,284 @@ command to running MTD test:
 # insmod mtd_stresstest.ko dev=9 count=1000
 ( 'dev=9' specify the number for mtd block device to test)
 ```
+
+
+
+(Tips:  xshell can not startup  , and notify update last version , *two* ways to solute this  , **1.** update system date to 2008 or early , and close update option by  "工具" >> "选项"  >> "实时更新" .  **2.** update ``nslicense.dll``   , change hex value from **``7F 0C 81 F9 80 33 E1 01 0F 86 81``**  to **``7F 0C 81 F9 80 33 E1 01 0F 83 81``**  *(0x86 change to 0x83)* , Note. Xshell 5.0 update  from **``7F 0C 81 F9 80 33 E1 01 0F 86 80``**  to **``7F 0C 81 F9 80 33 E1 01 0F 83 80``**) 
+
+
+
+## 20201224 Manually release memory on Linux
+
+``free``  displays  the total amount of free and used physical and swap memory in the system
+
+- total：内存总数
+
+- used：已经使用的内存数
+- free：空闲的内存数
+- shared：当前已经废弃不用
+- buffers Buffer：缓存内存数
+- cached Page：缓存内存数
+
+``/proc/sys/vm/drop_caches`` 　
+
+​	0：0是系统默认值，默认情况下表示不释放内存，由操作系统自动管理
+　　1：释放页缓存
+　　2：释放dentries和inodes
+　　3：释放所有缓存
+
+```shell
+# freee -m
+             total       used       free     shared    buffers     cached
+Mem:          3930       1619       2311         22        332        717
+-/+ buffers/cache:        569       3361
+Swap:         3981         77       3904
+# sync && echo 0 > /proc/sys/vm/drop_caches　
+()
+```
+
+
+
+## 20201225 New Hisi SDK for V100R012C02SPC001TB001
+
+### 1. start to open cwmp(TR069) logs for xgPon
+
+```shell
+# ps |grep cwmp | grep -v grep|awk '{print int($0)}'|xargs kill -12
+```
+
+### 2. start to open CM logs.
+
+```shell
+# cli /home/cli/log_cmd/log/cfg_set -v module 0xF2041B00 sys 1 dbg 0xff print 0xff flag 0
+( module name '0xF2041B00' for wan debug info, modules name '0xF2041c00' for lan debug info.) 
+```
+
+module define at ``hi_sysdef.h``
+
+```c
+typedef enum
+{
+    HI_SYSBASE_APPS               = 0xF0000000,     /* Application System */
+    HI_SYSBASE_BASIC              = 0xF1000000,     /* Basic System Library */
+    HI_SYSBASE_CMS                = 0xF2000000,     /* Configuration Management System */
+    HI_SYSBASE_DIAGNOSE           = 0xF3000000,     /* Diagnose System */
+    HI_SYSBASE_DMS                = 0xF4000000,     /* Device Management System */
+    HI_SYSBASE_DRIVER             = 0xF5000000,     /* Driver For Chip */
+    HI_SYSBASE_FFS                = 0xF6000000,     /* Fast Forward System */
+    HI_SYSBASE_HAL                = 0xF7000000,     /* Hardware Abstraction Layer */
+    HI_SYSBASE_MMS                = 0xF8000000,     /* Maintainace Management System */
+    HI_SYSBASE_PONLINK            = 0xF9000000,     /* Pon Link System */
+    HI_SYSBASE_SML                = 0xFA000000,     /* Service Management Library */
+    HI_SYSBASE_SSF                = 0xFB000000,     /* Support System Framework */
+    HI_SYSBASE_VOICE              = 0xFC000000,     /* Voice */
+    HI_SYSBASE_CFE                = 0xFD000000,     /* Fast Forward System */
+    HI_SYSBASE_ADAPTER            = 0xFE000000,     /* Spring Adapter */
+    HI_SYSBASE_GLB                = 0xFF000000,     /* Global Purpose */
+} hi_sysbase_e;
+```
+
+
+
+## 20201229 GBK transfer to UTF-8
+
+**gbk** code for 2 bytes , **utf-8** code for 3 bytes
+
+```c
+int __gbk_to_utf8(char * src, int s_len, char * dst, int d_len)
+{
+    char *encTo = "UTF-8//IGNORE";
+    char *encFrom = "GBK";
+    int i, j, srclen = 2, dstlen = 3;
+    char gbk[2] = {0}, utf8[3] = {0};
+    char *p_gbk = gbk, *p_utf8 = utf8;
+
+    iconv_t cd = iconv_open (encTo, encFrom);
+    if (cd != -1)
+    {
+        for(i = 0, j = 0; i<s_len && j<d_len; i++, j++)
+        {
+            if(!src[i]) break;
+            if(src[i] < 0x80)
+            {
+                dst[j] = src[i];
+                continue;
+            }
+            if(i>s_len-1 || j>d_len-2) break;
+            gbk[0] = src[i++];
+            gbk[1] = src[i];
+            p_gbk = gbk;
+            p_utf8 = utf8;
+            srclen = 2;
+            dstlen = 3;
+            if (iconv (cd, &p_gbk, &srclen, &p_utf8, &dstlen) < 0)
+            {
+                iconv_close (cd);
+                return -1;
+            }
+            HI_OS_MEMCPY_S(&dst[j], 3, utf8, 3);
+            j+=2;
+        }
+        iconv_close (cd);
+        return 0;
+    }
+    return -1;
+}
+```
+
+
+
+## 20210104 MLD /usr/bin/btm memory leak
+
+```shell
+# cat /proc/`ps |grep btm | grep -v grep | awk '{print $1}'`/status | grep -E 'VmSize|VmRSS|VmData|VmStk|VmExe|VmLib'
+```
+
+- VmSize(KB) ：虚拟内存大小。整个进程使用虚拟内存大小，是VmLib, VmExe, VmData, 和 VmStk的总和。
+- VmRSS(KB)：虚拟内存驻留集合大小。这是驻留在物理内存的一部分。它没有交换到硬盘。它包括代码，数据和栈。
+- VmData(KB)： 程序数据段的大小（所占虚拟内存的大小）， 堆使用的虚拟内存。
+- VmStk(KB)： 任务在用户态的栈的大小，栈使用的虚拟内存
+- VmExe(KB)：程序所拥有的可执行虚拟内存的大小，代码段，不包括任务使用的库
+- VmLib(KB) ：被映像到任务的虚拟内存空间的库的大小
+
+[Valgrind](https://www.valgrind.org/) is an instrumentation framework for building dynamic analysis tools ,to dectect memory leak.
+
+Building V for MIPS:
+
+```shell
+$ tar -jxvf valgrind-3.16.1.tar.bz2 -C valgrind/
+$ ./configure --host=mipsel-linux-gnu --prefix=<path_to_install_directory>
+$ make
+$ make install
+```
+
+code of memory leak 
+
+```c
+while(mainSSIDobjList != NULL)
+	{
+		mainSSIDobj = cccRdmGetObjectByOID(rdmCB, mainSSIDobjList->OID, mainSSIDobjList->IA, NULL_IF_NOT_EXISTED);
+		if(mainSSIDobj && strcmp(mainSSIDobj->X_5067F0_FrequencyBand, "5GHz") == 0 && mainSSIDobj->X_5067F0_MainSSID)
+		{
+			break;
+		}
+		mainSSIDobj = NULL;
+		mainSSIDobjList = mainSSIDobjList->next;
+	}
+
+	if(mainSSIDobj)
+	{
+		enable = (mainSSIDobj->RadioEnabled & mainSSIDobj->Enable);
+        /* 'cccRdmFreeObjList' is missing code in original,         
+         *   and this issue caused memory leak.
+         */
+		cccRdmFreeObjList(&tmpListHead); 
+		RDMDEINIT(rdmCB);
+	}
+```
+
+
+
+## 20210112  transer decimal to hex when building multi-province to mrd.txt in tcboot.bin
+
+convert decimal value to hex by shell , and replace word "[ZyClip_ProvinceName]" .	
+
+```Makefile
+province:
+	cp ${MRD_PATH}/mrd_template.txt mrd_tmp.txt
+ 	PNAME_HEX=`echo $(PROVINCE_NUMBER)|awk '{printf("%x\n",$$0)}'` && sed -i "s/\[ZyClip_ProvinceName\]/$${PNAME_HEX}/g" mrd_tmp.txt;
+
+```
+
+
+
+
+
+## 20210121 Hisilicon string copy function
+
+``HI_OS_STRCPY_S(char *dst, int Max ,char * src)`` its thread security and safty copy  content from  *src* to *dst*  , include string  or any struct.
+
+```c
+char tmp[LAN_HOSTS_NAME_LEN]={0};
+HI_OS_STRCPY_S(tmp, LAN_HOSTS_NAME_LEN ,(unsigned char *)pstPara->aucHostName);
+```
+ defines at ``hisilicon/gateway/drivers/basic/security/include/hi_os_securec.h``
+
+ ```c
+#define HI_OS_STRCPY_S(d,max,s)           \
+do{  \       
+    int nRet = 0;  \
+    nRet =  strcpy_s((d),(max),(s));  \
+    if(EOK != nRet ) \
+    { \      
+        printf("%s,%d :strcpy_s return[%d] failed \r\n",__func__,__LINE__,nRet); \
+    } \
+}while(0) 
+ ```
+defines at ``hisilicon/gateway/drivers/basic/security/src/strcpy_s.c``
+
+```c
+errno_t strcpy_s(char *strDest, size_t destMax, const char *strSrc)
+{
+    if ((destMax > 0 && destMax <= SECUREC_STRING_MAX_LEN && strDest != NULL && strSrc != NULL && strDest != strSrc)) {
+        const char *endPos = strSrc;
+        size_t srcStrLen = destMax;  /* use it to store the maxi length limit */ 166         while (*(endPos++) && srcStrLen-- > 0);   /* use srcStrLen as boundary checker */
+
+        srcStrLen = endPos - strSrc ; /*with ending terminator*/
+        if (srcStrLen <= destMax) {
+            if (strDest < strSrc) {
+                if (strDest + srcStrLen <= strSrc) { 172                     if (srcStrLen > SECURE_STRCOPY_SIZE) {
+                        (void)memcpy(strDest, strSrc, srcStrLen);
+                    } else {
+                        SMALL_STR_COPY
+                    }
+                    return EOK;
+                } else {
+                    strDest[0] = '\0';
+                    SECUREC_ERROR_BUFFER_OVERLAP("strcpy_s");
+                    return EOVERLAP_AND_RESET;
+                }
+            } else {
+                if (strSrc + srcStrLen <= strDest) {
+                    if (srcStrLen > SECURE_STRCOPY_SIZE) {
+                        (void)memcpy(strDest, strSrc, srcStrLen);
+                    } else {
+                        SMALL_STR_COPY
+                    }
+                    return EOK;
+                } else {
+                    strDest[0] = '\0';
+                    SECUREC_ERROR_BUFFER_OVERLAP("strcpy_s");
+                    return EOVERLAP_AND_RESET;
+                }
+            }
+        }
+    }
+    return strcpy_error(strDest, destMax, strSrc);
+}
+```
+
+
+
+## 20210203  ccc test
+
+```shell
+# echo "RDMNAME config;
+REQUEST;
+SEL InternetGatewayDevice.DeviceInfo;
+GET ModelName;
+GET Manufacturer;
+GET ProductClass;
+GET HardwareVersion;
+GET ModemFirmwareVersion;
+GET SoftwareVersion;
+SEND;" >/tmp/test.ccc
+# ccctest -f /tmp/test.ccc
+```
+
+
+
+
+
+
 

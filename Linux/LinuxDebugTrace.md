@@ -1,3 +1,33 @@
+# Linux Building
+
+building process.
+
+```
+
+                            kernel/built-in.o  certs/built-in.o
+                            mm/built-in.o      fs/built-in.o
+                            ipc/buit-in.o      security/built-in.o
+                            crypto/built-in.o  block/built-in.o
+                            lib/built-in.o     lib/lib.a
+ head_64.o                  usr/built-in.o     drivers/built-in.o
+ head64.o                   sound/built-in.o   firmware/built-in.o
+ head.o    init/built-in.o  net/built-in.o     virt/built-in.o
+    ||          ||             ||                ||
+
+ $(head-y)    $(init-y)     $(core-y)  $(drivers-y)
+                            $(net-y)   $(libs-y)  
+                            $(virt-y)
+     |            |             |          |
+     |            |             |          |
+      \          /               \        /
+       \        /                 \      /
+
+    KBUILD_VMLINUX_INIT         KBUILD_VMLINUX_MAIN
+               \                   /
+                 \              /
+                       vmlinux   (compress or not)
+```
+
 
 
 # Linux ELF
@@ -31,7 +61,7 @@ The **type** field tells us what the purpose of the file is. There are a few com
 - EXEC (Executable file), for binaries (value 2)
 - REL (Relocatable file), before linked into an executable file (value 1) , such like *.o file.
 
-For executable files there are four main sections, Each of these sections is loaded with different access rights, which can be seen with **readelf -S**.
+For executable files there are four main sections, Each of these sections is loaded with different access rights, which can be seen with **[readelf -S](https://zhuanlan.zhihu.com/p/112754720)**.
 
 **.text**
 
@@ -317,3 +347,10 @@ VmData: 虚拟内存数据。堆使用的虚拟内存;
 VmStk: 虚拟内存栈  栈使用的虚拟内存;
 VmExe: 可执行的虚拟内存, 可执行的和静态链接库所使用的虚拟内存;
 VmLib: 虚拟内存库动态链接库所使用的虚拟内存**
+
+
+
+### Linux Kernel Heap Spray
+
+[Heap Spray](https://mp.weixin.qq.com/s/mj1U5I1-0jITU1rMik0ALA) 
+

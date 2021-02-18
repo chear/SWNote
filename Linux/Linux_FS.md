@@ -22,7 +22,7 @@ A FS provides a generalized structure over persistent storage, allowing the low-
 
 # 2. File System Theory
 
-**Metadata  is data about data.**  For example a file named  'A.txt' , so  'A.txt'  is data , and the owner  , write/read rules  ,  stored path all called metadata.
+**Metadata  is data about data.**  For example a file named  'A.txt' , so  'A.txt'  is data , and the owner  , write/read rules  ,  stored path of this file all called metadata.
 
 ## 2.1  Physical Storage of data
 
@@ -72,5 +72,46 @@ i代表index，i-node也叫索引节点。一个i-node存储一个文件的元�
 
 
 
-# 3. jff2 FS
+# 3. JFFS2
 
+
+
+
+
+
+
+# 4.  Squashfs
+
+**Squashfs** is a compressed read-only file system for Linux. It uses ``zlib/lzo/xz`` compression to compress files, inodes and directories.
+
+A squashfs filesystem consists of a maximum of nine parts, packed together on a byte alignment:
+```shell
+     ---------------
+    |  superblock   |
+    |---------------|
+    |  compression  |
+    |    options    |
+    |---------------|
+    |  datablocks   |
+    |  & fragments  |
+    |---------------|
+    |  inode table  |
+    |---------------|
+    |   directory   |
+    |     table     |
+    |---------------|
+    |   fragment    |
+    |    table      |
+    |---------------|
+    |    export     |
+    |    table      |
+    |---------------|
+    |    uid/gid    |
+    |  lookup table |
+    |---------------|
+    |     xattr     |
+    |     table     |
+     ---------------
+```
+
+Compressed data blocks are written to the filesystem as files are read from the source directory, and checked for duplicates.  Once all file data has been written the completed inode, directory, fragment, export, uid/gid lookup and xattr tables are written.

@@ -8,7 +8,7 @@ ARM ARMv7 , 667 Hz , 1 Core, Memory 256M ,
 
 [OpenWRT](https://openwrt.org/docs/guide-user/start) is embedded operation system  for Linux distribution based on GPL License .  OpenWRT did not contain any source code , this composed by each patch and zip, other word OpenWRT almost everything is an ".ipk ",  the ".ipk" is other name for ".tar.gz" . 
 
-(Note: the static var for each package defined within ``open/tmp/*`` )
+(Note: the static var for each package defined within ``open/tmp/*``  , to unzip *.tar.gz by ```tar -zxvf file1.tar.gz```  , to unzip *.tar.bz2 by  ```tar -jxvf file2.tar.bz2```. )
 
 ## 	1.2 Startup
 

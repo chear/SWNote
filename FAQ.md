@@ -20,12 +20,12 @@ $brctl show
 
 ### display registed info with-in OLT server
 
-telnet login root@172.25.17.250 , root/admin
+telnet login root@172.25.17.250 , root/admin ,  xgpon password ``0000000049`` for mine.
 
 ```shell
 >enable
 #config
-#interface epon 0/12  			(Note: interface gpon 0/2)
+#interface epon 0/12  			(Note: interface gpon 0/2  ， interface xgpon 0/10)
 #display ont info 0 all 		(Note: 查看所有的ONT状态)
 #display ont info 0 1
 ```
@@ -551,3 +551,91 @@ static __always_inline void *kmalloc(size_t size, gfp_t flags)
 ```
 
 ``kzmalloc`` is for ``kmalloc``   and set zero for the space.
+
+
+
+## 18.  fopen  & open
+
+Both ``fopen`` and ``open``  are used to open file by specified path and file name , but ``fopen`` it is POSIX API , ``open`` its system call for Linux kernel. 
+
+Usually the ``fopen`` used to open text file , the ``open`` used to open device file. 
+
+```c
+FILE *fopen(const char *path, const char *mode);
+/*
+ r   Open text file for reading.  The stream is positioned at the beginning of the file.
+   
+ r+  Open for reading and writing.  The stream is positioned at the beginning of the file.
+   
+ w   Truncate file to zero length or create text file for writing.  The stream is positioned at the beginning of the file.
+   
+ w+  Open for reading and writing.  The file is created if it does not exist, otherwise it is truncated.  The stream is positioned at the beginning of the file.
+   
+ a   Open for appending (writing at end of file).  The file is created if it does not exist.  The stream is positioned at the end of the file.
+   
+ a+  Open  for reading and appending (writing at end of file).  The file is created if it does not exist.  The initial file position for reading is at the beginning of the file, but output is always appended to the end of the file.
+ */
+
+
+int open(const char *pathname, int flags);
+int open(const char *pathname, int flags, mode_t mode);
+```
+
+
+
+## 19 aligned for GUN C
+
+[aligned](<https://blog.csdn.net/qlexcel/article/details/79583158>)  , 数组中所有元素都是紧挨着的, 为了提高内容的使用效率 ，需要把结构体大小变为 4 的整数倍，即要把结构补充成有效对齐大小的整数倍。 如果我们不把结构的大小补充为4的整数倍, 那么下一个结构很有可能不能满足结构的地址对齐了。
+
+1. 数据类型自身的对齐值：对于char型数据，其自身对齐值为1，对于short型为2，对于int,float,double类型，其自身对齐值为4，单位字节。
+2. 结构体或者类的自身对齐值是其成员中自身对齐值最大的那个值。
+3. 指定对齐值：是指使用#pragma pack (value)时的指定对齐值value。
+4. 数据成员、结构体和类的有效对齐值：自身对齐值和指定对齐值中小的那个值。
+
+```c
+struct p
+{
+    int a;
+    char b;
+    short c;
+}__attribute__((aligned(4))) pp;
+ 
+struct m
+{
+    char a;
+    int b;
+    short c;
+}__attribute__((aligned(4))) mm;
+ 
+struct o
+{
+    int a;
+    char b;
+    short c;
+}oo;
+ 
+struct x
+{
+    int a;
+    char b;
+    struct p px;
+    short c;
+}__attribute__((aligned(8))) xx;
+ 
+int main()
+{           
+    printf("sizeof(int)=%d,sizeof(short)=%d.sizeof(char)=%d\n",sizeof(int) ,sizeof(short),sizeof(char));
+    printf("pp=%d,mm=%d \n", sizeof(pp),sizeof(mm));
+    printf("oo=%d,xx=%d \n", sizeof(oo),sizeof(xx));
+    return 0;
+}
+```
+
+output :
+
+```shell
+sizeof(int)=4,sizeof(short)=2.sizeof(char)=1
+pp=8,mm=12
+oo=8,xx=24
+```
+

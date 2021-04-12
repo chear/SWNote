@@ -63,6 +63,8 @@ root@:# ./addoob tclinux_allinone_nand tclinux_allinone_nand_ecc 2048 64
 root@:# ./addhdr tclinux_allinone_nand_ecc ap_mstc.bin
 ```
 
+(Note: check hex data for MSTC image  , verify the offset data correct or not , ``./addoob file1 file2 2112 64`` .)
+
 
 
 # 3. BootLoader

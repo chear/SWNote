@@ -1,16 +1,30 @@
-# 1. Basic Info
-
 [TOC]
 
-# Introduction
+
+
+# 1. Introduction
 
 NAND flash contains **Raw NAND Flash (并行接口)** , **Serial NAND Flash (串行接口)**
 
 
 
-**ONFI 		Open Nand Flash Interface**
+## 1.1 ONFI
+
+**ONFI (Open Nand Flash Interface)**  Using an open interface standard strengthens compatibility and interoperability of NAND devices from different vendors . This defines following memory origanization. To  check ONFI by  [spec](<https://media-www.micron.com/-/media/client/onfi/specs/onfi_4_2-gold.pdf>) .
+
+![onfi](./img/onfi.bmp)
 
 
+
+
+
+**One-Time Programmable**
+
+**FDM (Factory Defect Mapping)**
+
+
+
+## 1.2 Toggle
 
 
 
@@ -246,7 +260,7 @@ struct hi_fmc_spi_nand_param
 };
 ```
 
-spec defnation：
+spec definition：
 
 ```c
 ...
@@ -357,7 +371,9 @@ spi flash spec table reference diagram:
 
 ![spec](./img/ecnot_spec.png)
 
+ecc layout
 
+![ecc_layout](./img/ecc_layout.bmp)
 
 ## 4.3 ZyXEL  (MLD) platfrom struct:
 
@@ -810,7 +826,7 @@ bldr> spinand_read 80 800 0 1
 *spinand_read [Addr] [Len] [READ_MODE (0,1)] [Address_Type(0,1)]*
 
 ```shell
-bldr> bldr> spinand_write 40000 1 0 a
+bldr> spinand_write 40000 1 0 a
 
 SPI NAND Write to 0x40000, len 0x1, speed=0x0
 ```

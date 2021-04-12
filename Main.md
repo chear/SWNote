@@ -199,3 +199,14 @@ bootloader telecomadmin / nE7jA%5m
 
 console	admin / 1234
 
+
+
+## VM Ware
+
+kali source for apt.list
+
+deb https://mirrors.aliyun.com/kali kali-rolling main non-free contrib
+deb-src https://mirrors.aliyun.com/kali kali-rolling main non-free contrib
+
+default for toor
+

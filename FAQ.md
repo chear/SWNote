@@ -81,7 +81,7 @@ When first building project for "sysapps/public/gpl/felix_framework_cuc_cmcc" wi
 when download failed, could verify and copy the  '/home/{user_name}/.m2' to the current user home path such like :
 
 ```shell
-$cp -R /home/don/.m2 /home/chear/
+$ cp -R /home/don/.m2 /home/chear/
 ```
 or update maven setting.xml while add Aliyun to maven repo  , in this by  '/usr/share/apache-maven-3.2.5/conf/setting.xml'
 ```xml
@@ -424,8 +424,6 @@ PROVINCE_HUB
 # Find 		"PROVINCE_([A-Z])([A-Z])([A-Z])"
 # Replace 	"PROVINCE_$1$2$3 \L$1$2$3"
 ```
-
-
 
 
 

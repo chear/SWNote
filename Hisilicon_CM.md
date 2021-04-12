@@ -119,12 +119,16 @@ hi_int32 hi_notifier_call(hi_char8 *pc_name, hi_void *pv_data);
 ```
 
 
-### CM Sample
+
+### CM Settings
+
+Example of priority to  get default value from attribute table ,   at first check the ``/work/config/lastgood.xml`` , then ``/usr/local/factory/defaultconfig.xml`` ,final  ``mibtbl.c``
 
 
-```c
+```text
+lastgood.xml loading priority:
 
-
-
+cmcc_smart_jt_1_3_1_4_1.xml  ==> defaultconfig.xml  ==> mibtbl.c
+	 (vendor setting )             (mib setting)  		(mib)
 ```
 

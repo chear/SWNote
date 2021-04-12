@@ -1708,3 +1708,274 @@ strlen (str)
 
 
 
+## 20210303  HGW-500TX2X2-E to suit new flash  XT26G01C for XTX
+
+### Spec for this chip
+
+main source at ``platform/kernel/drivers/mtd/chips/spi_nand_flash_table.c``  , header at ``makecode/sysapps/private/third-party/MTK/include/modules/modules/spi/spi_nand_flash.h``
+
+```c
+    /* spi nand flash chip for XT26G01C  */
+	{
+		mfr_id: 					_SPI_NAND_MANUFACTURER_ID_XTX,
+		dev_id: 					_SPI_NAND_DEVICE_ID_XT26G01C,
+		ptr_name:					"_SPI_NAND_DEVICE_ID_XT26G01C",
+		device_size:				_SPI_NAND_CHIP_SIZE_1GBIT,
+		page_size:					_SPI_NAND_PAGE_SIZE_2KBYTE,
+		oob_size:					_SPI_NAND_OOB_SIZE_128BYTE,
+		erase_size: 				_SPI_NAND_BLOCK_SIZE_128KBYTE,
+		dummy_mode: 				SPI_NAND_FLASH_READ_DUMMY_BYTE_APPEND,
+		read_mode:					SPI_NAND_FLASH_READ_SPEED_MODE_DUAL,
+		write_mode:					SPI_NAND_FLASH_WRITE_SPEED_MODE_SINGLE,
+		oob_free_layout :			&ooblayout_xt26g01c, 	
+		feature:					SPI_NAND_FLASH_FEATURE_NONE,
+        die_num:					1,
+		ecc_fail_check_info:		{0xF0, 0xF0},
+		write_en_type:				SPI_NAND_FLASH_WRITE_LOAD_FIRST,
+		unlock_block_info:			{0x38, 0x0},
+		quad_en:					{0x01, 0x01},
+		ecc_en:						{_SPI_NAND_ADDR_FEATURE, 0x10, 0x10},
+#ifdef TCSUPPORT_NAND_FLASH_OTP
+		otp_page_num:				-1,
+#endif		
+	},
+
+struct spi_nand_flash_ooblayout ooblayout_xt26g01c = {
+    .oobsize = 128,
+    .oobfree = {{0,16}, {16,16}, {32,16}, {48,16}, {64,52}, {116,12}}
+};
+```
+
+### ECC Status
+
+``ecc_fail_check_info:{0xF0, 0xF0}``  to setting  **ECC Status (EES)** concerned for status register **C0H**  as following *Table5* , this register specify which bit errors were detected and corrected as *Table8*
+
+**Table5**
+
+![spec](./img/xtx_xt26g01c_spec.bmp)
+
+**Table8**
+
+![](./img/xtx_xt26g01c_spec3.bmp)
+
+SPI Nand driver do operating this field as following , source at  ``platform/kernel/drivers/mtd/chips/spi_nand_flash.c``
+
+```c
+static SPI_NAND_FLASH_RTN_T ecc_fail_check( u32 page_number ){
+    u8                              status;
+    struct SPI_NAND_FLASH_INFO_T    *ptr_dev_info_t;
+    SPI_NAND_FLASH_RTN_T            rtn_status = SPI_NAND_FLASH_RTN_NO_ERROR;
+    ptr_dev_info_t  = _SPI_NAND_GET_DEVICE_INFO_PTR;
+    spi_nand_protocol_get_feature(_SPI_NAND_ADDR_STATUS, &status);
+    _SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_1, "[spinand_ecc_fail_check]: status=0x%x\n", status);
+    
+    if((ptr_dev_info_t->feature & SPI_NAND_FLASH_NO_ECC_STATUS_HAVE) == 0) {
+        if((status & ptr_dev_info_t->ecc_fail_check_info.ecc_check_mask) == ptr_dev_info_t->ecc_fail_check_info.ecc_uncorrected_value) {
+            rtn_status = SPI_NAND_FLASH_RTN_DETECTED_BAD_BLOCK;
+            _SPI_NAND_PRINTF("[spinand_ecc_fail_check] : ECC cannot recover detected !, page=0x%x\n", page_number);
+        }
+    }
+    return (rtn_status);
+}
+```
+
+### Block (write ) Protect 
+
+``unlock_block_info:{0x38, 0x0}`` is block lock register for **A0H** within *Table5* , 
+
+![spec2](./img/xtx_xt26g01c_spec2.bmp)
+
+driver do operating this field as following:
+
+```c
+static void spi_nand_manufacute_init(struct SPI_NAND_FLASH_INFO_T *ptr_device_t){
+    unsigned char   feature;
+    unsigned char   die;
+
+    _SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_1,"spi_nand_manufacute_init: Unlock all block and Enable Quad Mode\n");
+
+    for(die = 0; die < ptr_device_t->die_num; die++) {
+        spi_nand_direct_select_die(die);
+
+        /* 1. Unlock All block */
+        if(ptr_device_t->unlock_block_info.unlock_block_mask != 0x00) {
+            spi_nand_protocol_get_feature(_SPI_NAND_ADDR_PROTECTION, &feature);
+            _SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_1, "Before Unlock all block setup, the status register1 = 0x%x\n", feature);
+
+            feature = (feature & ~(ptr_device_t->unlock_block_info.unlock_block_mask));
+            feature |= (ptr_device_t->unlock_block_info.unlock_block_value & ptr_device_t->unlock_block_info.unlock_block_mask);
+            spi_nand_protocol_set_feature(_SPI_NAND_ADDR_PROTECTION, feature);
+            _SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_1, "Unlock all block setup, the feature = 0x%x\n", feature);
+
+            spi_nand_protocol_get_feature(_SPI_NAND_ADDR_PROTECTION, &feature);
+            _SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_1, "After Unlock all block setup, the status register1 = 0x%x\n", feature);
+        } else {
+            _SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_1, "No need Unlock all block setup.\n");
+        }
+    }
+}
+```
+
+### Quad Mode Enable
+
+``quad_en:{0x01, 0x01}`` is feature register for **B0H** within *Table5* , 
+
+```c
+void enable_quad(void){
+    unsigned char                   feature;
+    unsigned char                   die;
+    struct SPI_NAND_FLASH_INFO_T    *ptr_dev_info_t;
+
+    ptr_dev_info_t  = _SPI_NAND_GET_DEVICE_INFO_PTR;
+
+    _SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_1,"SPI NAND Chip Init : Enable Quad Mode\n");
+
+    for(die = 0; die < ptr_dev_info_t->die_num; die++) {
+        spi_nand_direct_select_die(die);
+
+        /* Enable Qual mode */
+        if(ptr_dev_info_t->quad_en.quad_en_mask != 0x00) {
+            spi_nand_protocol_get_feature(_SPI_NAND_ADDR_FEATURE, &feature);
+            _SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_1, "Before enable qual mode setup, the status register2 =0x%x\n", feature);
+
+            feature = (feature & ~(ptr_dev_info_t->quad_en.quad_en_mask));
+            feature |= ptr_dev_info_t->quad_en.quad_en_value;
+            spi_nand_protocol_set_feature(_SPI_NAND_ADDR_FEATURE, feature);
+            _SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_1, "enable qual mode setup, the feature = 0x%x\n", feature);
+
+            spi_nand_protocol_get_feature(_SPI_NAND_ADDR_FEATURE, &feature);
+            _SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_1, "After enable qual mode setup, the status register2 =0x%x\n", feature);
+        } else {
+            _SPI_NAND_DEBUG_PRINTF(SPI_NAND_FLASH_DEBUG_LEVEL_1, "No need enable qual mode setup.\n");
+        }
+    }
+
+    /* modify share pin for quad mode */
+    set_spi_quad_mode_shared_pin();
+    
+    _SPI_NAND_PRINTF("enable SPI Quad mode\n");
+}
+```
+
+### ECC Enable
+
+``ecc_en:{_SPI_NAND_ADDR_FEATURE, 0x10, 0x10}`` is feature register for **B0H** within *Table5*
+
+### ECC layout
+
+``ecc_layout`` setting the range for ecc free address , file system such jfffs2 should be use this area , the ecc layout spec and  corresponding code as below
+
+```shell
+struct spi_nand_flash_ooblayout ooblayout_xt26g01c = {
+      .oobsize = 64,
+      .oobfree = {{0,64},{116,12}}
+};
+
+```
+
+in this case 800h ~ 830h and 874h - 87fh its free area,  840h-873h used to store internal ECC data.
+
+![spec4](./img/xtx_xt26g01c_spec_4.bmp)
+
+
+
+## 20200319  create 'crontab'
+
+**crontab**  used to schedules commands execution at Specified time or time interval.  configuration at ``/etc/crontab/root`` , script [usage](<https://www.runoob.com/w3cnote/linux-crontab-tasks.html>) as following.
+
+- The asterisk (*) operator specifies all possible values for a field. e.g. every hour or every day.
+- The comma (,) operator specifies a list of values, for example: "1,3,4,7,8".
+- The dash (-) operator specifies a range of values, for example: "1-6", which is equivalent to "1,2,3,4,5,6".
+- The slash (/) operator, can be used to skip a given number of values. For example, "*/3" in the hour time field is equivalent to "0,3,6,9,12,15,18,21"; "*" specifies 'every hour' but the "/3" means that only the first, fourth, seventh...and such values given by "*" are used.
+
+```text
+*    *    *   *    *  Command_to_execute
+|    |    |    |   |       
+|    |    |    |    Day of the Week ( 0 - 6 ) ( Sunday = 0 )
+|    |    |    |
+|    |    |    Month ( 1 - 12 )
+|    |    |
+|    |    Day of Month ( 1 - 31 )
+|    |
+|    Hour ( 0 - 23 )
+|
+Min ( 0 - 59 )
+```
+
+
+
+## 20210401 GitLab CI/CD
+
+[GitLab CI/CD](<https://docs.gitlab.com/ee/ci/yaml/README.html>) is a powerful tool built into GitLab that allows you to apply all the continuous methods (Continuous Integration, Delivery, and Deployment) to your software with no third-party application or integration needed.
+
+```yml
+  except:
+    - schedules
+  variables:
+    GIT_STRATEGY: none
+    GIT_CHECKOUT: "false"
+    CI_DEBUG_TRACE: "false"
+
+  before_script:
+    - pwd
+    - cd ..
+    - cp -f /builds/checkout.sh .
+    - ./checkout.sh ${CI_PROJECT_NAME} git@btc-git.zyxel.com:opal/${CI_PROJECT_NAME}.git
+    - ./checkout.sh opal_auto git@btc-git.zyxel.com:opal/opal_auto.git
+    - cd  ${CI_PROJECT_NAME}
+```
+
+
+
+## 20210406  MXIC Nand Flash
+
+to make ZTE platform:
+
+```shell
+# make pon=1GPON BRUN=1 SOFTVID=10280
+```
+
+nand flash spect:
+
+```c
+/* Mxic chip size 256M, id {0xc2,0xda,0x90,0x91,0x07,0x03},128 & 8-bit ecc. */
+/**
+ * struct nand_flash_dev - NAND Flash Device ID Structure
+ * @name:   Identify the device type
+ * @id:     device ID code
+ * @pagesize:   Pagesize in bytes. Either 256 or 512 or 0
+ *      If the pagesize is 0, then the real pagesize
+ *      and the eraseize are determined from the
+ *      extended id bytes in the chip
+ * @erasesize:  Size of an erase block in the flash device.
+ * @chipsize:   Total chipsize in Mega Bytes
+ * @options:    Bitfield to store chip relevant options
+ */
+struct nand_flash_dev {
+    char *name;
+    int id;
+    unsigned long pagesize;
+    unsigned long chipsize;
+    unsigned long erasesize;
+    unsigned long options;
+    uint16_t oobsize;
+};
+
+/*
+ *   Chip ID list
+ *
+ *   Name. ID code, pagesize, chipsize in MegaByte, eraseblock size,
+ *   options
+ *
+ *   Pagesize; 0, 256, 512
+ *   0   get this information from the extended chip ID
+ +   256 256 Byte page size
+ *   512 512 Byte page size
+ */
+const struct nand_flash_dev nand_flash_ids[] = {
+	{"NAND 256MiB 3,3V 8-bit",  0xDA, 0, 128, 0, LP_OPTIONS}
+};
+```
+
+
+

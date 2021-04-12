@@ -270,7 +270,8 @@ $cli /home/cli/hal/sec/sec_vlan_dump
 ### 5. Update Devices Info
 
 ```shell
-$hi_cfm set sysinfo.gateway_mac  hi_cfm get sysinfo.gateway_mac 
+$ hi_cfm set sysinfo.gateway_mac  
+$ hi_cfm get sysinfo.gateway_mac 
 ```
 
 

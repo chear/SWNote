@@ -260,6 +260,8 @@ sysdef.xml --> xml2rdm
 # make sysapps/public/other/libccc
 ```
 
+``libccc/core/target/bin/x2r``  used to parsing  ``makecode/sysdef.xml`` and convert to ``rdm_object.h`` .
+
 
 
 **CCC (Common Configration Center) Architecture Overview:**
@@ -272,3 +274,43 @@ sysdef.xml --> xml2rdm
 
 # 4. PI Project
 
+Project at ``\\172.25.24.94\chear\MTK_Test\tclinux_phoenix_ctc_20200308`` 
+
+```shell
+$ make
+( profile "./Project/profile/CT/CT_EN7561D_LE_7592_7613_AP_demo/*")
+```
+
+
+
+
+
+# 5. OPAL
+
+OPAL is a Linux-based, open and dynamic  platform .
+
+![opal](./img/opal_arch.bmp)
+
+
+
+```shell
+# checkout repo
+chear@sw3-cbs-30:~$ git clone https://btc-git.zyxel.com/MT03749/opal
+chear@sw3-cbs-30:~$ git checkout -b local_branch origin/master
+# start docker container
+chear@sw3-cbs-30:~$ ropd
+# building code
+cpe-opal$ make P=EMG6726-B10A_Generic V=s
+```
+
+to generate patch by quilt
+
+```shell
+# quilt series
+# quilt new 449-ZYXEL_BUGFIX_test_Hsiwei.patch
+# quilt add test_file.c 
+(file need to edit.)
+# vim test_file.c
+# quilt refresh 
+( generate patch for '449-ZYXEL_BUGFIX_test_Hsiwei.patch')
+```

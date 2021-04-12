@@ -1,6 +1,6 @@
 # Misc Flash Programmer v4
 
-NUVOTon  [M484SIDAE](http://www.nuvoton.com.cn/products/microcontrollers/arm-cortex-m4-mcus/m484-usb-hs-otg-series/m484sidae/)  based on Arm® Cortex®-M4F. It can run up to 192 MHz with 175 µA/ MHz dynamic low power consumption. The 512 KB embedded dual bank Flash memory supports OTA ( Over-The-Air ) firmware upgrade, and the 160 KB embedded SRAM includes 32 KB cache to speed up external SPI Flash code execution. The factory pre-loaded bootloader delivers Secure Boot functionality to provide the code integrity check in embedded Flash memory. The built-in Secure Protection ROM provides a safe space for saving confidential program or data. One-Time Programmable ROM is also included for product life-cycle management.
+NUVOTon  [M484SIDAE](http://www.nuvoton.com.cn/products/microcontrollers/arm-cortex-m4-mcus/m484-usb-hs-otg-series/m484sidae/)  based on ARM Cortex-M4F. It can run up to 192 MHz with 175 µA/ MHz dynamic low power consumption. The 512 KB embedded dual bank Flash memory supports OTA ( Over-The-Air ) firmware upgrade, and the 160 KB embedded SRAM includes 32 KB cache to speed up external SPI Flash code execution. The factory pre-loaded bootloader delivers Secure Boot functionality to provide the code integrity check in embedded Flash memory. The built-in Secure Protection ROM provides a safe space for saving confidential program or data. One-Time Programmable ROM is also included for product life-cycle management.
 
 **Target Application:**
 

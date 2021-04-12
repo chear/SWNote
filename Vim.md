@@ -46,7 +46,19 @@ BROADCOM/*
 /home/chear/HGW-500TX2X2-E/dev/makecode/sysapps/private/mitrastar/libCmd/BROADCOM/*
 ```
 
+ZTE :
 
+```Makefile
+tags ctags:
+	ctags -w -o $(obj)ctags `$(FIND) $(FINDFLAGS) $(TAG_SUBDIRS) \
+                                                -name '*.[chS]' -print`
+
+etags:
+    etags -a -o $(obj)etags `$(FIND) $(FINDFLAGS) $(TAG_SUBDIRS) \
+                                                -name '*.[chS]' -print`
+
+( finally command ./ctags -w -o ctags `find -L tools  arch/arm/cpu/zx279128s/ arch/arm/lib/ common/ drivers/crypto/ drivers/i2c/ drivers/mtd/ drivers/mtd/nand/ drivers/mtd/spi/ drivers/net/ drivers/net/phy/ drivers/rtc/ drivers/serial/ drivers/spi/ drivers/usb/ulpi/ lib/libfdt/ lib/ lib/lzma/ lib/lzo/ lib/zlib/ net/ board/zxic/zx279128sevb/ include -name '*.[chS]' -print` )
+```
 
 
 

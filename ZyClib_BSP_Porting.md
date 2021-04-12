@@ -19,7 +19,25 @@ Toolchain:
 
 - mips-linux-nm
 
-ZyXEL flash partition structure:
+
+ZyXEL bootloader ``Makefile``  process
+
+```Makefile
+OBJFILES = $(OUTDIR)/test.o
+
+$(OUTDIR)/main.o: ./main.c
+ 	$(CC) -c $(CFLAGS_MIPS16) $(CFLAGS) -o $(OUTDIR)/main.o ./main.c
+
+all: 
+	make boot.out
+	@echo  \#define BOOT_CODE_TIME \"`date `\" > ./banner/mk_time
+	$(NM)   ./output/boot.out | sort > ./output/boot.nm
+	$(OBJCOPY) -g -Obinary ./output/boot.out ./output/boot.img
+	$(OBJDUMP) -h -S ./output/boot.out > ./output/boot.text
+
+$(OUTDIR)/boot.out :     $(OBJFILES)
+	$(LD) $(LDFLAGS) $(OBJFILES) $(LIBS) -o $(OUTDIR)/boot.out
+```
 
 
 

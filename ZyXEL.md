@@ -299,11 +299,14 @@ chear@sw3-cbs-30:~$ git clone https://btc-git.zyxel.com/MT03749/opal
 chear@sw3-cbs-30:~$ git checkout -b local_branch origin/master
 # start docker container
 chear@sw3-cbs-30:~$ ropd
-# building code
-cpe-opal$ make P=EMG6726-B10A_Generic V=s
+# building whole code
+cpe-opal$ make P=DX3301-T0_Generic V=s 
+
+# to building the bootloader, and generate zld.bin
+cpe-opal$ make package/private/econet/en75xx-loader/{compile,install} V=s
 ```
 
-to generate patch by quilt
+to generate patch by quilt.
 
 ```shell
 # quilt series

@@ -291,7 +291,9 @@ OPAL is a Linux-based, open and dynamic  platform .
 
 ![opal](./img/opal_arch.bmp)
 
+building process
 
+![opal](./img/opal_build.bmp)
 
 ```shell
 # checkout repo
@@ -305,6 +307,27 @@ cpe-opal$ make P=DX3301-T0_Generic V=s
 # to building the bootloader, and generate zld.bin
 cpe-opal$ make package/private/econet/en75xx-loader/{compile,install} V=s
 ```
+
+## 5.1 upgrade bootloader
+
+All OPAL device are locked bootloader upgreade by default , to debug bootloader need to unlock by command ``aten``
+
+```shell
+ZHAL> atse DX3301-T0
+2400C00C09503316E000148493987B03118E
+
+ZHAL> aten 1,363943360710703246723488897955
+ZHAL> atck
+supervisor password: g5jy7d7616
+admin password     : A7FMM7NQ
+WiFi PSK key       : YQC737CD78
+```
+
+(Note : command  ``atse [product_name]``  used to get seed of password , to get "produc_name" access file mi.conf , or running command ``atsh``  within zloader.  next get password by "http://172.21.83.77/aten.php"  such like following.)
+
+![get_pwd](./img/atse_pwd.bmp)
+
+
 
 to generate patch by quilt.
 

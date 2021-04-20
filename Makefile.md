@@ -232,7 +232,9 @@ bootloader_env:
 
 
 
-## 6. 'wildcard'
+## 6. 常用函数
+
+### 6.1 'wildcard'
 
 ```
 ## Des: This script wile compile all the *.c source files to *.o , then next to release an executable file.
@@ -245,9 +247,13 @@ foo : $(objects)
 cc -o foo $(objects)
 ```
 
+### 6.2  'eval'
+
+The [eval](<https://www.gnu.org/software/make/manual/html_node/Eval-Function.html#Eval-Function>) function is very special: it allows you to define new makefile constructs that are not constant; which are the result of evaluating other variables and functions.
+
+### 6.3 'patsubst'
 
 
- 
 
 ## 7. 'FORCE'
 
@@ -266,3 +272,6 @@ $(file): FORCE
 FORCE:
 .PHONY: FORCE
 ```
+
+
+

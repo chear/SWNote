@@ -287,11 +287,13 @@ $ make
 
 # 5. OPAL
 
+## 5.1 OPAL Arch
+
 OPAL is a Linux-based, open and dynamic  platform .
 
 ![opal](./img/opal_arch.bmp)
 
-building process
+## 5.1.1 Building OPAL
 
 ![opal](./img/opal_build.bmp)
 
@@ -305,10 +307,17 @@ chear@sw3-cbs-30:~$ ropd
 cpe-opal$ make P=DX3301-T0_Generic V=s 
 
 # to building the bootloader, and generate zld.bin
-cpe-opal$ make package/private/econet/en75xx-loader/{compile,install} V=s
+cpe-opal$ make package/private/econet/en75xx-loader/{clean,prepare,compile,install} V=s
+
+# to building kernel
+cpe-opal$ make package/kernel/{prepare,clean,compile,install} V=s
 ```
 
-## 5.1 upgrade bootloader
+### 5.1.2  System Startup
+
+
+
+### 5.1.3 Get User Info
 
 All OPAL device are locked bootloader upgreade by default , to debug bootloader need to unlock by command ``aten``
 
@@ -327,7 +336,15 @@ WiFi PSK key       : YQC737CD78
 
 ![get_pwd](./img/atse_pwd.bmp)
 
+to [save boot debug flag](<file://172.25.5.39/cpeswdoc/cpesw/Document/SW3%20Training%20Slides/OPAL/Manufacture/(Peter)%20SOP%20%E4%BA%A7%E7%BA%BF%E7%94%9F%E4%BA%A7%E6%8C%87%E4%BB%A4%20v1.10.pdf>) , boot to zloader and then following
 
+```shell
+ZHAL> atbt 1
+( writeble for block 0)
+ZHAL> atwz 4CC53E083738,0,1,0,10,1
+( ATWZ x[,y,z,a,b,c] write MAC addr, Country code, 
+EngDbgFlag, FeatureBit, MAC Number, boot flag)
+```
 
 to generate patch by quilt.
 
@@ -340,3 +357,130 @@ to generate patch by quilt.
 # quilt refresh 
 ( generate patch for '449-ZYXEL_BUGFIX_test_Hsiwei.patch')
 ```
+
+
+
+## 5.2 Generate STM image
+
+to make STM image:
+
+```shell
+$ make production
+```
+
+flash partition layout for OPAL DX3301_Generic
+
+```shell
+#
+# Configuration for SMT_Generator/genNANDimg.sh
+#
+################# offset #######################
+# 0x000000000000-0x000000040000 : zld.bin + padding   bootloader"
+# 0x000000040000-0x000000080000 : rom_hader + TE_config.rom + padding ROM
+# 0x000000080000-0x000002880000 : ras.bin + padding	
+# 0x000002880000-0x000004ea0000 : ras2.bin + padding	
+# 0x000004ea0000-0x000004fa0000 : "wwan"
+# 0x000004fa0000-0x0000053a0000 : "data"
+# 0x0000053a0000-0x0000054a0000 : "rom-d"
+# 0x0000054a0000-0x0000074a0000 : "misc"
+# 0x000007520000-0x0000075e0000 : "reservearea"
+################################################
+```
+
+layout for STM image
+
+```c
+/*
+allinone_DX3301-T0_image_FLASH.SMT
+|--------------------|
+| common_header.img  |
+|--------------------|
+| partition_1_head   |
+|      .img          |
+|--------------------|
+|        	         |
+| partition_1_image  |
+|      .img          |
+|--------------------|
+*/
+typedef struct hdrNandInfo_s {
+    unsigned long pageSize;
+    unsigned short oobSize;
+    unsigned short blockSize;
+    unsigned long reserved;
+} hdrNandInfo_t;
+
+typedef struct hdrNandHeader_s {
+    hdrNandInfo_t nand;
+    char productVersion[32];
+    unsigned char reserve[4];
+    unsigned short CGBP0;
+    unsigned char Bad_block0;
+    unsigned char Reserve_Area[2];
+    unsigned char on_die_ecc;
+    unsigned char swap_flag;
+    unsigned char partQTY;
+}hdrNandHeader_t ;
+
+typedef struct hdrPartInfo_s {
+    unsigned long addr;
+    unsigned long partSize;
+    unsigned long imgSize;
+    unsigned long imgVersion;
+    unsigned char  reserve_p;
+    unsigned char  error_bit;
+    unsigned short Good_blocks;
+} hdrPartInfo_t;
+```
+
+
+
+## 5.3 Manufacture Testing Commands
+
+MFG configuration path  at  ``package/private/zyxel/zcfg/defcfg/$PROFILE_NAME/TE_config.rom`` ,  and login user for root/e78a2a88 .
+
+### 5.3.1 LED Testing
+
+```shell
+# sys led on
+```
+
+
+
+### 5.3.2  Button Testing
+
+```shell
+$ telnet 192.192.192.4
+# sys btntest 1
+```
+
+
+
+### 5.3.3 WLAN Calibration
+
+```shell
+# ifconfig ra0 up
+```
+
+
+
+
+
+### 5.3.4 Revert System
+
+After finish HW production testing , need to set the boot module debug flag to 0 by using “atwz” or “sys
+atwz” , and finally to reset to default by “atcr” or “sys atcr".
+
+```shell
+# sys atwz
+# sys atcr
+=== FR Entered ===
+@@ w+ file value init: 1=== FR Entered ===
+recv_str=atcrNoReboot
+Froce unmount /misc
+Erase customised misc partition(s) done.
+@@ r+ file value add:2Reset to default and sync: Success!
+
+# sys romreset 1
+```
+

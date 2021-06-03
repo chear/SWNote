@@ -2,6 +2,17 @@
 
 **Universal-Ctags** replace to **Exuberant-Ctags**  ,and more powerful , source at [Github](<https://github.com/ universal-ctags/ctags>) , [Docs](<http://docs.ctags.io/en/latest/news.html?highlight=macro#defining-a-macro-in-cpreprocessor-input>)
 
+to build ctags
+
+```shell
+$ ./autogen.sh
+$ ./configure --prefix=/home/chear/ # defaults to /usr/local
+$ make
+$ make install # may require extra privileges depending on where to install
+```
+
+
+
 linux.ctags to define macro for *SYSCALL_DEFINE0*  to *SYSCALL_DEFIN9*
 
 ```shell
@@ -11,7 +22,7 @@ $ cat linux.ctags
 --regex-linux=/SYSCALL_DEFINE[0-9]\(([^, )]+)[\),]*/\1/s/   
 ```
 
-
+to building cr
 
 
 
@@ -72,17 +83,28 @@ the following command contain whole process to **create ,apply , remove and dele
 
 ```shell
 $ cd oenwrt/built-dir/
-$ quilt new 01_test.diff
-(Create new patch named 01_test.diff )
-$ quilt edit FILE_NAME
+# Create new patch named for 01_test.patch
+$ quilt new 01_test.patch
+# Add files to the patch, in this way for 01_test.patch
+$ quilt add FILENAME
+# To eidt file by vim or other eidter
+$ vim FILENAME
+# save diff to patch
 $ quilt refresh
-(Apply the patch.)
+
+# Display the quilt list.
 $ quilt series
-(Display the quilt list)
+# Remove the quilt patch.
 $ quilt pop
-(Remove the quilt patch)
+
+# Remove and delete file from current patch.
 $ quilt delete
-(Remove and delete patch from quilt list )
+
+# Remove all patchs.
+$ quilt pop -a
+$ quilt push 004-ZYXEL_FEATURES_COMMON_support_zloader_TimLiu.patch
+# Display applied patch.
+$ quilt applies (unapplied)
 ```
 
 
@@ -103,3 +125,4 @@ $ quilt delete
 **cscope** its powerful than **ctags**.
 
 **(Note: with-in Hisilicon project , cscope  can not recognize symbol like 'hi_void' ,so can not use to find function. )**
+

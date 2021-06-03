@@ -51,6 +51,25 @@
 
 
 
+
+
+# Memory Lock
+
+- mutex lock
+- spin lock
+
+
+
+![mutex_lock](../img/mutex_lock.png)
+
+
+
+
+
+![spin_lock](../img/spin_lock.png)
+
+
+
 # Linux Memory Managemant
 
 [url](<https://www.toutiao.com/i6855591224003265036>)

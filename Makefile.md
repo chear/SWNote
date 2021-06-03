@@ -133,6 +133,8 @@ duplicated in the order they were listed in the makefile .
 
 ref: <https://stackoverflow.com/questions/3220277/what-do-the-makefile-symbols-and-mean>
 
+*Tips :  '$@' in Makefile means for target files,  in [Shell script](<https://blog.csdn.net/qq_35744460/article/details/89702566>) means  means for paramater.*
+
 
 
 ## 4. The makefile execute order , and .PHONY
@@ -236,12 +238,16 @@ bootloader_env:
 
 ### 6.1 'wildcard'
 
-```
+```Makefile
 ## Des: This script wile compile all the *.c source files to *.o , then next to release an executable file.
-# wildcard : 扩展通配符
+# wildcard : 扩展通配符,一般我们可以使用“$(wildcard *.c)”来获取工作目录下的所有的.c文件列表
 # notdir ： 去除路径
 # patsubst ：替换通配符
 
+# Sample Makefile 
+# 首先使用“wildcard”函数获取工作目录下的.c文件列表，之后将列表中所有文件名的后缀.c替换为.o。
+# 得到在当前目录可生成的.o文件列表。因此在一个目录下可以使用如下内容的 Makefile 
+# 将工作目录下的所有的.c文件进行编译并最后连接成为一个可执行文件
 objects := $(patsubst %.c,%.o,$(wildcard *.c))
 foo : $(objects)
 cc -o foo $(objects)
@@ -251,7 +257,32 @@ cc -o foo $(objects)
 
 The [eval](<https://www.gnu.org/software/make/manual/html_node/Eval-Function.html#Eval-Function>) function is very special: it allows you to define new makefile constructs that are not constant; which are the result of evaluating other variables and functions.
 
-### 6.3 'patsubst'
+### 6.3 'foreach'
+
+```Makefile
+# $(foreach <var>,<list>,<text>)
+# var：局部变量
+# text：文件列表，空格隔开，每一次取一个值赋值为变量var
+# commond：对var变量进行操作（一般会使用var变量，不然没意义），每次操作结果都会以空格隔开，最后返回空格隔开的列表。
+ 
+# Sample Make
+names := a b c d
+files := $(foreach n,$(names),$(n).o)
+# output $(files) = "a.o b.o c.o d.o"
+```
+
+### 6.4 '$(warning)'
+
+[$(warning)](<https://www.oreilly.com/openbook/make3/book/ch12.pdf>) used to debugging the Makefile .
+
+```Makefile
+# Sample Make
+$(warning THIS IS MESG OUTPUT)
+
+$(warning A target)target: $(warning In a prerequisite list)makefile $(BAZ)
+	$(warning In a command script)
+ 	ls
+```
 
 
 

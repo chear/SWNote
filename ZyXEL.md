@@ -84,7 +84,7 @@
 
 
 
-# 2. Source File & Building 
+# 2. Source File & Building
 
 ## 2.1 Files Structure
 
@@ -283,41 +283,9 @@ $ make
 
 
 
+# 5. WiFi 6 Router
 
-
-# 5. OPAL
-
-## 5.1 OPAL Arch
-
-OPAL is a Linux-based, open and dynamic  platform .
-
-![opal](./img/opal_arch.bmp)
-
-## 5.1.1 Building OPAL
-
-![opal](./img/opal_build.bmp)
-
-```shell
-# checkout repo
-chear@sw3-cbs-30:~$ git clone https://btc-git.zyxel.com/MT03749/opal
-chear@sw3-cbs-30:~$ git checkout -b local_branch origin/master
-# start docker container
-chear@sw3-cbs-30:~$ ropd
-# building whole code
-cpe-opal$ make P=DX3301-T0_Generic V=s 
-
-# to building the bootloader, and generate zld.bin
-cpe-opal$ make package/private/econet/en75xx-loader/{clean,prepare,compile,install} V=s
-
-# to building kernel
-cpe-opal$ make package/kernel/{prepare,clean,compile,install} V=s
-```
-
-### 5.1.2  System Startup
-
-
-
-### 5.1.3 Get User Info
+## 5.1 Get User Info for devices
 
 All OPAL device are locked bootloader upgreade by default , to debug bootloader need to unlock by command ``aten``
 
@@ -346,17 +314,7 @@ ZHAL> atwz 4CC53E083738,0,1,0,10,1
 EngDbgFlag, FeatureBit, MAC Number, boot flag)
 ```
 
-to generate patch by quilt.
 
-```shell
-# quilt series
-# quilt new 449-ZYXEL_BUGFIX_test_Hsiwei.patch
-# quilt add test_file.c 
-(file need to edit.)
-# vim test_file.c
-# quilt refresh 
-( generate patch for '449-ZYXEL_BUGFIX_test_Hsiwei.patch')
-```
 
 
 
@@ -366,6 +324,92 @@ to make STM image:
 
 ```shell
 $ make production
+```
+
+The **zld.bin (tcboot.bin)** size for 128k ,  and layout by following.
+
+```Text
+		 0x0000 --------------|
+              |     ubifs     |
+		 0x3f00 --------------|
+	          |     mi.conf   |
+		 0x3ff7 --------------|
+			  |               |
+		0x10000 --------------|  __boot_start
+              |     boot.bin  |
+			  |			      |
+			  |---------------|  __boot_end
+              |               |
+	    0x20000 ----------XXXX|  last 4 bytes for crc,32 bytes for hash256.
+```
+
+The **ras.bin** compose by  **ZyXEL_Header + kernel  +rootfs **.
+
+```Makefile
+# source file at target/linux/en75xx/image/Makefile
+define Image/Build/zy_trx_image
+    cat $(KERNEL_IMG) $(ROOTFS_IMG) $(DEFCFG_IMG) > $(BIN_DIR)/tclinux
+    $(STAGING_DIR_HOST)/bin/econet-trx \
+        -T ZYXEL \
+        -K $(KERNEL_IMG) \
+        -R $(ROOTFS_IMG) \
+        -C $(DEFCFG_IMG) \
+        -P $(TCPLATFORM) \
+        -I $(CONFIG_MRD_MODEL_ID) \
+        -S $(CONFIG_ZYXEL_FIRMWARE_VERSION) \
+        -s $(ZYXEL_CUST_FIRMWARE_VERSION) \
+        $(TRX_IMG_OPT) \
+        -f $(BIN_DIR)/tclinux -o $(BIN_DIR)/ras.bin \
+        -c $(STAGING_DIR_HOST)/bin/econet-trx_config
+    rm -f $(BIN_DIR)/tclinux
+endef
+
+ifneq ($(ZYXEL_SUPPORT_DEFCFG),)
+    $(call Image/Build/zy_trx_image)
+else
+    $(call Image/Build/zy_trx_image_without_defcfg)
+endif
+```
+
+ZyXEL header struct such like below , tools at ``build_dir/host/econet-trx-7.3.245.300/tools/trx``:
+
+```C
+truct trx_header {
+    unsigned int magic;         /* "HDR0" */
+    unsigned int header_len;    /*Length of trx header*/
+    unsigned int len;           /* Length of file including header */
+    unsigned int crc32;         /* 32-bit CRC from flag_version to end of file */
+    unsigned char version[32];  /*firmware version number*/
+    unsigned char customerversion[32];  /*firmware version number*/
+//  unsigned int flag_version;  /* 0:15 flags, 16:31 version */
+#if 0
+    unsigned int reserved[44];  /* Reserved field of header */
+#else
+    unsigned int kernel_len;    //kernel length
+    unsigned int rootfs_len;    //rootfs length
+    unsigned int romfile_len;   //romfile length
+    #if 0
+    unsigned int reserved[42];  /* Reserved field of header */
+    #else
+    unsigned char Model[32];
+    unsigned int decompAddr;//kernel decompress address
+    unsigned int reserved[32];  /* Reserved field of header */
+    #endif
+#endif
+#if 1//defined(ZYXEL)
+    unsigned char chipId[CHIP_ID_LEN];      /* Provided by Makefile */
+    unsigned char boardId[BOARD_ID_LEN];        /* Provided by Makefile */
+    unsigned char modelId[MODEL_ID_LEN];            /* Provided by Makefile */
+    unsigned int defcfg_len;    //default config length
+    unsigned int imageSequence;
+    unsigned char swVersionInt[SW_VERSION_LEN]; /* Provided by Makefile */
+    unsigned char swVersionExt[SW_VERSION_LEN]; /* Provided by Makefile */
+    unsigned int rootfsChksum;
+    unsigned int kernelChksum;
+    unsigned int defcfgChksum;
+    unsigned int headerChksum;
+#endif
+};
 ```
 
 flash partition layout for OPAL DX3301_Generic
@@ -392,16 +436,16 @@ layout for STM image
 ```c
 /*
 allinone_DX3301-T0_image_FLASH.SMT
-|--------------------|
+|--------------------|-----------------
 | common_header.img  |
-|--------------------|
+|--------------------|   IMAGE　HEADER
 | partition_1_head   |
 |      .img          |
-|--------------------|
+|--------------------|-----------------
 |        	         |
-| partition_1_image  |
+| partition_1_image  |	PARTITION IMAGE
 |      .img          |
-|--------------------|
+|--------------------|-----------------
 */
 typedef struct hdrNandInfo_s {
     unsigned long pageSize;
@@ -433,6 +477,10 @@ typedef struct hdrPartInfo_s {
 } hdrPartInfo_t;
 ```
 
+OPAL flash struct:
+
+![flash_header](./img/opal_falsh_struct.bmp)
+
 
 
 ## 5.3 Manufacture Testing Commands
@@ -456,13 +504,47 @@ $ telnet 192.192.192.4
 
 
 
+### 5.3.3 LAN Testing
+
+Change MAC 
+
+
+
 ### 5.3.3 WLAN Calibration
 
 ```shell
-# ifconfig ra0 up
+#  zycli wlan show primary
+Basic information
+        FrequencyBand: 2.4GHz
+        Channel: 5 (Auto)
+        Bandwidth: 40MHz
+        wlmode: 11bgnax
+primary Settings
+        Network Name (SSID): Zyxel_3739
+        Active Wireless Lan: Enable
+        Security Mode: WPA2-PSK
+        Encryption: aes
+        Pre-shared Key: 5d5448674c9c57fead78f77a43705d9abf4ec0a850820d3d3d7ee05dc1f9ef51
+        Update Timer: 3600
+
+# zycli wlan show5g primary
+Basic information
+        FrequencyBand: 5GHz
+        Channel: 112 (Auto)
+        Bandwidth: 80MHz
+        wlmode: 11anacax
+primary Settings
+        Network Name (SSID): Zyxel_3739
+        Active Wireless Lan: Enable
+        Security Mode: WPA2-PSK
+        Encryption: aes
+        Pre-shared Key: 5d5448674c9c57fead78f77a43705d9abf4ec0a850820d3d3d7ee05dc1f9ef51
+        Update Timer: 3600
+
+# ifconfig ra0 up/down
+# iwpriv ra0 set ATE=TXSTOP
+# iwpriv rai0 set ATE=TXSTOP
 ```
-
-
 
 
 
@@ -481,6 +563,6 @@ Froce unmount /misc
 Erase customised misc partition(s) done.
 @@ r+ file value add:2Reset to default and sync: Success!
 
-# sys romreset 1
+("sys romreset [0/1]" corresponding "sys atcr" or "sys atcr reboots")
 ```
 

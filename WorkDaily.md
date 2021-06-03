@@ -1979,3 +1979,38 @@ const struct nand_flash_dev nand_flash_ids[] = {
 
 
 
+## 20210406  Bootloader porting from Econet for OPAL
+
+Building ECONET SDK in 172.25.24.94 ,  named ``OSBNB00124527_ECNT_General_7561D_7592+7613_Phase1_7_3_251_900_v033_presdk_CT_20210312.tgz``
+
+```shell
+$ tar -xzvf OSBNB00124527_ECNT_presdk_.tgz -C ./new_sdk	
+$ make PROFILE=CMCC_AP_WIFI6_MESH_MULTIWAN_demo CUSTOM=CT bootbase_clean bootbase
+$ export PATH=/opt/trendchip/mipsel-linux-uclibc-4.6.3-kernel3.18/usr/bin/:$PATH
+```
+
+Building **PMG5617-T20B2** for OPAL
+
+```shell
+$ git checkout -b bootloader_test origin/AMBU_EN7516_EN7528_10282020_97b8a29f
+$ make P=PMG5617-T20B2 V=99 		#(make P=HGW500TX2X2E_T0 V=99)
+$ make target/linux/install V=99
+```
+
+Building **HGW500TX2X2E_T0**  to support *CONFIG_ZYXEL_SET_SUPERVISOR_KEY* 
+
+```shell
+ZHAL> atck wifi_02,admin,root
+ZHAL> atck
+supervisor password: root
+admin password     : admin
+WiFi PSK key       : wifi_02
+ZHAL> atcr
+```
+
+
+
+## 20210406  c note
+
+[difference "->" and "." in c language](<https://www.zhihu.com/question/49164544>) , 
+

@@ -420,6 +420,10 @@ based on  *CT_EN7528_LE_7592_7613_JOYME3_demo.profile*
 
 ## 2.1 ZyClib Bootbase making
 
+```shell
+# make boot
+```
+
 
 
 ## 2.2 ZyClib mtd partition table

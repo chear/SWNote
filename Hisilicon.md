@@ -8,9 +8,26 @@ ARM ARMv7 , 667 Hz , 1 Core, Memory 256M ,
 
 [OpenWRT](https://openwrt.org/docs/guide-user/start) is embedded operation system  for Linux distribution based on GPL License .  OpenWRT did not contain any source code , this composed by each patch and zip, other word OpenWRT almost everything is an ".ipk ",  the ".ipk" is other name for ".tar.gz" . 
 
-(Note: the static var for each package defined within ``open/tmp/*``  , to unzip *.tar.gz by ```tar -zxvf file1.tar.gz```  , to unzip *.tar.bz2 by  ```tar -jxvf file2.tar.bz2```. )
+(Note: the static var for each package defined within ``open/tmp/*``  , to unzip *.tar.gz by ```tar -zxvf file1.tar.gz```  , to unzip *.tar.bz2 by  ```tar -jxvf file2.tar.bz2``` , to zip *.tar.bz2 by  ``tar -jcvf file3.tar.bz2 DirName``.  more detail by following )
 
-## 	1.2 Startup
+
+
+| File Type | Compress                   | Uncompress                          |
+| --------- | -------------------------- | ----------------------------------- |
+| .tar      | tar -xvf FileName.tar      | tar -cvf FileName.tar DirName       |
+| .gz       | gzip -d FileName.gz        | gzip FileName                       |
+| .tar.gz   | tar -zxvf FileName.tar.gz  | tar -zcvf FileName.tar.gz DirName   |
+| .tar.bz2  | tar -jxvf FileName.tar.bz2 | tar -jcvf FileName.tar.bz2 DirName  |
+| .bz2      | tar -jxvf FileName.tar.bz2 | tar -jcvf FileName.tar.bz2 DirName  |
+| .bz       | tar -jxvf FileName.tar.bz  |                                     |
+| .Z        | tar Zxvf FileName.tar.Z    | tar Zcvf FileName.tar.Z DirName     |
+| .tgz      | tar -zxvf FileName.tar.tgz | tar -zcvf FileName.tar.tgz FileName |
+| .zip      | unzip FileName.zip         | zip FileName.zip DirName            |
+| .rar      | rar -a FileName.rar        | rar -e FileName.rar                 |
+
+
+
+## 	1.2 Startup.
 
 
 ```flow

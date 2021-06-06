@@ -49,3 +49,28 @@
 
 ![eye_diagram_result2](./img/eye_diagram_test_result2.png)
 
+
+
+
+
+## 3. Flash Memory
+
+- Non-Volatile	(RAM)Memory		
+
+  非易失性存储器  (Nand Flash , Nor Flash , Hard Disk ,与此相对的易失性存储器， DRAM,SDRAM , DDR SDRAM)
+
+- SDRAM		
+
+  Synchronous Dynamic Random Access Memory (同步动态随机存储器) ， 											同步是指 Memory 工作需要同步时钟， 第一代为 SDR SDRAM , 第二代为 DDR SDRAM, 第三代 DDR2 SDRAM ，四代， DDR3 SDRAM等.
+
+- OTP
+
+  一次性可编程存储器，于此相对于的是可以被多次写入数据的存储器，如 NAND Flash , Hard Disk
+
+- Ware Leveling
+
+-  SLC (Single Level Cell)
+
+- MLC (Multi Level Cell)
+
+  

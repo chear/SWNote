@@ -157,27 +157,38 @@ $ make package/private/econet/en75xx-loader/{clean,install} V=99 QUILT=1
 Clone and checkout repo by zyrepo
 
 ```shell
-# zyrepo init -u [git@btc-git.zyxel.com:opal20/manifest.git](mailto:git@btc-git.zyxel.com:opal20/manifest.git) -m opal_econet_old.xml
-# zyrepo sync 
-# zyrepo branch -b CTBBU_EN7561D_HGW500TX2X2E
+chear@Build_Opal_Docker$ zyrepo init -u git@btc-git.zyxel.com:opal20/manifest.git -m opal_econet_old.xml
+chear@Build_Opal_Docker$ zyrepo sync
+chear@Build_Opal_Docker$ zyrepo branch -b develop
+chear@Build_Opal_Docker$ zyrepo branch 
+chear@Build_Opal_Docker$ cd opal & make P=HGW500TX2X2E V=s
+chear@Build_Opal_Docker$ zyrepo foreach -c "git status"
+```
+
+main files structure for opal2.0
+
+```shell
+opal2p0
+  ├── acts_build.sh -> opal/scripts/acts_build.sh
+  ├── econet_old
+  ├── manifest
+  ├── ./opal/package/
+  │   ├── private
+  │   ├── econet -> ../../../econet_old/econet
+  │   └── zyxel -> ../../../zyxel_private/zyxel
+  │   └── public-zyxel -> ../../zyxel_public/public-zyxel
+  ├── opalcicd
+  ├── zyrepo
+  ├── .zyrepo
+  │   ├── manifest
+  │   ├── manifest_name
+  │   ├── manifest.xml -> manifest/opal_econet_old.xml
+  │   ├── zyrepo -> .zyrepo/zyrepo
+  │   └── .zyrepo
+  ├── zyxel_private
+  └── zyxel_public
 ```
 
 
 
  
-
-\3. 到每個目錄下做有修改過的code,並commit
-
-​     a. git add "modify file"
-
-​     b. git commit 
-
-\4. zyrepo upload -t CTBBU_EN7561D_HGW500TX2X2E -m yes
-
-\5. zyrepo branch -d "bugfix-xxx" or "feature-xxx"  (非必要做, 若有遇到upload code後.有要再push一次的話,這會先把Remote 的branch delete. 之後再做第四項的指令)
-
- 
-
-\6. 若要解其他issue 時
-
-​    a. 重複做上面的2,3,4項  

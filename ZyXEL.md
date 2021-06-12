@@ -182,11 +182,11 @@ kernel --> ras
 To generate the bootloader and release NAND.bin
 
 ```shell
-$make PROFILE=CCC3
-$make boot
-$make production
-$make kernel
-$make modules
+$ make PROFILE=CCC3
+$ make boot
+$ make production
+$ make kernel
+$ make modules
 ```
 
 
@@ -431,6 +431,22 @@ flash partition layout for OPAL DX3301_Generic
 ################################################
 ```
 
+layout for ROMFILE partition:
+
+```txt
+file at /bin/en75xx/zyxel/NAND/genNANDimg/PARTITION_2.img
+0x00 -----------|-----------------
+| 0x5a01        |  ROMFILE_TYPE
+0x02 -----------|-----------------
+|  size         |  ROMFILE_SIZE
+0x06 -----------|-----------------
+|   crc         |  ROMFILE_CRC
+0x08 -----------|-----------------
+|    *.json     |  romfile json
+|               | 
+|---------------|-----------------
+```
+
 layout for STM image
 
 ```c
@@ -493,8 +509,6 @@ MFG configuration path  at  ``package/private/zyxel/zcfg/defcfg/$PROFILE_NAME/TE
 # sys led on
 ```
 
-
-
 ### 5.3.2  Button Testing
 
 ```shell
@@ -502,15 +516,28 @@ $ telnet 192.192.192.4
 # sys btntest 1
 ```
 
-
-
 ### 5.3.3 LAN Testing
 
 Change MAC 
 
-
-
 ### 5.3.3 WLAN Calibration
+
+```shell
+# iwpriv ra0 e2p 78
+ra0       e2p:
+[0x0078]:0xFFFF
+(use "sys Calibration_Verification_24g" to direct calibration 2.4G)
+
+# iwpriv rai0 e2p 78
+rai0      e2p:
+[0x0078]:0xFFFF
+(use "sys Calibration_Verification_5g" to direct calibration 5G)
+
+# iwpriv ra0 set AuthMode=OPEN
+(set wifi SSID and pwd)
+```
+
+display the wifi property by following:
 
 ```shell
 #  zycli wlan show primary
@@ -546,8 +573,6 @@ primary Settings
 # iwpriv rai0 set ATE=TXSTOP
 ```
 
-
-
 ### 5.3.4 Revert System
 
 After finish HW production testing , need to set the boot module debug flag to 0 by using “atwz” or “sys
@@ -564,5 +589,17 @@ Erase customised misc partition(s) done.
 @@ r+ file value add:2Reset to default and sync: Success!
 
 ("sys romreset [0/1]" corresponding "sys atcr" or "sys atcr reboots")
+```
+
+### 5.3.5 Upgrade ROM
+
+```shell
+ZHAL> atum TE_config.rom
+```
+
+to restore default ROM file.
+
+```shell
+# sys atcr
 ```
 

@@ -163,6 +163,8 @@ chear@Build_Opal_Docker$ zyrepo branch -b develop
 chear@Build_Opal_Docker$ zyrepo branch 
 chear@Build_Opal_Docker$ cd opal & make P=HGW500TX2X2E V=s
 chear@Build_Opal_Docker$ zyrepo foreach -c "git status"
+chear@Build_Opal_Docker$ zyrepo foreach -c "git pull origin develop --rebase"
+chear@Build_Opal_Docker$ zyrepo upload -m yes
 ```
 
 main files structure for opal2.0

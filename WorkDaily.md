@@ -2014,3 +2014,10 @@ ZHAL> atcr
 
 [difference "->" and "." in c language](<https://www.zhihu.com/question/49164544>) , 
 
+
+
+## 20210617  'git rebase' or 'git merge'
+
+[Git rebase & merge](<https://zhuanlan.zhihu.com/p/260331030>)
+
+(note : rebase better than merge.)

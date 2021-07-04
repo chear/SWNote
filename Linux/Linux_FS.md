@@ -115,3 +115,16 @@ A squashfs filesystem consists of a maximum of nine parts, packed together on a 
 ```
 
 Compressed data blocks are written to the filesystem as files are read from the source directory, and checked for duplicates.  Once all file data has been written the completed inode, directory, fragment, export, uid/gid lookup and xattr tables are written.
+
+
+
+
+
+# 5. YAFFS
+
+[Yaffs](<https://yaffs.net/>)  (Yet Another Flash File System) is a NAND-flash specific file system.( ref: [How Yaffs Works](<https://yaffs.net/documents/how-yaffs-works>) . )
+
+![yaffs_arch](../img/yaffs_arch.png)
+
+The Yaffs Direct Interface (YDI) which allows Yaffs to be simply integrated with embedded systems, with or without an RTOS.
+

@@ -95,7 +95,7 @@ bootrom/
 └── Makefile
 ```
 
-(Note: the Econet's boot-loader same as u-boot, driver's source files at  *bootrom/bootram* )
+(Note: the Econet's boot-loader same as u-boot, driver's source files at  *bootrom/bootram* , [IPL( Initial Program Loader)](https://www.abbreviationfinder.org/cn/acronyms/ipl_initial-program-loader.html))
 
 whole bootloader make command:
 

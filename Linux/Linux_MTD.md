@@ -15,6 +15,6 @@ The important bit here is that program operations (i.e. writes) take place to a 
 **(Note: **
 
 - **[MTD is neither a block nor a char device.]((<http://linux-mtd.infradead.org/faq/general.html#L_mtd_what>) )  **
-- **Ext2 ,ext3 and FAT are file systems work with block device not for MTD devices, MTD device work with jffs2 or squashFS . **
+- **Ext2 ,ext3 and FAT are file systems work with block device not for MTD devices, MTD device work with jffs2 , yaffs2 or squashFS . **
 - **the /dev/mtdblockX device nodes  are simple Flash Translation Layers (FTLs) over the MTD devices.) **
 

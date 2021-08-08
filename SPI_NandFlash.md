@@ -4,6 +4,10 @@
 
 # 1. Introduction
 
+Memory device overview
+
+![mem_overview](./img/mem_dev.bmp)
+
 NAND flash contains **Raw NAND Flash (并行接口)** , **Serial NAND Flash (串行接口)**
 
 

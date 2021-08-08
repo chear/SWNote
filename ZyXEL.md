@@ -292,6 +292,7 @@ All OPAL device are locked bootloader upgreade by default , to debug bootloader 
 ```shell
 ZHAL> atse DX3301-T0
 2400C00C09503316E000148493987B03118E
+(Note: atse need SerialNumver and Product Model)
 
 ZHAL> aten 1,363943360710703246723488897955
 ZHAL> atck

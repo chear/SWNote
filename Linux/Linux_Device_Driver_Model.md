@@ -30,3 +30,10 @@ ref:
 
 
 
+# 4. [Linux RCU](<https://zhuanlan.zhihu.com/p/89439043>)
+
+RCU (Read Copy Update) , 设置了一个临界区域，在 read 的同时，可以进行 copy 操作, 或者说read和进行copy的线程并行,目的是为了update。
+
+省去了同步机制, 提高了效率。
+
+![rcu](../img/rcu.jpg)

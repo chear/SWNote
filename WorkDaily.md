@@ -1,6 +1,10 @@
 [TOC]
 
+
+
 ## Mitrastar Info:
+
+
 
 make menuconfig
 General setup  --->  
@@ -2021,3 +2025,62 @@ ZHAL> atcr
 [Git rebase & merge](<https://zhuanlan.zhihu.com/p/260331030>)
 
 (note : rebase better than merge.)
+
+
+
+## 20210825  ZyXEL MGS-3712F  switch
+
+```shell
+MGS-3712F(config)# ethernet cfm md 1 format string name MD2 level 2
+MGS-3712F(config)# ethernet cfm ma 1 format string name MA2 md 1 primary-vlan 200
+MGS-3712F(config-ma)# mep 22 interface port-channel 9 zcfg_dbg_bediagnostic direction down priority 0 
+```
+
+802.1ag
+
+```shell
+# ls -la /var/tmsctl_lbm_result
+# tmsctl.sh
+```
+
+
+
+## 20210922 OPAL Bootup & Parallel NAND Flash
+
+header for `tcboot.bin`
+
+```c
+
+typedef struct tcboot_header{
+	unsigned int resv1[2];					//0x00 ~ 0x04, this 8bytes must not use becaust of jump instruction in start.s
+	unsigned int tcboot_len;				//0x08
+	unsigned int tcboot_magic_num;			//0x0c
+	unsigned int lzma_flash_start_addr;	//0x10
+	unsigned int lzma_flash_end_addr;		//0x14
+	unsigned int bootram_flash_start_addr;	//0x18
+	unsigned int bootram_flash_end_addr;	//0x1c
+#if defined(TCSUPPORT_SECURE_BOOT_7526)	
+	unsigned int i2c_param;					//0x20 for TCSUPPORT_SECURE_BOOT_7526
+#else
+	unsigned int resv2;					//0x20
+#endif
+	unsigned int chip_flash_info;			//0x24
+	union {
+		unsigned int ecc_info;				//0x28
+		unsigned int en7522_page_size;		//0x28
+	};
+	unsigned int bypass;					//0x2c
+	unsigned int spram_exe_addr;			//0x30
+	unsigned int lzma_exe_addr;			//0x34
+	unsigned int verify_start_addr;		//0x38
+	unsigned int verify_end_addr;			//0x3C
+	unsigned int resv3[2];					//0x40 ~ 0x44
+	unsigned int move_data_int_flash_start_addr;	//0x48
+	unsigned int move_data_int_flash_end_addr;		//0x4C
+	unsigned int boot2_flash_start_addr;	//0x50
+	unsigned int boot2_flash_end_addr;		//0x54
+	unsigned int spram_flash_start_addr;	//0x58
+	unsigned int spram_flash_end_addr;		//0x5c
+} TCBOOT_HEADER;
+```
+

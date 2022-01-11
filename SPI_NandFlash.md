@@ -57,6 +57,10 @@ Most NAND flash I/O frequency about 80 - 108 MHz ( Etron 80 MHz , XTX 90 MHz , F
    Nand Flash按照内部存储数据单元的电压的不同层次，也就是单个内存单元中，是存储1位数据，还是多位数据，可以分为 **SLC (Single-Level Cell) ** 和 **MLC (Multi-Level Cell)** 。那么软件如何识别系统上使用过的SLC还是MLC呢？ 
    Nand Flash设计中，有个命令叫做Read ID，读取ID，读取好几个字节，一般最少是4个，新的芯片，支持5个甚至更多，从这些字节中，可以解析出很多相关的信息，比如此Nand Flash内部是几个芯片（chip）所组成的，每个chip包含了几片（Plane），每一片中的页大小，块大小，等等。在这些信息中，其中有一个，就是识别此flash是SLC还是MLC。
 
+- SLC ,MLC  指的是 Flash 颗粒与使用 Paralle or  Serial 接口并没有关系.
+- 串行与并行主要区别在于IO口的数量上.
+- EMMC = NAND + 主控IC，用以管理坏块以及ECC， 一般 EMMC 都选用 MLS 颗粒
+
 
 
 ## 1.2 Nand Flash的一些typical特性

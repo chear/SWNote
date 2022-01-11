@@ -58,29 +58,29 @@ Downloading Server:
 
 
 ```shell
-# checkout repo
+## checkout repo
 chear@sw3-cbs-30:~$ git clone https://btc-git.zyxel.com/MT03749/opal
 chear@sw3-cbs-30:~$ git checkout -b local_branch origin/master
-# start docker container
+## start docker container
 chear@sw3-cbs-30:~$ ropd
-# building whole code
+## building whole code
 cpe-opal$ make P=DX3301-T0_Generic V=99
 
-# to building the bootloader, and generate zld.bin, 
-# quilt is enabled by default for kernel patches, 
-# but not for packages, using "QUILT=1" to quilt enable.
+## to building the bootloader, and generate zld.bin, 
+## quilt is enabled by default for kernel patches, 
+## but not for packages, using "QUILT=1" to quilt enable.
 cpe-opal$ make package/private/econet/en75xx-loader/{clean,install} QUILT=1 V=99
 
-# to building zyxel package ,and install to rootfs folder
+## to building zyxel package ,and install to rootfs folder
 cpe-opal$ make package/private/zyxel/zcfg_be/{clean,compile} V=99 
 
-# to building kernel module (building Virtual Kernel Package)
+## to building kernel module (building Virtual Kernel Package)
 cpe-opal$ make package/kernel/{clean,install} V=99
 
-# to building linux kernel & rootfs ,then generate ras.bin
+## to building linux kernel & rootfs ,then generate ras.bin
 cpe-opal$ make P=DX3301-T0_Generic target/linux/install V=99
 
-# to update & generate rootfs.squash
+## to update & generate rootfs.squash
 cpe-opal$ make package/install V=99
 cpe-opal$ TOPDIR=$PWD INCLUDE_DIR=$PWD/include make -C target/linux/ firmware_release V=99
 ```
@@ -148,6 +148,97 @@ $ make package/private/econet/en75xx-loader/{clean,install} V=99 QUILT=1
 
 ## 1.3  System Startup
 
+`en75xx-loader`  hex binary arch:
+
+```shell
+##      |---------------|
+##      |     trx       |   trx.h
+##      |---------------|
+##      |    header     |	header.c
+##      |---------------|
+##      |   boot.img    |
+##      |---------------|
+##      |   lzma.img    |
+##      |---------------|
+##      |   spram.bin   |
+##      |---------------|
+##      |   MRD         |   mic.c
+##      |---------------|
+```
+
+trx header structure:
+
+```c
+struct trx_header {
+	unsigned int magic;			/* "HDR0" */
+	unsigned int header_len;    /*Length of trx header*/
+	unsigned int len;			/* Length of file including header */
+	unsigned int crc32;			/* 32-bit CRC from flag_version to end of file */
+	unsigned char version[32];  /*firmware version number*/
+	unsigned char customerversion[32];  /*firmware version number*/
+//	unsigned int flag_version;	/* 0:15 flags, 16:31 version */
+	unsigned int kernel_len;	//kernel length
+	unsigned int rootfs_len;	//rootfs length
+    unsigned int romfile_len;	//romfile length
+	#if 0
+	unsigned int reserved[42];  /* Reserved field of header */
+	#else
+	unsigned char Model[32];
+	unsigned int decompAddr;//kernel decompress address
+	unsigned int openjdk_len;	//openjdk length
+	unsigned int osgi_len;		//osgi length
+	unsigned int imageflag;		/*tclinux+openjdk+osgi 1;tclinux+openjdk 2;tclinux+osgi 3*/
+	unsigned int reserved[29];  /* Reserved field of header */
+	unsigned char chipId[CHIP_ID_LEN];		/* Provided by Makefile */
+	unsigned char boardId[BOARD_ID_LEN];		/* Provided by Makefile */
+	unsigned char modelId[MODEL_ID_LEN];			/* Provided by Makefile */
+	unsigned int defcfg_len;	//default config length
+	unsigned int imageSequence;
+	unsigned char swVersionInt[SW_VERSION_LEN];	/* Provided by Makefile */
+	unsigned char swVersionExt[SW_VERSION_LEN];	/* Provided by Makefile */
+ 	unsigned int rootfsChksum;
+	unsigned int kernelChksum;
+	unsigned int defcfgChksum;
+    unsigned int headerChksum;
+};
+```
+
+header structure:
+
+```c
+typedef struct tcboot_header{
+	unsigned int resv1[2];					//0x00 ~ 0x04, this 8bytes must not use becaust of jump instruction in start.s
+	unsigned int tcboot_len;				//0x08
+	unsigned int tcboot_magic_num;			//0x0c
+	unsigned int lzma_flash_start_addr;	    //0x10
+	unsigned int lzma_flash_end_addr;		//0x14
+	unsigned int bootram_flash_start_addr;	//0x18
+	unsigned int bootram_flash_end_addr;	//0x1c
+	unsigned int resv2;					    //0x20
+	unsigned int chip_flash_info;			//0x24
+	union {
+		unsigned int ecc_info;				//0x28
+		unsigned int en7522_page_size;		//0x28
+	};
+	unsigned int bypass;					//0x2c
+	unsigned int spram_exe_addr;			//0x30
+	unsigned int lzma_exe_addr;			    //0x34
+	unsigned int verify_start_addr;		    //0x38
+	unsigned int verify_end_addr;			//0x3C
+	unsigned int resv3[2];					//0x40 ~ 0x44
+	unsigned int move_data_int_flash_start_addr;	//0x48
+	unsigned int move_data_int_flash_end_addr;		//0x4C
+	unsigned int boot2_flash_start_addr;	//0x50
+	unsigned int boot2_flash_end_addr;		//0x54
+	unsigned int spram_flash_start_addr;	//0x58
+	unsigned int spram_flash_end_addr;		//0x5c
+} TCBOOT_HEADER;
+```
+
+
+
+
+
 ![1619427421760](./img/opal_dx3301_startup.png)
 
 
@@ -164,14 +255,26 @@ Clone and checkout repo by zyrepo
 chear@Build_Opal_Docker$ zyrepo init -u git@btc-git.zyxel.com:opal20/manifest.git -m opal_econet_old.xml
 chear@Build_Opal_Docker$ zyrepo sync
 chear@Build_Opal_Docker$ zyrepo branch -b develop
-chear@Build_Opal_Docker$ zyrepo branch 
-chear@Build_Opal_Docker$ cd opal & make P=HGW500TX2X2E V=s
+chear@Build_Opal_Docker$ zyrepo branch -b CTB_7528HU_7561DU_HGW500TX2X2E_20210801
+# building  project
+chear@Build_Opal_Docker$ cd opal & make P=HGW500TX2X2E_EXTERNAL V=s
+```
+
+Commit and upload source code to gitlab
+
+```shell
 chear@Build_Opal_Docker$ zyrepo foreach -c "git status"
 # Download and merge source to local develop branch 
-chear@Build_Opal_Docker$ zyrepo foreach -c "git pull origin develop --rebase"
+chear@Build_Opal_Docker$ zyrepo foreach -c "git pull origin CTB_7528HU_7561DU_HGW500TX2X2E_20210801 --rebase"
+
+# branch format such like "bugfix-ctbbt-xxxxxx"
+chear@Build_Opal_Docker$ zyrepo branch -b bugfix-ctbbu-SMT_fast_startup
+chear@Build_Opal_Docker$ git commit
+
 # Upload commit change to server and auto merge.
-chear@Build_Opal_Docker$ zyrepo upload -m yes
+chear@Build_Opal_Docker$ zyrepo upload -t CTB_7528HU_7561DU_HGW500TX2X2E_20210801 -m yes
 ```
+
 
 
 **Tips:  use  ' [git cherry-pick [commit_hash]](<https://www.ruanyifeng.com/blog/2020/04/git-cherry-pick.html>) ' to merge update to current branch.**
@@ -205,10 +308,11 @@ opal2p0
 Note: debug Spi Nand flash :
 
 ```shell
-# echo 2 0 0 > /proc/driver/spi_nand_debug
-len = 0x6, buf[0]=2, buf[1]= , buf[2]=0
+# echo "211" > /proc/driver/spi_nand_debug
+len = 0x4, buf[0]=2, buf[1]=1, buf[2]=1
 Set SPI NAND DEBUG LEVLE to 2
-Set _SPI_NAND_ERASE_FAIL_TEST_FLAG to 0
+Set _SPI_NAND_WRITE_FAIL_TEST_FLAG to 1
+Set _SPI_NAND_ERASE_FAIL_TEST_FLAG to 1
 
 # cat /proc/driver/spi_nand_debug
 flash size=[134217728], SPI NAND DEBUG LEVEL=2, _SPI_NAND_WRITE_FAIL_TEST_FLAG=0, _SPI_NAND_ERASE_FAIL_TEST_FLAG=0
@@ -216,7 +320,16 @@ flash size=[134217728], SPI NAND DEBUG LEVEL=2, _SPI_NAND_WRITE_FAIL_TEST_FLAG=0
 # echo all > /proc/yaffs
 ( to trace all for yaffs in kernel.)
 
-# echo read 24c > /proc/driver/spi_nand_test
+# echo "rw_test 2 8" > /proc/driver/spi_nand_test
+cmd:rw_test, arg1=2, arg2=8
+write_test: run at vpe:0, cpu:0
+read_test: run at vpe:1, cpu:1
+read_test: times=2, block_idx=8
+write_test: times=2, block_idx=8
+
+# echo "read 2 8" > /proc/driver/spi_nand_test
+# echo "getFeature 2 8" > /proc/driver/spi_nand_test
+# echo "dumpBmt 2 8" > /proc/driver/spi_nand_test
 ```
 
 
@@ -274,7 +387,85 @@ chear@Build_Opal_Docker$ zyrepo branch -b develop
 chear@Build_Opal_Docker$ zyrepo foreach -c "git pull origin develop --rebase"
 chear@Build_Opal_Docker$ zyrepo foreach -c "git remote update"
 chear@Build_Opal_Docker$ zyrepo branch -b CTB_7528HU_7561DU_HGW500TX2X2E_20210801
-//log应该提示是Switch to existed branch  CTB_7528HU_7561DU_HGW500TX2X2E_20210801
+Switch to existed branch  CTB_7528HU_7561DU_HGW500TX2X2E_20210801
+```
 
+**Note: **
+``git remote update`` will update all of your branches set to track remote ones, but not merge any changes in.
+
+``git fetch`` will update only the branch you're on, but not merge any changes in.
+
+``git pull`` will update *and* merge any remote changes of the current branch you're on. This would be the one you use to update a local branch.
+
+
+
+###  2.  Display 'PRODUCT_NAME'  from flash within mrd
+
+get production name for actual address by  ``atrf [offset],[length`` in zloader , 
+
+```shell
+ZHAL> atrf 261667,32
+[DEBUG] Read len=32 from flash=0x0003fe23 to ram=0x80020000
+0003FE23: 00 4E 42 47 37 35 31 30 00 00 00 00 00 00 00 00    .NBG7510........
+0003FE33: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00    ................
+# actual address from flash should be decimal val,
+```
+
+verify production name by ``atsh`` 
+
+```shell
+ZHAL> atsh
+Firmware Version       : V1.00(ABZY.0)b5
+Bootbase Version       : V1.01 | 11/10/2021  7:06:00
+Vendor Name            : ZyXEL
+Product Model          : NBG7510
+Serial Number          : 123456789012345
+First MAC Address      : 001122AABBCC
+Last MAC Address       : 001122AABBDB
+MAC Address Quantity   : 16
+Default Country Code   : FF
+Boot Module Debug Flag : 01
+RootFS      Checksum   : f50ec1e9
+Kernel      Checksum   : fe58c60e
+Main Feature Bits      : 00
+Other Feature Bits     :
+840d8444: 04060d00 00000000 00000000 00000000
+840d8454: 00000000 00000000 00000000 0000
+```
+
+
+
+### 3.  write romfile partition to switch SMT mode
+
+romfile partition header:
+
+```c
+struct romfile_header
+{
+	unsigned char magic;	//should be ROMFILE_MAGIC
+	unsigned char type;
+	unsigned int length;
+	unsigned short total_crc;	//should be 2 bytes, caculate crc with total_crc=0
+	unsigned char data[0];
+};
+```
+
+romfile data header from actual address like following:
+
+```shell
+ZHAL> atrf 262144,512
+[DEBUG] Read len=512 from flash=0x00040000 to ram=0x80020000
+00040000: 01 5A 68 D9 00 00 CD BA 7B 0A 20 20 22 53 65 72    .Zh.....{.  "Ser
+00040010: 76 69 63 65 73 22 3A 7B 20 20 20 0A 20 20 7D 2C    vices":{   .  },
+00040020: 0A 20 20 22 44 65 76 69 63 65 49 6E 66 6F 22 3A    .  "DeviceInfo":
+00040030: 7B 20 20 20 20 0A 20 20 7D 2C 0A 20 20 22 44 53    {    .  },.  "DS
+00040040: 4C 22 3A 7B 0A 20 20 7D 2C 0A 20 20 22 49 6E 74    L":{.  },.  "Int
+```
+
+write 8 byte header to TE_config.rom to make file `romfile_partition` , and finally write to romfile partition for flash.
+
+```shell
+cd /data/ && tftp -g -r romfile_partition 192.168.123.7
+mtd writeflash /data/romfile_partition 262144 0 /dev/mtd1 && sys atcr reboot
 ```
 

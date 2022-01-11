@@ -110,6 +110,7 @@ or update maven setting.xml while add Aliyun to maven repo  , in this by  '/usr/
 
 
 ## 3. different bewteen "aclocal" and "autoconf"
+
 1. autoscan (autoconf): 扫描源代码以搜寻普通的可移植性问题，比如检查编译器，库，头文件等，生成文件configure.scan,它是configure.ac的一个雏形。
 2. aclocal (automake):根据已经安装的宏，用户定义宏和acinclude.m4文件中的宏将configure.ac文件所需要的宏集中定义到文件 aclocal.m4中。aclocal是一个perl 脚本程序，它的定义是：“aclocal - create aclocal.m4 by scanning configure.ac”
 
@@ -647,3 +648,20 @@ oo=8,xx=24
 
 而静态链接库其实是在编译时就确定了库函数地址。比如，我们使用了`printf()`函数，`printf()`函数对应有一个目标文件`printf.o`，静态链接时，会把`printf.o`链接打包到可执行文件中。在可执行文件中，`printf()`函数相对于文件头的偏移量是确定的，所以说它的地址在编译链接后就是确定的
 
+
+
+
+
+##  21. open & fopen , read & fread & pread
+
+*open* , *fopen*  最大的区别是 *fopen* 使用缓冲文件系统来打开文件，*open* 则是系统调用无法移植. 一般 *open* 用以打开你 linux 下的设备文件，而 *fopen*  则用来打开一般文件。最后 *open* 返回文件描述符，属于用户态，读写需进行用户态与内核态切换。   *fopen* 返回文件指针.
+
+*read* 传入的是文件描述符，  *fread*  则传入指向缓冲区保存或读取的数据。 在效率上 *fread* 为封装好的库函数，而*read* 为系统函数，一般来说，*fread* 效率更高。
+
+
+
+
+
+## 22. Econet 紧急升级
+
+1. GPIO_0 接地低电平

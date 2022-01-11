@@ -1,4 +1,7 @@
-
+> [TOC]
+>
+> 
+>
 
 #  Hisilicon Platform Introduction
 
@@ -247,7 +250,7 @@ $ make chip=sd5116 V=s
 'make chip=sd5116 province=heilongjiang V=s' , 
 for H3 by 'make chip=hi5663h V=s' 
 for H2 by 'make chip=hi5661y V=s' to copmile hi5661 project
-for H2 by 'make chip=sd5116 V=s',to compile hi5662h project.)
+for H2-3 by 'make chip=sd5116 V=s',to compile hi5662h project.)
 
 $ make -C openwrt package/gateway/{prepare,config,compile,install} V=s
 ( to build Hisilicon operation module)
@@ -263,7 +266,7 @@ $ make -C openwrt package/apps/httping/{prepare,config,compile,install} V=s
 **Note: if you want to update the code in trunk, please commit the code in directory solution\patch\openwrt\package\network\services\(generate patch)**
 
 ```shell
-$ make -c openwrt package/gateway/sdk/hi_boot/{prepare,config,compile,install} V=s
+$ make -C openwrt package/gateway/sdk/hi_boot/{prepare,compile,install} V=s
 (to build the hi-boot)
 
 $ make -C openwrt target/linux/install V=s
@@ -354,7 +357,7 @@ $ ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/root-sd5116/
 
 ```shell
 $ cd openwrt/
-$ make target/linux/{clean,prepare,compile,install} V-s
+$ make target/linux/{clean,prepare,compile,install} V=s
 $ make package/utils/busybox/{compile,install} V=s 
 (To build busybox only, to get more pls check openwrt/tmp/.packageinfo)
 ```
@@ -540,6 +543,10 @@ root@OpenWrt:~# hi_cfm test restore
 (To reset default env in partition /config/worka/*)
 root@OpenWrt:~# cli /home/cli/cm/cm_ctrl -v value 0x2000000d	(disable)
 root@OpenWrt:~# cli /home/cli/cm/cm_ctrl -v value 0x2000000e	(enable)
+
+(enable RMS edit for SD5116)
+root@OpenWrt:~# cli /home/cli/cm/cm_ctrl -v value 0x2000000d
+root@OpenWrt:~# cli /home/cli/cm/cm_ctrl -v value 0x2000000f
 ```
 
 disable and enable TR069 wan control in GUI:
@@ -557,4 +564,24 @@ root@OpenWrt:~# cli /home/cli/hal/chip/gpio_read -v gpio 0
 root@OpenWrt:~# cli /home/cli/hal/chip/gpio_write -v gpio 0 level 1
 (setting GPIO_0 to 1)
 ```
+
+
+
+# 2 Hisi maintaince
+
+## 2.1 5662 & 5663 multiboot image
+
+for 5662 chip:
+
+```shell
+# make chip=sd5116 province=jt hitools image V=99
+```
+
+for 5663 chip:
+
+```shell
+# make chip=hsan province=jt hitools factory V=99
+```
+
+
 

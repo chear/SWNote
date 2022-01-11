@@ -7,6 +7,15 @@ email: qwasQWAS1234
 
 
 
+**VLan Environment:**
+
+| VID  | Type  | Note                |
+| ---- | ----- | ------------------- |
+| 200  | DHCP  |                     |
+| 3003 | pppoe | 051010575051/112233 |
+
+
+
 
 ## Hisilicon Support Info:
 
@@ -181,7 +190,7 @@ svn auth user U/P: [chear.huang@mitrastar.com](mailto:chear.huang@mitrastar.com)
 
 admin / Cmcc10086# 
 
-CMCCAdmin / aDm8H%MdA
+CMCCAdmin / aDm8H%M
 
  root/!@qw34er
 

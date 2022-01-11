@@ -3,7 +3,7 @@
 ## Based on hi5630
 ![hisilicon_arch](img\hi_5630.png)
 
-​	hi -boot 是基于 u-boot 裁剪 、修改而来，编译生成目标文件非常小。hi -boot 已经适配了验证 所需的外围芯 外围芯 片，若产品板外围芯片型号与单板上外围芯片型号不同时，需要适当修改相关硬件驱动代码,由于 Hi 5630 内部封装了 DDR 和一个 GEPHY，主要外围芯片为 FLASH 和外置以太 PHY.  ( [HW datasheet](pdf_resource/Hi5630HV110_G.Hn_PLC_datasheet_01.pdf))
+​	hi -boot 是基于 u-boot 裁剪 、修改而来，编译生成目标文件非常小。hi -boot 已经适配了验证 所需的外围芯 ，若产品板外围芯片型号与单板上外围芯片型号不同时，需要适当修改相关硬件驱动代码,由于 Hi 5630 内部封装了 DDR 和一个 GEPHY，主要外围芯片为 FLASH 和外置以太 PHY.  ( [HW datasheet](pdf_resource/Hi5630HV110_G.Hn_PLC_datasheet_01.pdf))
 
 **Note:  DDR 地址空间 0x80000000 ~ 0xFFFFFFFF , Flash 的地址空间 0x00000000 ~ 0x03FFFFFF**
 
@@ -38,6 +38,16 @@ hi-boot 主要文件结构如下:
 └── tools
     (压缩工具以及 ddr 初始化实现)
 ```
+
+to make *hi_boot* :
+
+```shell
+# make package/gateway/sdk/hi_boot/{propare,compile,install} V=99
+```
+
+
+
+
 
 ## Hi-Boot Startup
 

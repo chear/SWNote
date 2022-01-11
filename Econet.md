@@ -1,6 +1,6 @@
 [TOC]
 
-# 	1.  Arch Introduction
+# 1.  Arch Introduction
 
 ![econet_arch](img/econet_arch.bmp)
 

@@ -2,7 +2,7 @@
 
 ## 1.1 Hisilicon Chip  Architecture
 
-![image](E:/Resource/MitrastarNote/img/onu_chip_arch.png)
+![image](img/onu_chip_arch.png)
 以 Hisi 5116 为例，ONU 芯片包含两部分：交换核和 ARM 核。 数据流转发主要发生在交换芯片内。ARM 芯片用以运行 Linux 系统软件，交换芯片顾名思义则提供数据交换功能。 交换芯片包含多个用户侧以太网端口， 一个 Pon 网络口，以及多个 cpu 端口，芯片交换对底层屏蔽并由HAL（Hardware Abstraction Layer） 层接口进行封装， 提供 API 与应用层交互。ARM 芯片也通过 HAL 对交换芯片进行配置调用。
 
 PLOAM (Physical Layer OAM)，OMCI (ONU Management and Control Interface)，OAM，MPCP (Multi-Point Control Protocol) 通过Pon 通道单独完成。
@@ -56,7 +56,7 @@ PLOAM (Physical Layer OAM)，OMCI (ONU Management and Control Interface)，OAM�
 
 ### 1.2.2 ARM Forward
 
-![image](E:/Resource/MitrastarNote/img/hi_arm_data_path.png)
+![image](img/hi_arm_data_path.png)
 (CFE 以对应的物理端口虚拟lan1、lan2，分别对应物理端口GE0、FE1（UNI)  ,端口+vlan 虚拟出wan.100,wan.200 )
 
 软件转发处理报文 （对于需要进入CPU 做由软件处理的报文）：

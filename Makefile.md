@@ -79,6 +79,45 @@ cc -c -o main.o main.c
 
 
 
+##  ifeq
+
+Makefile 中的 ``ifeq`` 没有 "&&"  ， "||"
+
+```Makefile
+ifeq ($（变量名）， 变量值 )
+...
+else ifeq ($(..), ..)
+...
+else
+...
+endif
+```
+
+and
+
+```Makefile
+## if(VALUE1 && VALUE2){...}
+ifneq ($(VALUE1)$(VALUE2),)
+	do something....
+endif
+
+## if(VALUE1 == V1 && VALUE2 == V2) {...}
+ifeq ($(VALUE1)_$(VALUE2), V1_V2)
+	do something....
+endif
+```
+
+or
+
+```Makefile
+## if( VALUE1 == V1 || VALUE2 == V2 ) {...}
+ifneq ($(findstring $(VALUE1)$(VALUE2),  V1  V2),)
+	do something...
+endif
+```
+
+
+
 
 
 
@@ -303,6 +342,3 @@ $(file): FORCE
 FORCE:
 .PHONY: FORCE
 ```
-
-
-

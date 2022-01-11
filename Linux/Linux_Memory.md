@@ -51,6 +51,10 @@
 
 
 
+# Segment & Page
+
+[why use segment & page to manage memory pls check](https://blog.csdn.net/low5252/article/details/106068865)
+
 
 
 # Memory Lock

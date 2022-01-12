@@ -574,14 +574,22 @@ root@OpenWrt:~# cli /home/cli/hal/chip/gpio_write -v gpio 0 level 1
 for 5662 chip:
 
 ```shell
-# make chip=sd5116 province=jt hitools image V=99
+# make chip=sd5116 province=jt image V=99
 ```
 
-for 5663 chip:
+for 5663 chip :
 
 ```shell
-# make chip=hsan province=jt hitools factory V=99
+# make chip=hsan province=jt factory V=99
 ```
 
+(use **SPC036TB001_12241_shipment** source  branch can upgrade on both hi-5662 and hi-5663 platform for Unified version , except hi_boot.)
 
+```shell
+# ./hi_pkger -n 0 -f CMDC -z "cmcc" -y "squashfs" -c 130 -p HSAN -v V2.6.02C \
+-t 30001 v1.0 config_sd5116.ini \
+-t 20002 V200R011C01SPC039TB002_26a8088 \ /home/chear/ssd/Hisi_New/HSANV200R011C01SPC036TB001_12241_shipment/openwrt/bin/hsan/kernel.images \
+-t 20003 V200R011C01SPC039TB002_26a8088 \ /home/chear/ssd/Hisi_New/HSANV200R011C01SPC036TB001_12241_shipment/openwrt/bin/hsan/root.squashfs  \
+-t 20006 V200R011C01SPC039TB002_26a8088 \ /home/chear/ssd/Hisi_New/HSANV200R011C01SPC036TB001_12241_shipment/openwrt/bin/hsan/java.bin -o /home/chear/ssd/Hisi_New/HSANV200R011C01SPC036TB001_12241_shipment/openwrt/bin/hsan/HSANV200R011C01SPC039TB002_26a8088V2.6.02C_img.bin
+```
 

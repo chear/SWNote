@@ -593,3 +593,48 @@ for 5663 chip :
 -t 20006 V200R011C01SPC039TB002_26a8088 \ /home/chear/ssd/Hisi_New/HSANV200R011C01SPC036TB001_12241_shipment/openwrt/bin/hsan/java.bin -o /home/chear/ssd/Hisi_New/HSANV200R011C01SPC036TB001_12241_shipment/openwrt/bin/hsan/HSANV200R011C01SPC039TB002_26a8088V2.6.02C_img.bin
 ```
 
+``hi_pkger`` header structure:
+
+```c
+/*
+ * 打包签名信息
+ */
+typedef struct tagHI_UPG_SIGNINFO_ST
+{    
+    hi_uchar8    uc_has_sign;    /*!< 是否签名 */    
+    hi_uchar8    uc_RSA_bits;    /*!< RSA位 */     
+    hi_uchar8    uc_hash_algo;    /*!< hash算法 */
+    hi_uchar8    uc_reserved;    /*!< 保留 */
+} HI_UPG_SIGNINFO_ST;
+
+/*
+ * 每个子文件的信息
+ */
+typedef struct tagHI_UPG_LAYER_ST
+{
+    hi_uchar8    auc_file_type[HI_UPG_INT_LEN];   /*!< 软件类型 */    
+    hi_uchar8    auc_file_offset[HI_UPG_INT_LEN]; /*!< 偏移地址 */
+    hi_uchar8    auc_file_len[HI_UPG_INT_LEN];    /*!< 软件长度 */
+    hi_uchar8    auc_soft_version[HI_UPG_STR_LEN];/*!< 软件版本号 */
+} HI_UPG_LAYER_ST;
+
+/*
+ * 打包文件头格式
+ */
+typedef struct tagHI_UPG_FILE_HADER_ST
+{
+    hi_uchar8            auc_magic_num[HI_UPG_INT_LEN];        /*!< 魔鬼数字 */ 
+    hi_uchar8            auc_product_name[HI_UPG_STR_LEN];     /*!< 产品名称 */ 
+    hi_uchar8            auc_soft_version[HI_UPG_STR_LEN];     /*!< 软件版本信息 */
+	hi_uchar8            auc_vendor_id[HI_UPG_DATE_LEN];       /*!< 厂商信息 */ 
+	hi_uchar8            auc_chip_version[HI_UPG_DATE_LEN];    /*!< 芯片版本信息 */ 
+	hi_uint32            auc_test_flag[HI_UPG_DATE_LEN];       /*!< 特殊流程flag */ 
+    HI_UPG_SIGNINFO_ST    st_sign_info;                        /*!< 签名信息 */
+    hi_uchar8            auc_reserved[HI_UPG_INT_LEN];         /*!< 保留，其中第一个字节版本类型 0:squashfs 1:jffs2 */ 
+    hi_uchar8            auc_pkg_num[HI_UPG_INT_LEN];          /*!< 子文件数 */ 
+    HI_UPG_LAYER_ST        ast_layout[HI_MAX_LAYER_NUM];       /*!< 每个子文件头信息 */
+	hi_uchar8            auc_pkg_total_length[HI_UPG_INT_LEN]; /*!< 升级包整包长度 */ 
+    hi_uchar8            auc_head_crc[HI_UPG_INT_LEN];         /*!< CRC */ 
+} HI_UPG_FILE_HADER_ST;
+```
+

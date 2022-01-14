@@ -63,3 +63,15 @@ Access to config ``c_cpp_properties.json`` and ``tasks.json``  , then you can co
 
 (Use "c&c++" plug-in  within VS Code ,its easy to conflict with "clangd" ,  when change settings for plug-in should restart VS Code. )
 
+### VS Code & Linux
+
+want to view the source file with linux on remote should install "remote ssh" & "clangd" plug-in on VS Code , also should use ``bear`` command to generate ``compile_commands.json`` for  source index. 
+
+For example generate source index for en75xx-loader 
+
+```shell
+# bear make package/private/econet/en75xx-loader/{clean,install} V=99
+# ln -s /home/chear/cicd/opal/compile_commands.json /home/chear/cicd/opal/build_dir/target-mipsel-buildroot-linux-uclibc/linux-en75xx_hgw500tx2x2e/en75xx-loader-7.3.251.900/compile_commands.json
+```
+
+(to use "clangd" should keep confirm "compile_commands.json" with-in workspace folder.)

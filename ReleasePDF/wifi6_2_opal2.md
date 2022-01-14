@@ -91,7 +91,7 @@ ZHAL> atwz 7089CCFF982C,ff,1,0,10
 
 ```shell
 ZHAL> atub YAC100.bm
-(升级 bootbase)
+(升级 bootbase, atub YAC100.bm,2 能够升级 MRD)
 ```
 
 ![put](../img/atub.bmp)

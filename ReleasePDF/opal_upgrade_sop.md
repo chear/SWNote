@@ -8,7 +8,7 @@
 
 
 
-##### 1.2下载 [<u>Express</u>](\\172.25.5.39\firmware\WX\HGW-500TX2X2-E v3\100ABZY0b6_20220104) 组播升级工具 , 运行后如下，单击 "Start" 按钮
+##### 1.2下载 [Express](\\172.25.5.39\firmware\WX\HGW-500TX2X2-E v3\100ABZY0b6_20220104) 组播升级工具 , 运行后如下，单击 "Start" 按钮
 
 ![opal_express_boot](../img/express_boot.bmp)
 
@@ -28,9 +28,13 @@
 
 ![fw_files](../img/fw_files.bmp)
 
+##### 2.2 设置 电脑端IP地址 为 192.168.1.* ， 如 192.168.1.7
 
+![ip_setting](E:/Resource/SWNote/img/win_net_setting.png)
 
-##### 2.2 打开串口工具 , 如 [<u>MobaXterm_Installer_v20.6.zip</u>](<\\172.25.5.39\cpeswdoc\cpesw\Software\MobaXterm_Installer_v20.6.zip>)  or [<u>Xshell-6.0.0197p.exe</u>](<\\172.25.5.39\cpeswdoc\cpesw\Software\Xshell-6.0.0197p.exe>)  , 在开机读秒的时间内按任意键进入 ZBoot 命令操作模式, 输入 ``atub V1.00(ABZY.0)b6_20220104.bm``  升级tcboot 如
+![upgrade](E:/Resource/SWNote/img/upgrade2.bmp)
+
+##### 2.3 打开串口工具 , 如 [<u>MobaXterm_Installer_v20.6.zip</u>](<\\172.25.5.39\cpeswdoc\cpesw\Software\MobaXterm_Installer_v20.6.zip>)  or [<u>Xshell-6.0.0197p.exe</u>](<\\172.25.5.39\cpeswdoc\cpesw\Software\Xshell-6.0.0197p.exe>)  , 在开机读秒的时间内按任意键进入 ZBoot 命令操作模式, 输入 ``atub V1.00(ABZY.0)b6_20220104.bm``  升级tcboot 如
 
 ![zyxel_boot](../img/opal_zboot.png)
 
@@ -38,7 +42,7 @@
 
 
 
-##### 2.3 打开 [<u>tftp</u>](\\172.25.5.39\cpeswdoc\cpesw\Software\tftpd32.329.zip) 工具，设置 Host IP 为 192.168.1.1 并选择升级文件，此处为"[<u>V1.00(ABZY.0)b6_20220104.bm</u>](\\172.25.5.39\firmware\WX\HGW-500TX2X2-E v3\100ABZY0b6_20220104\V1.00(ABZY.0)b6_20220104.bm)" , 单击 "Put" 按钮，如：
+##### 2.4 打开 [<u>tftp</u>](\\172.25.5.39\cpeswdoc\cpesw\Software\tftpd32.329.zip) 工具，设置 Host IP 为 192.168.1.1 并选择升级文件，此处为"[<u>V1.00(ABZY.0)b6_20220104.bm</u>](\\172.25.5.39\firmware\WX\HGW-500TX2X2-E v3\100ABZY0b6_20220104\V1.00(ABZY.0)b6_20220104.bm)" , 单击 "Put" 按钮，如：
 
 ![tftp](E:/Resource/SWNote/img/tftp3.jpg)
 
@@ -52,13 +56,15 @@
 
 ##### 3.1 搭建升级环境连接路由器串口及网线如 1.1 所示，并下载升级文件 [<u>V1.00(ABZY.0)b6_20220104.bin</u>](\\172.25.5.39\firmware\WX\HGW-500TX2X2-E v3\100ABZY0b6_20220104\V1.00(ABZY.0)b6_20220104.bin) 如 2.1所示
 
-##### 3.2 打开串口工具进入 ZBoot 命令操作模式, 输入 ``atur V1.00(ABZY.0)b6_20220104.bin``
+##### 3.2 设置IP地址如 2.2所示
 
-##### 3.3 打开 tftp ，输入 Host IP, 并选择升级文件 "V1.00(ABZY.0)b6_20220104.bin" ,如图
+##### 3.3 打开串口工具进入 ZBoot 命令操作模式, 输入 ``atur V1.00(ABZY.0)b6_20220104.bin``
+
+##### 3.4 打开 tftp ，输入 Host IP, 并选择升级文件 "V1.00(ABZY.0)b6_20220104.bin" ,如图
 
 ![tftp5](../img/tftp5.jpg)
 
-##### 3.4 点击 put 后，开始升级，升级完成后自动重启。
+##### 3.5 点击 put 后，开始升级，升级完成后自动重启。
 
 
 

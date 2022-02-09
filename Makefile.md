@@ -130,8 +130,27 @@ endif
 
 "=" 和 ":=" 区别
 
-1. “=” make会将整个makefile展开后，再决定变量的值。也就是说，变量的值将会是整个makefile中最后被指定的值。看例子： x = foo y = $(x) bar x = xyz 在上例中，y的值将会是 xyz bar ，而不是 foo bar 。
-2. “:=” “:=”表示变量的值决定于它在makefile中的位置，而不是整个makefile展开后的最终值。 x := foo y := $(x) bar x := xyz
+1. “=” make会将整个makefile展开后，再决定变量的值。也就是说，变量的值将会是整个makefile中最后被指定的值。如下y的值将会是 “xyz bar” ，而不是 “foo bar” 。
+
+   ```Makefile
+   x = foo 
+   y = $(x) bar 
+   x = xyz
+   #Output: 
+   # y=zyx bar
+   ```
+
+2. “:=” “:=”表示变量的值决定于它在makefile中的位置，而不是整个makefile展开后的最终值.
+
+   ```Makefile
+   x := foo 
+   y := $(x) bar 
+   x := xyz
+   #Output: 
+   # y=foo bar
+   ```
+
+   
 
 
 
@@ -201,7 +220,7 @@ Ref: makefile使用规则
 
 
 
-## 5. makefile & shell
+## 5. Makefile & shell
 
 1. 在Makefile中只能在target中调用Shell脚本，其他地方不能输出。
 2. Makefile中的shell，每一行是一个进程，不同行之间变量值不能传递。所以，Makefile中的shell不管多长也要写在一行。
@@ -215,9 +234,7 @@ targt:
 	env1=var1	# Shell veriable
 ```
 
-
-
-( 在 Makefile 中编写 shell 脚本需要特别注意隐藏字符，比如回车换行符，如果隐藏字符位置不对可能会导致 Makeile 执行失败，并且较难排除。在 vim 命令模式中 :set invlist 打开或者关闭隐藏字符。 )
+**(在 Makefile 中编写 shell 脚本需要特别注意隐藏字符，比如回车换行符，如果隐藏字符位置不对可能会导致 Makeile 执行失败，并且较难排除。在 vim 命令模式中 :set invlist 打开或者关闭隐藏字符. )**
 
 ```makefile
 #===============================================================================
@@ -342,3 +359,12 @@ $(file): FORCE
 FORCE:
 .PHONY: FORCE
 ```
+
+
+
+## 8  How to debug with Makefile
+
+1.  use ``$(warning)`` function
+
+2. --debug option ,  debug option format like ``--debug=option1,option2`` levels   "basic (default)", "verbose", "implicit" ,"jobs " , "all (all the previous options and is the default when using the -d option.)"
+

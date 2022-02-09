@@ -401,7 +401,7 @@ Switch to existed branch  CTB_7528HU_7561DU_HGW500TX2X2E_20210801
 
 ###  2.  Display 'PRODUCT_NAME'  from flash within mrd
 
-get production name for actual address by  ``atrf [offset],[length`` in zloader , 
+get production name for actual address by  ``atrf [offset],[length]`` in zloader .(Note: [offset] and [length] all are decimal value.) 
 
 ```shell
 ZHAL> atrf 261667,32

@@ -66,7 +66,7 @@ ZHAL> aten 1,886387413284852333284811581
 
 具体操作如下图：
 
-![gen_pwd](E:/Resource/MitrastarNote/img/boot_flag3.jpg)
+![gen_pwd](../img/boot_flag3.jpg)
 
 将 Debug Flag 写入 MRD
 

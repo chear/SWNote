@@ -34,7 +34,7 @@ building process.
 
 
 
-![gun](E:\Resource\MitrastarNote\img\gun_elf.jpg)
+![gun](..\img\gun_elf.jpg)
 
 **Object Files** are typically created by the  assembler and link editor , and are a binary format  representations of programs intended to be executed directly on a processor. Programs that require other abstract machines, such as shell scripts, are excluded. 
 

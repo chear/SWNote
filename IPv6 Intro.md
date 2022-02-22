@@ -96,7 +96,7 @@ ipv4 vs ipv6 , those ipv6 & ipv4  header are for IP layer.
 | Mobility (currently without upper-layer header)   | 135  | Parameters used with [Mobile IPv6](https://en.wikipedia.org/wiki/Mobile_IPv6). |
 | Host Identity Protocol                            | 139  | Used for [Host Identity Protocol](https://en.wikipedia.org/wiki/Host_Identity_Protocol) version 2 (HIPv2).[[11\]](https://en.wikipedia.org/wiki/IPv6_packet#cite_note-rfc7401-11) |
 | Shim6 Protocol                                    | 140  | Used for [Shim6](https://en.wikipedia.org/wiki/Shim6).[[12\]](https://en.wikipedia.org/wiki/IPv6_packet#cite_note-rfc5533-12) |
-| Reserved                                          | 253  | Used for experimentation and testing.[[](https://en.wikipedia.org/wiki/IPv6_packet#cite_note-rfc3692-13) |
+| Reserved                                          | 253  | [Used for experimentation and testing.](https://en.wikipedia.org/wiki/IPv6_packet#cite_note-rfc3692-13) |
 | Reserved                                          | 254  | Used for experimentation and testing.[[13\]](https://en.wikipedia.org/wiki/IPv6_packet#cite_note-rfc3692-13)[[4\]](https://en.wikipedia.org/wiki/IPv6_packet#cite_note-rfc4727-4) |
 
 
@@ -313,7 +313,7 @@ Address of a set of interfaces one-to-many delivery to all interfaces in the
 
   ​	**FF01::2** (Interface Local),  **FF02::2** (Link Local),  **FF05::2** (Site Local)
 
-  (其中FF01::到FF0F::的多播地址是保留专用地址, FF01::1 节点本地范围所有节点多播地址, FF02::1 链路本地范围所, 节点多播地址, FF01::2 节点本地范围所有路由器多播地址, FF02::2 链路本地范围所有路由器多播地址, sFF05::2 站点本地范围所有路由器多播地址)
+  (其中FF01::到FF0F::的多播地址是保留专用地址, FF01::1 节点本地范围所有节点多播地址, FF02::1 链路本地范围所, 节点多播地址, FF01::2 节点本地范围所有路由器多播地址, FF02::2 链路本地范围所有路由器多播地址, FF05::2 站点本地范围所有路由器多播地址)
 
 Defined Values for the Scope Field
 
@@ -327,6 +327,34 @@ Defined Values for the Scope Field
 | 8                         | Organization-local scope |
 | E                         | Global   scope           |
 | F                         | Reserved                 |
+
+[multicast adderss format](<http://blog.sina.com.cn/s/blog_3d5517850102x3c4.html>)
+
+```test
+RFC 4291 defined multicast address format:
+|    8    | 4  |  4    |              112                        |
++---------+----+-------+-----------------------------------------+
+|11111111 |flgs| scope |            group ID                     |
++---------+----+-------+-----------------------------------------+
+flgs 4 bit： |0|R|P|T|
+(flgs位的高1bit为保留，必须设置为0, 'R'位如果置1的话表示此组播地址是一个内嵌RP地址的ipv6组播地址,默认为0; 'P'位如果置1的话表示此组播地址是一个基于单播前缀的ipv6组播地址。默认为0，如果P位设置为1，那么T位必须为1; 'T'位如果为置0表示永久分配或者是well-known组播地址，如果置1表示临时分配动态的地址，不固定.)
+scope 4 bit : as privious tables
+
+
+RFC 3306 defined multicast address format:
+|   8    |  4   |  4   |   8      |    8   |         64     |   32    |
++--------+------+------+----------+--------+----------------+----------+
+|11111111| flgs | scop | reserved |  plen  | network prefix | group ID |
++--------+------+------+----------+--------+----------------+----------+
+flgs 4 bit : 'P'和'T'位必须为1，表示此组播地址是一个基于单播前缀的组播地址。
+scope 4 bit : as privious tables
+reserved 8 bit: 必须为0。
+plen 8bit : 表示前缀的具体长度。（最长长度为64）
+Network prefixt : 表示具体的前缀
+group_id 2 bit : 组播组ID。
+```
+
+
 
 
 
@@ -377,6 +405,25 @@ Address of a set of interfaces One-to-one-of-many delivery to a single interface
 作为对该算法的一种改进，RFC3041又引入了一种随机地址机制，他包含了用一组随机数字代替由MAC地址转换的接口ID。该地址具有一定的生存周期，随着生存周期的结束，该地址会自动更换，较好地解决了节点的Internet访问活动被跟踪的问题。
 
 有状态和无状态是相对于分配地址的机器而言，在无状态地址自动配置方式下，网络接口接收路由器宣告的全局地址前缀，再结合接口ID得到一个可聚集全局单播地址。在有状态地址自动配置的方式下，主要采用动态主机配置协议（DHCP），需要配备专门的DHCP服务器，网络接口通过客户机/服务器模式从DHCP服务器处得到地址配置信息
+
+
+
+## 4.1 Neighbor Discovery
+
+The IPv6 autoconfiguration function starts from the **Neighbor Discovery (ND)** ,The main functions include:
+
+- Address Resolution: How to resolve the IPv6 address of neighboring nodes to its link layer address.
+- Duplicate Address Detection (DAD) : How does a node determine whether the address it wants to use which has been used by other neighboring nodes
+- Address Auto configuration: Provides a mechanism to allow hosts to automatically configure parameters for each interface. For example: IPv6 address, link MTU, etc.
+- Router Discovery : How do Hosts find a router connected to a link
+- Prefix Discovery : How do Hosts know which prefixes belong to the address that can be directly transmitted on the link? (Nodes use prefix to determine whether to send packets directly or through routers to destinations.)
+- Route redirection : When there are more than two routers on the link, how does the Router tell the host to use the better next-hop (other routers) to deliver the packet to a specific destination address
+
+
+
+## 4.2  DAD
+
+
 
 
 

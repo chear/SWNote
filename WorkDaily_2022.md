@@ -2,7 +2,7 @@
 
 ## 2022.01.06  VS Code & MinGW
 
-**VS Code** IDE for [free download](https://code.visualstudio.com/Download), while support  c&c++ when after install plug-in . **MinGW**  means *Minimalist GNU for Windows*  [downloading](https://sourceforge.net/projects/mingw/files/) , is open source GCC compiler on Windows systems.  [to integrate VS Code & MinGW](https://zhuanlan.zhihu.com/p/77074009) .
+**VS Code** IDE for [free download](https://code.visualstudio.com/Download), while support  c&c++ after install plug-in . **MinGW**  means *Minimalist GNU for Windows*  [downloading](https://sourceforge.net/projects/mingw/files/) , is open source GCC compiler on Windows .  [to integrate VS Code & MinGW](https://zhuanlan.zhihu.com/p/77074009) .
 
 Access to config ``c_cpp_properties.json`` and ``tasks.json``  , then you can compile and run c files ,main configuration as follow:
 
@@ -65,7 +65,7 @@ Access to config ``c_cpp_properties.json`` and ``tasks.json``  , then you can co
 
 ### VS Code & Linux
 
-want to view the source file with linux on remote should install "remote ssh" & "clangd" plug-in on VS Code , also should use ``bear`` command to generate ``compile_commands.json`` for  source index. 
+want to view the source for linux on server in **VS Code**  must install  *"remote ssh"* & *"clangd"* plug-in on VS Code , also need use ``bear`` command to generate ``compile_commands.json`` for  source index. 
 
 For example generate source index for en75xx-loader 
 

@@ -303,6 +303,8 @@ Used for Stateless Address Configuration.
 
 Address of a set of interfaces one-to-many delivery to all interfaces in the
 
+![ipv6_format](./img/ipv6_format.bmp)
+
 - IPv6 multicast addresses always begins with FF
 
 - All-Nodes addresses

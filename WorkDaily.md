@@ -1105,7 +1105,8 @@ g! lb
 ...
    26|Active     |   90|HguDpi (2.2.2)|2.2.2
 g! start 26
-g! getHTTPTrafficProcessRuleInfo
+g! 
+
 {
         "Result":       0,
         "List": [{

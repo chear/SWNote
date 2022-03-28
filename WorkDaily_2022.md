@@ -76,3 +76,48 @@ For example generate source index for en75xx-loader
 
 (to use "clangd" should keep confirm "compile_commands.json" with-in workspace folder.)
 
+
+
+## 2022.03.01  Merge code into 'develop' branch
+
+to get my log by 
+
+```shell
+$ zyrepo foreach -c  "git log CTB_7528HU_7561DU_HGW500TX2X2E_20210801 --after="2021-8-1" --format=\"%ae: %h --%ce\" --author=\"Chear Huang\""
+( %h: short commit hash, %ae: author email, %ce: commit email.)
+
+$ git reset --hard "HEAD^"
+(to delete last commit.)
+```
+
+
+
+
+
+## 2022.03.09  Hisi XGPon kernel
+
+building xgPon 
+
+```shell
+## to building kernel 
+make source mod=kernel V=99;
+## to building sub dir and contains Makefile.hsan
+make source mod=hisilicon V=99
+## to building hisilicon/gateway/service
+make source mod=service V=99
+```
+
+
+
+[DNS](http://c.biancheng.net/view/6457.html) based on UDP  and default for *53* port , DNS packet as following:
+
+![dns_packet](img/dns_packet.png)
+
+![dns](./img/dns_packet.jpg)
+
+![dns2](./img/dns_packet_2.jpg)
+
+
+
+
+

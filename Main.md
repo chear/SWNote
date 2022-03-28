@@ -16,13 +16,16 @@ email: qwasQWAS1234
 
 
 
-
 ## Hisilicon Support Info:
 
-海思support:	
+### 海思support:	
 
 https://hisupport.hisilicon.com/hisupport
  mitrastarcn_002/15138!sw31
+
+### Hisi VOIP Registation:
+
+![vpio](./img/hisi_voip.jpg)
 
 
 
@@ -218,4 +221,10 @@ deb https://mirrors.aliyun.com/kali kali-rolling main non-free contrib
 deb-src https://mirrors.aliyun.com/kali kali-rolling main non-free contrib
 
 default for toor
+
+
+
+## WAN Info
+
+![wan](./img/wan_info.bmp)
 

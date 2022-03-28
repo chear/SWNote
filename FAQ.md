@@ -357,6 +357,10 @@ both ```svn revert``` and ```svn upload -r``` are reload version
 
 ( Note: when uploading files to svn trunk with Linux was better than Windows. ``svn add --no-ignore``  )
 
+```shell
+# svn up -r 10237 hisilicon/gateway/sercice/cm/odl/source/igdCmTransferServices.c
+```
+
 
 
 

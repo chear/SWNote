@@ -229,7 +229,7 @@ Port 和 QID 对应表
 $cli /home/cli/cfe/lrn/lrn_dump
 ```
 
-![image](E:/Resource/MitrastarNote/img/hi_napt_result.png)
+![image](./img/hi_napt_result.png)
 
 
 

@@ -79,7 +79,7 @@ cc -c -o main.o main.c
 
 
 
-##  ifeq
+##  ifeq && ifneq
 
 Makefile 中的 ``ifeq`` 没有 "&&"  ， "||"
 
@@ -116,7 +116,14 @@ ifneq ($(findstring $(VALUE1)$(VALUE2),  V1  V2),)
 endif
 ```
 
+Note:
 
+| 关键字 | 功能                                              |
+| ------ | ------------------------------------------------- |
+| ifeq   | 判断参数是否不相等，相等为 true，不相等为 false。 |
+| ifneq  | 判断参数是否不相等，不相等为 true，相等为 false。 |
+| ifdef  | 判断是否有值，有值为 true，没有值为 false。       |
+| ifndef | 判断是否有值，没有值为 true，有值为 false。       |
 
 
 
@@ -313,6 +320,44 @@ cc -o foo $(objects)
 
 The [eval](<https://www.gnu.org/software/make/manual/html_node/Eval-Function.html#Eval-Function>) function is very special: it allows you to define new makefile constructs that are not constant; which are the result of evaluating other variables and functions.
 
+```Makefile
+pointer := pointed_value
+
+define foo 
+var := 123
+arg := $1
+$$($1) := ooooo
+endef 
+
+$(info $(call foo,pointer))
+# output :
+# var := 123
+# arg := pointer
+# $(pointer) := ooooo
+# -----------------------------
+# var: , arg:
+# pointer: pointed_value, pointed_value:
+# done.
+# -----------------------------
+
+$(eval $(call foo,pointer))
+# output:
+# var := 123
+# arg := pointer
+# $(pointer) := ooooo
+# -----------------------------
+# var: 123, arg: pointer
+# pointer: pointed_value, pointed_value: ooooo
+# done.
+# -----------------------------
+target:
+        @echo -----------------------------
+        @echo var: $(var), arg: $(arg)
+        @echo pointer: $(pointer), pointed_value: $(pointed_value)
+        @echo done.
+        @echo -----------------------------
+```
+
 ### 6.3 'foreach'
 
 ```Makefile
@@ -342,7 +387,13 @@ $(warning A target)target: $(warning In a prerequisite list)makefile $(BAZ)
 
 
 
-## 7. 'FORCE'
+## 7. 字符串常用函数
+
+### 
+
+
+
+## 8. 'FORCE'
 
 If a rule has no prerequisites or recipe, and the target of the rule is a nonexistent file, then `make` imagines this target to have been updated whenever its rule is run. This implies that all targets depending on this one will always have their recipe run.  This rule can call anyname ,  in this case just call ``FORCE``.
 
@@ -362,7 +413,7 @@ FORCE:
 
 
 
-## 8  How to debug with Makefile
+## 9.  How to debug with Makefile
 
 1.  use ``$(warning)`` function
 

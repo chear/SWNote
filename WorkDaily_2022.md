@@ -121,3 +121,38 @@ make source mod=service V=99
 
 
 
+## 2022.04.11 Create gitlab-runner for CI/CD
+
+prepare create new user and generate public key by  ``ssh-keygen`` , then add this user to 'docker' group
+
+```shell
+# sudo useradd -m sw3_pub
+# sudo passwd sw3_pub
+# sudo usermod -aG docker sw3_pub
+# ssh-keygen -t ed25519
+```
+
+get docker image and register *gitlab-runner*
+
+```shell
+$ docker run -d -p 5000:5000 --restart=always --name registry -v /srv/registry:/var/lib/registry registry:2
+
+$ docker run -d --name gitlab-runner --restart always -v /srv/gitlab-runner/config:/etc/gitlab-runner -v /var/run/docker.sock:/var/run/docker.sock -v /home/gitlab-runner_volumes:/home/gitlab-runner_volumes --dns 172.21.5.1 gitlab/gitlab-runner:ubuntu-v12.8.0
+
+$ docker run --rm -it cpe-docker-registry.zyxel.com:5000/my-build-server3:v1.01 bash
+```
+
+login to gitlab container and make certification for url *btc-git.zyxel.com*
+
+```shell
+$ docker exec -it gitlab-runner bash
+root@:/# openssl s_client -connect btc-git.zyxel.com:443 -showcerts < /dev/null | openssl x509 -outform PEM > /etc/ssl/certs/btc-git.zyxel.com.crt
+
+root@:/# gitlab-runner --debug register -n --tls-ca-file="/etc/ssl/certs/btc-git.zyxel.com.crt" --name ctb_build-it --url https://btc-git.zyxel.com/ -r 6wunkyzuVyTPXxN_6y8N --executor docker --docker-image cpe-docker-registry.zyxel.com:5000/my-build-server3:v1.01 --docker-dns 172.21.5.1 --docker-volumes /mnt/gitlab-runner_volumes_1/build:/mnt/build/:rw --docker-volumes /mnt/gitlab-runner_volumes_1/builds:/builds:rw --docker-volumes /mnt/gitlab-runner_volumes_1/script:/script:rw  --docker-volumes /mnt/gitlab-runner_volumes_1/gitlab-daily-build-image:/gitlab-daily-build-image:rw --docker-volumes /opt/tools/zyrepo:/opt/tools/zyrepo:rw --docker-volumes /home/sw3_pub/.ssh:/root/.ssh:rw --tag-list "tagsBuildCTBOPAL2-it"  --docker-tlsverify false
+
+root@:/# gitlab-runner list
+
+root@:/# gitlab-runner unregister --tls-ca-file="/etc/ssl/certs/btc-git.zyxel.com.crt" --url https://btc-git.zyxel.com/ --token tkCsX-fJygTdtgjvNqvQ
+
+root@:/# gitlab-runner restart
+```

@@ -43,8 +43,8 @@ Arch
 - ``docker save`` 保存的是镜像（image），``docker export`` 保存的是容器（container）；
 
 ```shell
-  $ docker save #ID or #Name
-  $ docker export #ID or #Name
+$ docker save #ID or #Name
+$ docker export #ID or #Name
 ```
 
 - ``docker load`` 用来载入镜像包，docker import用来载入容器包，但两者都会恢复为镜像；
@@ -52,15 +52,27 @@ Arch
 - ``docker load`` 不能对载入的镜像重命名，而docker import可以为镜像指定新名称。
 
 ```shell
-# to check the images info
+# to display the images info
 $ docker image ls
-# to check containers info
+# to display containers info
 $ docker ps -a
 ```
 
 
 
+# 2. New image
+
+to make new  environment  integrate vim and config git user name for  MTK bootloader. [Rref](https://zhuanlan.zhihu.com/p/366271256)
+
+```shell
+# to make image
+$ docker commit -m "add vim ,git config" -a "chear" [contain_id] [new_images_id]:[tag]
+
+# to running new container
+$ docker run --rm -it --name opal2_mtk_boot_docker_chear --hostname Build_Opal_Docker6604 -v ./:/work/cpe-opal -w /work/cpe-opal -v /opt:/opt -v /home/chear/.ssh:/home/chear/.ssh --dns 172.25.5.210 ubuntu_18_04_env:bootloader bash
+```
 
 
-# 2. Usage
+
+
 

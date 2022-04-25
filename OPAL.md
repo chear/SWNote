@@ -40,11 +40,12 @@ OPAL based on OpenWrt, and has 3 rules  for
 
 - Target :  ``BuildTarget`` for Linux kernel to configure HW.
 
-  
+  ## 1.2 [Differ Container & Images](<https://zhuanlan.zhihu.com/p/348837988>)
 
-- Host: ``HostBuild``  for tools
+  Host: ``HostBuild``  for tools
 
-- Package:  ``BuildPackage`` for package running on the device.
+  Package:  ``BuildPackage`` for package running on the device.
+
 
 Downloading Server:
 
@@ -376,7 +377,55 @@ source at  *package/private/zyxel/zcmd/zcmd.c* , zcmdDataModelInit:
 
 
 
-# 2. MTK SDK
+# 2. MTK Bootloader SDK
+
+to update docker image
+
+```shell
+$ docker ps 
+chear@sw3-cbs-opal:~$ docker ps
+CONTAINER ID   IMAGE                          COMMAND   CREATED          STATUS          3714815f17f5   ubuntu_18_04_env:bootloader    "bash"    14 minutes ago   Up 14 minutes 
+
+$ docker commit -m "ln to sh" -a "chear" 3714815f17f5 ubuntu_18_04_env:bootloader
+```
+
+main cofniguration files tree in the SDK .
+
+```shell
+./defconfig/WX5600-T0/
+|-- atf.config
+|-- u-boot-env.txt
+|-- uboot_config
+└-- zloader.config
+./Uboot-upstream/configs/zyxel_wx5600_t0_defconfig
+./Uboot-upstream/arch/arm/dts/
+|-- mt7986.dtsi
+└-- wx5600-t0-c2-2.dts
+./Uboot-upstream/arch/arm/dts/mt7986.dtsi
+./Uboot-upstream/board/mediatek/mt7986/
+|-- Kconfig
+|-- MAINTAINERS
+|-- Makefile
+|-- bootmenu_emmc.c
+|-- bootmenu_sd.c
+|-- bootmenu_snand.c
+|-- bootmenu_snor.c
+|-- bootmenu_ubi.c
+|-- built-in.o
+└-- mt7986_rfb.c
+./Uboot-upstream/arch/arm/cpu/armv8/u-boot-spl.lds
+./atf-20220114-95c4e1886/fdts/mt7986.dts
+```
+
+to building MTK bootloader
+
+```shell
+$ git clone git@btc-git.zyxel.com:opal20/sdk/mediatek/mt7986_v7.6.2.1_mp/bootloader.git
+$ make clean
+$ make PROFILE=WX5600-T0 V=99 
+```
+
+
 
 
 

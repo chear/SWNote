@@ -1101,12 +1101,14 @@ g! addHTTPTrafficProcessRuleJ "" 80 UP E4:E7:49:3B:12:42 "GET,POST" "" "User-Age
 select and start dpi  plugin , and then this plug-in should   ``addHTTPTrafficProcessRuleJ`` , get info as following:
 
 ```shell
+# display the plug-in
 g! lb
 ...
    26|Active     |   90|HguDpi (2.2.2)|2.2.2
+# 
 g! start 26
-g! 
-
+# to display the rule info
+g! getHTTPTrafficProcessRuleInfo
 {
         "Result":       0,
         "List": [{
@@ -1119,6 +1121,21 @@ g!
                         "StatuscodeList":       [],
                         "BundleName":   "com.chinamobile.smartgateway.cmccdpi"
                 }]
+}
+# add mirror
+g! addMirrorRule "192.168.6.6" "8090" "UP" "TCP" "" "192.168.1.1" 10001
+# get mirror 
+g! getMirroRuleInfo
+# add monitor addr
+g! addTrafficMonitoringDestAddressJ "www.jd.com" "www.baidu.com" com.chinamobile.smartgateway.cmccdpi
+# get val
+g! getTrafficMonitoringDestAddressInfo
+{
+	"Result":	0,
+	"List":	[{
+			"BundleName":	"com.chinamobile.smartgateway.cmccdpi",
+			"DestAddressList":	["www.jd.com", "www.baidu.com"]
+		}]
 }
 ```
 

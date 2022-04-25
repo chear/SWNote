@@ -1,6 +1,6 @@
-# Makefile Introduction
+# [ Makefile Introduction](https://seisman.github.io/how-to-write-makefile/introduction.html)
 
-**MakeFile**: 用于自动化编译MakeFile定义了一系列对规则，来制定哪些文件需要先编译，那些需要后编译，那些文件需要重新编译，甚至于更复杂多功能操作，MakeFile就像一个shell脚本，可以制定操作系统命令。运行make命令，Makefile的优先选择顺序是，GNUmakefile、makefile 、Makefile 只要选中一个就不在理会其他。
+**[MakeFile](https://github.com/seisman/how-to-write-makefile)**: 用于自动化编译MakeFile定义了一系列对规则，来制定哪些文件需要先编译，那些需要后编译，那些文件需要重新编译，甚至于更复杂多功能操作，MakeFile就像一个shell脚本，可以制定操作系统命令。运行make命令，Makefile的优先选择顺序是，GNUmakefile、makefile 、Makefile 只要选中一个就不在理会其他。
 
 包含5部分：
 
@@ -9,6 +9,8 @@
 - 变量定义 : Makefile中定义的变量
 - 文件指示 : Makefile中引用其他Makefile; 指定Makefile中有效部分; 定义一个多行命令
 - 注释 : Makefile只有行注释 "#", 如果要使用或者输出"#"字符, 需要进行转义, "#"
+
+(Note: *make* default order **GUNmakefile > makefile > Makefile** )
 
 
 
@@ -28,6 +30,8 @@
 [Re1](<http://clarkgrubb.com/makefile-style-guide#phony-targets> ) , [Ref2](<https://www.cnblogs.com/wang_yb/p/3990952.html>)
 
 
+
+## Makefile 规则
 
 **target，prerequisites and recipe **
 
@@ -70,6 +74,40 @@ cc -c -o main.o main.c
 | AR           | ar             |
 | CC           | cc             |
 | CXX          | g++            |
+
+**静态模式**
+
+静态模式可以更加容易地定义多目标的规则，可以让我们的规则变得更加的有弹性和灵活。
+
+```txt
+<targets ...> : <target-pattern> : <prereq-patterns ...>
+    <commands>
+    ...
+```
+
+For example:
+
+```Makefile
+objects = foo.o bar.o
+
+all: $(objects)
+
+$(objects): %.o: %.c
+    $(CC) -c $(CFLAGS) $< -o $@
+```
+
+the *$(filter )* function used to  seperate  '*.o'  and  '*.elc' in var *$(files)*
+
+```Makefile
+files = foo.elc bar.o lose.o
+
+$(filter %.o,$(files)): %.o: %.c
+    $(CC) -c $(CFLAGS) $< -o $@
+$(filter %.elc,$(files)): %.elc: %.el
+    emacs -f batch-byte-compile $<
+```
+
+
 
 
 
@@ -419,3 +457,4 @@ FORCE:
 
 2. --debug option ,  debug option format like ``--debug=option1,option2`` levels   "basic (default)", "verbose", "implicit" ,"jobs " , "all (all the previous options and is the default when using the -d option.)"
 
+3. *make -n*  means display or show the command will be exec , but still not.

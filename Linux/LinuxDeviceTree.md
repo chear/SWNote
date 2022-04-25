@@ -1,0 +1,34 @@
+# Introduction
+
+The *[device tree](https://elinux.org/Device_Tree_Usage)* is a simple tree structure of nodes and properties.  Properties are key-value pairs, and node may contain both properties and child nodes.  For example, the following is a simple tree in the .dts format  it does show the structure of nodes and properties. 
+
+```c
+/dts-v1/;
+/* '/' means single root node  */
+/ {
+    node1 {
+        a-string-property = "A string";
+        a-string-list-property = "first string", "second string";
+        // hex is implied in byte arrays. no '0x' prefix is required
+        a-byte-data-property = [01 23 34 56];
+        child-node1 {
+            first-child-property;
+            second-child-property = <1>;
+            a-string-property = "Hello, world";
+        };
+        child-node2 {
+        };
+    };
+    node2 {
+        an-empty-property;
+        a-cell-property = <1 2 3 4>; /* each number (cell) is a uint32 */
+        child-node1 {
+        };
+    };
+};
+```
+
+
+
+# Basic Data Format
+

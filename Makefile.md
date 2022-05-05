@@ -75,7 +75,9 @@ cc -c -o main.o main.c
 | CC           | cc             |
 | CXX          | g++            |
 
-**静态模式**
+
+
+**[静态模式](<https://seisman.github.io/how-to-write-makefile/rules.html>)**
 
 静态模式可以更加容易地定义多目标的规则，可以让我们的规则变得更加的有弹性和灵活。
 
@@ -105,6 +107,25 @@ $(filter %.o,$(files)): %.o: %.c
     $(CC) -c $(CFLAGS) $< -o $@
 $(filter %.elc,$(files)): %.elc: %.el
     emacs -f batch-byte-compile $<
+```
+
+
+
+##  [Target-specific Variable](https://seisman.github.io/how-to-write-makefile/variables.html#id8)
+
+**Target-specific Variable** 被称为目标变量 (局部变量)，它可以和“全局变量”同名，因为它的作用范围只在这条规则以及连带规则中，所以其值也只在作用范围内有效。而不会影响规则链以外的全局变量的值。
+
+```Makefile
+## <target ...> : <variable-assignment>;
+## <target ...> : overide <variable-assignment>
+## Note: define var 'ENV_SIZE' within uboot_env ,
+uboot_env: ENV_SIZE = $(shell grep "CONFIG_ENV_SIZE=" $(UBOOT_DIR)/.config |sed 's/"//g' | cut -d'=' -f2)
+uboot_env: uboot
+    mkdir -p images
+    $(info chear_debug: size= $(ENV_SIZE))
+    @if [ -f "$(DEFAULT_CONFIG_PATH)/$(PROFILE)/u-boot-env.txt" ]; then \
+        $(UBOOT_DIR)/tools/mkenvimage -s $(ENV_SIZE) -o images/u-boot-env.bin $(DEFAULT_CONFIG_PATH)/$(PROFILE)/u-boot-env.txt; \
+    fi
 ```
 
 
@@ -268,10 +289,27 @@ Ref: makefile使用规则
 ## 5. Makefile & shell
 
 1. 在Makefile中只能在target中调用Shell脚本，其他地方不能输出。
+
 2. Makefile中的shell，每一行是一个进程，不同行之间变量值不能传递。所以，Makefile中的shell不管多长也要写在一行。
+
 3. Makefile中的变量以$开头， 所以，为了避免和shell的变量冲突，shell的变量以$$开头
+
 4. '@' 代表执行命令不需要返回结果 , '-'  代表创建或者删除文件，如果碰到文件不存在或者已经创建，那么希望忽略掉这个错误，继续执行， '$' 代表Makefile扩展变量
+
 5. 在 Makefile 中定义变量需要注意
+
+6. $(shell )  函数可以用于 target 中，作用和 \` \`  相当，make仅仅对它的回返结果进行处理；make将函数返回结果中的所有换行符（“\n”）或者一对“\n\r”替换为单空格；并去掉末尾的回车符号（“\n”）或者“\n\r”。进行函数展开式时，它所调用的命令（它的参数）得到执行。除对它的引用出现在规则的命令行和递归变量的定义中以外，其它决大多数情况下，make是在读取解析Makefile时完成对函数shell的展开。
+
+   ```Makefile
+   all:
+   	PLAT=$(shell grep "CONFIG_PLAT=" $(ATF_DIR)/.config |sed 's/"//g' | cut -d'=' -f2)	
+   	cp $(ATF_DIR)/build/$(PLAT)/release/bl2.img images/
+   	cp $(ATF_DIR)/build/$(PLAT)/release/fip.bin images/
+   ```
+
+   
+
+   
 
 ```Makefile
 env = var 		# Makefile veriable

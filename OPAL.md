@@ -406,7 +406,7 @@ main cofniguration files tree in the SDK .
 |-- Kconfig
 |-- MAINTAINERS
 |-- Makefile
-|-- bootmenu_emmc.c
+|-- bootmenu_emmc.c		
 |-- bootmenu_sd.c
 |-- bootmenu_snand.c
 |-- bootmenu_snor.c
@@ -421,6 +421,7 @@ to building MTK bootloader
 
 ```shell
 $ git clone git@btc-git.zyxel.com:opal20/sdk/mediatek/mt7986_v7.6.2.1_mp/bootloader.git
+$ git checkout pre_develop
 $ make clean
 $ make PROFILE=WX5600-T0 V=99 
 ```

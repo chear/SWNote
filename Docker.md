@@ -62,10 +62,14 @@ $ docker ps -a
 
 # 2. New image
 
-to make new  environment  integrate vim and config git user name for  MTK bootloader. [Rref](https://zhuanlan.zhihu.com/p/366271256)
+to make new environment  integrate vim and config git user name for  MTK bootloader. [Rref](https://zhuanlan.zhihu.com/p/366271256)
 
 ```shell
-# to make image
+# to building image
+$ cd Dock67
+$ docker build --build-arg UID=1016 --build-arg GID=1016 --build-arg USER=chear -t ubuntu_18_04_env:bootloader .
+
+# to commit image
 $ docker commit -m "add vim ,git config" -a "chear" [contain_id] [new_images_id]:[tag]
 
 # to running new container

@@ -156,3 +156,61 @@ root@:/# gitlab-runner unregister --tls-ca-file="/etc/ssl/certs/btc-git.zyxel.co
 
 root@:/# gitlab-runner restart
 ```
+
+
+
+## 202.04.25  install 'tldr' within docker container
+
+```shell
+$ mkdir -p ~/.tldr/tldr
+$ sudo git clone https://codechina.csdn.net/mirrors/tldr-pages/tldr.git ~/.tldr/tldr
+$ sudo apt-get update
+$ sudo apt-get install tldr
+```
+
+
+
+## 2022.04.26 MTK  SDK porting
+
+generate *u-boot* config and building *u-boot* by:
+
+```shell
+$ tar -xf uboot-2022.04_0421_formal.tar.xz
+$ cd uboot-mtk-20220412-sb
+## make mt7981_spim_nand_rfb_defconfig
+$ make 
+$ make CROSS_COMPILE=/usr/bin/aarch64-linux-gnu-
+```
+
+ to generate configuration by  ``./script/kconfig/Makefile``
+
+```Makefile
+%config: scripts_basic outputmakefile FORCE
+	$(Q)$(MAKE) $(build)=scripts/kconfig $@
+## Express commands:
+## make -f ./scripts/Makefile.build obj=scripts/kconfig mt7981_spim_nand_rfb_defconfig
+
+
+%_defconfig: $(obj)/conf
+	$(Q)$< $(silent) --defconfig=arch/$(SRCARCH)/configs/$@ $(Kconfig)
+## Express commands: 
+## scripts/kconfig/conf  --defconfig=arch/../configs/mt7981_spim_nand_rfb_defconfig Kconfig
+```
+
+to generate *u-boot.bin*
+
+```shell
+./tools/mkimage -T mtk_image -a 0x41e00000 -e 0x41e00000 -n "media=snand;nandinfo=2k+64" -d u-boot.bin u-boot-mtk.bin >/dev/null ;
+```
+
+generate bootloader
+
+```shell
+$ cp u-boot.bin  ../atf-20220421-d0152f6db/
+$ make menuconfig && make
+## Express:
+## make -f /work/cpe-opal/mtk_porting/atf-20220421-d0152f6db/Makefile PLAT="mt7981" CROSS_COMPILE="/usr/bin/aarch64-linux-gnu-" BOOT_DEVICE="spim-nand" NMBM=1 NAND_TYPE="spim:2k+64" DRAM_USE_DDR4=0 DDR3_FREQ_2133=1 BOARD_BGA=1 LOG_LEVEL=20 BL33="./u-boot.bin" clean
+## make -f /work/cpe-opal/mtk_porting/atf-20220421-d0152f6db/Makefile PLAT="mt7981" CROSS_COMPILE="/usr/bin/aarch64-linux-gnu-" BOOT_DEVICE="spim-nand" NMBM=1 NAND_TYPE="spim:2k+64" DRAM_USE_DDR4=0 DDR3_FREQ_2133=1 BOARD_BGA=1 LOG_LEVEL=20 BL33="./u-boot.bin"  all fip
+
+```
+

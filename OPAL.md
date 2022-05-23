@@ -389,7 +389,7 @@ CONTAINER ID   IMAGE                          COMMAND   CREATED          STATUS 
 $ docker commit -m "ln to sh" -a "chear" 3714815f17f5 ubuntu_18_04_env:bootloader
 ```
 
-main cofniguration files tree in the SDK .
+main configuration files tree in the SDK .
 
 ```shell
 ./defconfig/WX5600-T0/
@@ -417,7 +417,31 @@ main cofniguration files tree in the SDK .
 ./atf-20220114-95c4e1886/fdts/mt7986.dts
 ```
 
-to building MTK bootloader
+bootloader flash layout
+
+```text
+	|-----------|
+	|  bl2.img  |
+	|-----------|
+	|  env      |	u-boot-env.bin
+	|-----------|
+	|  factory  |	RootFS
+	|-----------|
+	|  fip.bin  |   
+	|-----------|
+	|  zloader  |	zloader.bin.gz.uImage
+	|-----------|
+	|  ubi      |   kernel && rootfs
+	|-----------|
+	|  ubi 2    |  
+	|-----------|
+	|  zyubi    |  
+	|-----------|
+```
+
+
+
+to building MTK bootloader , chip based on **mt7986**
 
 ```shell
 $ git clone git@btc-git.zyxel.com:opal20/sdk/mediatek/mt7986_v7.6.2.1_mp/bootloader.git
@@ -426,7 +450,24 @@ $ make clean
 $ make PROFILE=WX5600-T0 V=99 
 ```
 
+to building whole code by
 
+```shell
+# zyrepo init -u git@btc-git.zyxel.com:opal20/manifest.git -m opal21_mtk_v7_6_2_1.xml
+# zyrepo sync
+# zyrepo branch -b pre_develop
+###  'opal20checkout -m7986' replace privious zyrepo command.
+# cd opal && make P=WX5600-T0 V=99
+```
+
+to building MTK  for **mt7981**  for AX3000
+
+```shell
+$ ropd_mt7981
+# opal20checkout.sh mt7981
+# make P=HGW500GX2X2M V=99
+# make package/private/zyxel/esmd/{clean,compile} V=99
+```
 
 
 

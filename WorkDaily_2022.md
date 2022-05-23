@@ -214,3 +214,33 @@ $ make menuconfig && make
 
 ```
 
+to upgrade by bootloader by *MTK* sdk
+
+```shell
+MT7981> mtkupgrade bl2
+## bl2.img
+MT7981> mtkupgrade fip
+## fip.bin
+MT7981> mtkupgrade simg
+## bootloader-factory.bin
+```
+
+
+
+## 2022.05.16  Push code to remote repo
+
+```shell
+## git fetch origin [remote_branch]:[local_branch]
+$ git fetch origin develop:develop
+## '--allow-unrelated-histories' means merge different repo code.
+$ git merge local_develop --allow-unrelated-histories
+```
+
+
+
+## 2022.05.20  ``find -exec``
+
+```shell
+ $ find ./ -name "*.tgz" -exec mv {} ../../mt7981_cicd/opal20/opal/dl/ \;
+```
+

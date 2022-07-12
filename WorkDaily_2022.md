@@ -76,6 +76,14 @@ For example generate source index for en75xx-loader
 
 (to use "clangd" should keep confirm "compile_commands.json" with-in workspace folder.)
 
+*to generate 'compile_commands.josn' on workspace folder.*
+
+```shell
+# cd package/private/zyxel/esmd && TOPDIR=/work/cpe-opal/EXTDISK/opal20/opal INCLUDE_DIR=/work/cpe-opal/EXTDISK/opal20/opal/include bear make V=ss
+```
+
+
+
 
 
 ## 2022.03.01  Merge code into 'develop' branch
@@ -139,7 +147,7 @@ $ docker run -d -p 5000:5000 --restart=always --name registry -v /srv/registry:/
 
 $ docker run -d --name gitlab-runner --restart always -v /srv/gitlab-runner/config:/etc/gitlab-runner -v /var/run/docker.sock:/var/run/docker.sock -v /home/gitlab-runner_volumes:/home/gitlab-runner_volumes --dns 172.21.5.1 gitlab/gitlab-runner:ubuntu-v12.8.0
 
-$ docker run --rm -it cpe-docker-registry.zyxel.com:5000/my-build-server3:v1.01 bash
+$ docker run --rm --add-host pkgtarball.mitrastar.com:172.25.24.30 -it cpe-docker-registry.zyxel.com:5000/my-build-server3:v1.01 bash
 ```
 
 login to gitlab container and make certification for url *btc-git.zyxel.com*
@@ -243,4 +251,124 @@ $ git merge local_develop --allow-unrelated-histories
 ```shell
  $ find ./ -name "*.tgz" -exec mv {} ../../mt7981_cicd/opal20/opal/dl/ \;
 ```
+
+
+
+
+
+## 2022.06.01 Bundle mt7981-loader with OpwnWrt Makefile
+
+### 1. create new package and bundle source code to OpenWrt
+
+Create new package 'test' structure as following,  this package just print many '#' symbol and generate *a.out* when compile this package, and copy file *a.out* to rootfs.
+
+```shell
+# tree package/mtk/test/
+package/mtk/test/
+|-- Makefile
+└-- just_test-2.0	
+    └-- Makefile
+```
+
+*package/mtk/test/Makefile*  as following
+
+```Makefile
+include $(TOPDIR)/rules.mk
+include $(INCLUDE_DIR)/kernel.mk
+
+#These lines concatanate the package name and list the URL location from which the package source code is to be downloaded
+PKG_NAME:=just_test
+PKG_VERSION:=2.0
+PKG_RELEASE:=1
+PKG_NAME_VER:= $(PKG_NAME)-$(PKG_VERSION)
+
+#PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+#PKG_SOURCE_URL:=@ZyXEL_SITE/private/ZyXEL
+#DL_DIR:=$(TOPDIR)/dl/private
+
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
+#MAKE_PATH:=just_test-2.0
+#PACKAGE_DIR:=$(BIN_DIR)/packages/private
+#PATCH_DIR:=patches-$(PKG_VERSION)
+
+include $(INCLUDE_DIR)/package.mk
+
+define Package/just_test
+	SECTION:=net
+	CATEGORY:=Zyxel Packages
+	TITLE:= ZyXEL Test fun.
+#	DEPENDS:=@ZYXEL_ONECONNECT
+endef
+
+define Package/just_test/description
+	Going down this fun.
+endef
+
+define Package/just_test/config
+	#select PACKAGE_zcmd if PACKAGE_zcfg
+endef
+
+define Package/just_test/clean
+$(info chear_debug: just_test clean fun.)
+endef
+
+
+define Build/Prepare
+	rm -rf $(PKG_BUILD_DIR)
+	$(info chear_debug: just_test Prepare fun, $(PKG_BUILD_DIR))
+	$$(call link_files,$(PKG_NAME_VER),$(BUILD_DIR))
+endef
+
+define Package/just_test/compile
+	$(MAKE) -C $(PKG_BUILD_DIR)	all
+endef
+
+define Package/just_test/install
+	$(INSTALL_DIR) $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/a.out $(1)/usr/bin/
+endef
+
+$(eval $(call BuildPackage,just_test))
+```
+
+to building new package.
+
+```shell
+# make pacakge/mtk/test/compile V=s
+```
+
+
+
+##  2022.06.15  UBI(Unsorted Block Images) FS
+
+**UBIFS** is file system developed by Nokia engineers , is next generation of the JFFS2 . One thing to understand that UBIFS is very different to any traditional file system 
+
+- it **does not** work on top of block devices (like `hard drives`, `MMC/SD cards`, `USB flash drives`, `SSDs`, etc). 
+- UBIFS was designed to work on top of *raw* flash, which has nothing to do with block devices. 
+- UBIFS does not work on `MMC cards` and the like -they look like block devices to the outside world 
+- `MMC cards` implement **FTL (Flash Translation Layer)** support in hardware, which simply speaking emulates a block device on top of the built-in raw flash.  More detail [pdf](<http://www.linux-mtd.infradead.org/doc/ubifs.pdf>)
+
+
+
+![raw_ftl](./img/Raw_vs_FTL.bmp)
+
+mtd and ubi
+
+![mtd_ubi](./img/mtd_vs_ubi.bmp)
+
+
+
+
+
+
+
+## 2022.07.11  led-gpio driver for Linux 5.4
+
+very useful command to find out code used.
+
+```shell
+# find ./drivers/leds/ -name "*.o"  |awk '{print $1}' |sed 's/\.o/\.c/g' |xargs grep -n "_led_probe"
+```
+
+
 

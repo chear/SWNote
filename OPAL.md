@@ -248,7 +248,7 @@ typedef struct tcboot_header{
 
 # 2. OPAL 2.0
 
-## 2.1 zyrepo 
+## 2.1 zyrepo
 
 Clone and checkout repo by zyrepo
 
@@ -401,7 +401,6 @@ main configuration files tree in the SDK .
 ./Uboot-upstream/arch/arm/dts/
 |-- mt7986.dtsi
 └-- wx5600-t0-c2-2.dts
-./Uboot-upstream/arch/arm/dts/mt7986.dtsi
 ./Uboot-upstream/board/mediatek/mt7986/
 |-- Kconfig
 |-- MAINTAINERS
@@ -417,7 +416,7 @@ main configuration files tree in the SDK .
 ./atf-20220114-95c4e1886/fdts/mt7986.dts
 ```
 
-bootloader flash layout
+mt7981 flash partition layout.
 
 ```text
 	|-----------|
@@ -427,16 +426,39 @@ bootloader flash layout
 	|-----------|
 	|  factory  |	RootFS
 	|-----------|
-	|  fip.bin  |   
-	|-----------|
-	|  zloader  |	zloader.bin.gz.uImage
-	|-----------|
-	|  ubi      |   kernel && rootfs
-	|-----------|
+	|  fip.bin  |                           |-----------|
+	|-----------|                           | kernel    |
+	|  zloader  |	zloader.bin.gz.uImage   | rootfs    |  (ubi volume ubi0_0 ubi0_3)
+	|-----------|                           | zyfwinfo  |  
+	|  ubi      |   kernel && rootfs -------| root_data |
+	|-----------|                           |-----------| 
 	|  ubi 2    |  
 	|-----------|
-	|  zyubi    |  
-	|-----------|
+	|  zyubi    |          |--------|
+	|-----------|  --------| romfile|
+				           | rom-d  |
+				           | wwan   | ubi volume ubi1_0 ~ ubi1_4
+				           | data   |
+				           | misc   |
+				           |--------|
+(Note: with in mt7981 , /sys/devices/virtual/ubi/ubi1/ means 'zyubi' partition.)
+```
+
+bootloader files layout:
+
+```shell
+	 bootloader-factory.bin					zld.bin
+	|-----------|							|-----------|
+	|  bl2.bin  |                           |zld_img_hdr| contains image type, 
+	|-----------|							|  .bin     |    size, checksum.
+	| uboot-env |							|-----------|	
+	|-----------|                           | bl2.bin   |
+	|  fip.bin  |							|-----------| 
+	|-----------|                           | fip.bin   |  
+	|  zloader  |  							|-----------| 
+	|-----------|							| zloader   |
+											|-----------| 
+(Note: did not fill with factory partition from nand 0x180000~0x380000)
 ```
 
 
@@ -453,7 +475,7 @@ $ make PROFILE=WX5600-T0 V=99
 to building whole code by
 
 ```shell
-# zyrepo init -u git@btc-git.zyxel.com:opal20/manifest.git -m opal21_mtk_v7_6_2_1.xml
+# ./opt/trendchip/mips-linux-uclibc-4.9.3/usr/bin/mips-linux-addr2line -e ra_nat.o 658c
 # zyrepo sync
 # zyrepo branch -b pre_develop
 ###  'opal20checkout -m7986' replace privious zyrepo command.
@@ -464,7 +486,7 @@ to building MTK  for **mt7981**  for AX3000
 
 ```shell
 $ ropd_mt7981
-# opal20checkout.sh mt7981
+# opal20checkout.sh --m7981
 # make P=HGW500GX2X2M V=99
 # make package/private/zyxel/esmd/{clean,compile} V=99
 ```
@@ -563,4 +585,12 @@ write 8 byte header to TE_config.rom to make file `romfile_partition` , and fina
 cd /data/ && tftp -g -r romfile_partition 192.168.123.7
 mtd writeflash /data/romfile_partition 262144 0 /dev/mtd1 && sys atcr reboot
 ```
+
+FS differ:
+
+|                   | MTK mt7981                                         | Econet en75xx      |
+| ----------------- | -------------------------------------------------- | ------------------ |
+| File System       | ubi                                                | jffs2              |
+| ras.bin Partition | contains (kernel ,rootfs , zyfwinfo , rootfs_data) | kernel , rootfs    |
+| FW Header         | zyfwinfo volume                                    | header for ras.bin |
 

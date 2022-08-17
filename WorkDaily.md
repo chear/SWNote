@@ -305,6 +305,18 @@ config$ testled on
 config$ ethctl
 ```
 
+#### Debug command
+
+```shell
+# zysh
+ZySH> debug module-debug set all debug-level 1
+Set debug module all to level 1 success.
+ZySH> 
+ZySH> debug module-debug save 
+ZySH> 
+ZySH> debug module-debug show debug-level all
+```
+
 ### ePon & gPon Register
 
 ```shell

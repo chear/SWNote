@@ -40,7 +40,9 @@ OPAL based on OpenWrt, and has 3 rules  for
 
 - Target :  ``BuildTarget`` for Linux kernel to configure HW.
 
-  ## 1.2 [Differ Container & Images](<https://zhuanlan.zhihu.com/p/348837988>)
+
+
+### 1.1.3 [Differ Container & Images](<https://zhuanlan.zhihu.com/p/348837988>)
 
   Host: ``HostBuild``  for tools
 
@@ -112,8 +114,6 @@ endefs
 ( generate patch for '449-ZYXEL_BUGFIX_test_Hsiwei.patch')
 ```
 
-
-
 *Tips 1: to stop docker*
 
 ```shell
@@ -144,6 +144,10 @@ $ make package/private/econet/en75xx-loader/{clean,install} V=99 QUILT=1
 ```
 
 *Tips 4: 'tig' [usage by](<https://linux.cn/article-11069-1.html>)*
+
+### 1.2.3 Zcfg debug for 'zysh'
+
+![zcfg_debug](./img/zcfg_debug.bmp)
 
 
 
@@ -414,6 +418,7 @@ main configuration files tree in the SDK .
 └-- mt7986_rfb.c
 ./Uboot-upstream/arch/arm/cpu/armv8/u-boot-spl.lds
 ./atf-20220114-95c4e1886/fdts/mt7986.dts
+	(arm-trusted-firmware:https://github.com/ARM-software/arm-trusted-firmware)
 ```
 
 mt7981 flash partition layout.
@@ -444,7 +449,17 @@ mt7981 flash partition layout.
 (Note: with in mt7981 , /sys/devices/virtual/ubi/ubi1/ means 'zyubi' partition.)
 ```
 
-bootloader files layout:
+*bl2.img* layout:
+
+![bl2_img](./img/mtk_bl2_struct.jpg)
+
+*fip.bin*  layout:
+
+![fip_bin_](./img/mtk_fip_struct.bmp)
+
+
+
+zloader image:
 
 ```shell
 	 bootloader-factory.bin					zld.bin

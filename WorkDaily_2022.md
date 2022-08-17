@@ -356,7 +356,7 @@ mtd and ubi
 
 ![mtd_ubi](./img/mtd_vs_ubi.bmp)
 
-
+![maping](./img/mtd_ubi_mapping.png)
 
 
 
@@ -364,10 +364,53 @@ mtd and ubi
 
 ## 2022.07.11  led-gpio driver for Linux 5.4
 
-very useful command to find out code used.
+very useful command to find out kernel source , refs [Programmer’s Guide for ARMv8.pdf](blob:https://doczz.net/c828dee6-356a-4775-bf66-061174dc3462)
 
 ```shell
 # find ./drivers/leds/ -name "*.o"  |awk '{print $1}' |sed 's/\.o/\.c/g' |xargs grep -n "_led_probe"
+```
+
+### u-boot
+
+```text
+cmd"atled" --> cmd "do_led"--> drivers/leds/led-uclass.c --> drivers/gpio/gpio-uclass.c
+(zloader)		(u-boot)													     |	
+								driver/pinctrl/mediatek/pinctrl-mtk-common.c <---|
+			void mtk_rmw(struct udevice *dev, u8 i, u32 reg, u32 mask, u32 set)
+```
+
+### kernel
+
+*Documentation/devicetree/bindings/leds/common.txt*  
+
+*Documentation/devicetree/bindings/leds/leds-gpio.txt*
+
+ex3320-t0-tm.dts* for leds
+
+```c
+zyleds {
+    compatible = "gpio-leds";
+
+    led_red_inet {
+        label = "zyled-red-inet";
+        gpios = <&pio 28 GPIO_ACTIVE_LOW>;
+        default-state = "off";
+    };
+    led_blue_inet {
+        label = "zyled-blue-inet";
+        gpios = <&pio 31 GPIO_ACTIVE_LOW>;
+        default-state = "keep";
+    };
+}
+```
+
+match to driver within *led-gpio.c*
+
+```c
+static const struct of_device_id of_gpio_leds_match[] = {
+      { .compatible = "gpio-leds", },
+      {},
+ };
 ```
 
 

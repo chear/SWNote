@@ -462,18 +462,17 @@ mt7981 flash partition layout.
 zloader image:
 
 ```shell
-	 bootloader-factory.bin					zld.bin
+ bootloader-factory.bin					zld.bin
 	|-----------|							|-----------|
-	|  bl2.bin  |                           |zld_img_hdr| contains image type, 
+	|  bl2.bin  |							|zld_img_hdr| contains image type, 
 	|-----------|							|  .bin     |    size, checksum.
 	| uboot-env |							|-----------|	
-	|-----------|                           | bl2.bin   |
+	|-----------|							| bl2.bin   |
 	|  fip.bin  |							|-----------| 
-	|-----------|                           | fip.bin   |  
-	|  zloader  |  							|-----------| 
+	|-----------|							| fip.bin   |  
+	|  zloader  |							|-----------| 
 	|-----------|							| zloader   |
 											|-----------| 
-(Note: did not fill with factory partition from nand 0x180000~0x380000)
 ```
 
 
@@ -504,6 +503,23 @@ $ ropd_mt7981
 # opal20checkout.sh --m7981
 # make P=HGW500GX2X2M V=99
 # make package/private/zyxel/esmd/{clean,compile} V=99
+```
+
+*openwrt-$(target)squashfs-sysupgrade.bin* layout
+
+```shell
+openwrt-mediatek-ex3320t0-ex3320-t0-squashfs-sysupgrade.bin
+|-----------|-------
+|  CONTROL  |  
+|-----------|  tar -cvf ${file} sysupgrade/ 
+|  kernel   |	
+|-----------|
+|  root     |
+|-----------| 
+|  zyfwinfo |  
+|-----------|-------
+| meta_data | metadata_json && fstool
+|-----------|-------
 ```
 
 
@@ -608,4 +624,41 @@ FS differ:
 | File System       | ubi                                                | jffs2              |
 | ras.bin Partition | contains (kernel ,rootfs , zyfwinfo , rootfs_data) | kernel , rootfs    |
 | FW Header         | zyfwinfo volume                                    | header for ras.bin |
+
+
+
+### 4.  zyrepo upload failed
+
+‘zyrepo upload -t  CTB_MT7981_HGW500GX2X2M_20220607 -m yes’ get following error on docker *ropd20_mt7981*:
+
+```shell
+opal20/sdk/mediatek/mt7981_v7.6.5.0/openwrt :
+upload_one: ismerge = 0, merge = yes, have commit = 0
+execute cmd =  git push -u origin bugfix-ctbbu-fw_generator_mtk_mash_upgrade
+     Branch 'bugfix-ctbbu-fw_generator_mtk_mash_upgrade' set up to track remote branch 'bugfix-ctbbu-fw_generator_mtk_mash_upgrade' from 'origin'.
+     Traceback (most recent call last):
+  File "/opt/tools/zyrepo/zyrepo", line 1768, in <module>
+    main(sys.argv[1:])
+  File "/opt/tools/zyrepo/zyrepo", line 1734, in main
+    exec_upload(args)
+  File "/opt/tools/zyrepo/zyrepo", line 1480, in exec_upload
+    repo_upload(manifest_remotes, manifest_default, manifest_projects, args1)
+  File "/opt/tools/zyrepo/zyrepo", line 1033, in repo_upload
+    needMerge = upload_one(project,args1.target,branch,args1.merge,tag,commit)
+  File "/opt/tools/zyrepo/zyrepo", line 1007, in upload_one
+    print("    ",err)
+UnicodeEncodeError: 'ascii' codec can't encode characters in position 144-148: ordinal not in range(128)
+```
+
+to fix this issue  by :
+
+```shell
+chear@Build_Opal_Docker6604: sudo apt-get update
+chear@Build_Opal_Docker6604: sudo apt-get install -y locales
+chear@Build_Opal_Docker6604: sudo locale-gen "en_US.UTF-8"
+chear@Build_Opal_Docker6604: echo "export LC_ALL=en_US.UTF-8" >> /home/chear/.bashrc
+chear@Build_Opal_Docker6604: source ~/.bashrc
+```
+
+this issue may cased by **'UTF-8 locales'** .
 

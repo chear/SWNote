@@ -246,7 +246,7 @@ $ git merge local_develop --allow-unrelated-histories
 
 
 
-## 2022.05.20  ``find -exec``
+## 2022.05.20  ``find -exec`` CMD
 
 ```shell
  $ find ./ -name "*.tgz" -exec mv {} ../../mt7981_cicd/opal20/opal/dl/ \;
@@ -413,5 +413,10 @@ static const struct of_device_id of_gpio_leds_match[] = {
  };
 ```
 
+led working flow in kernel such like:
 
-
+```mermaid
+graph LR
+A("./driver/leds/leds-gpio.c")-->B("./leds/led-class.c")
+B-->E("./leds/ledtrig-timer.c")
+```

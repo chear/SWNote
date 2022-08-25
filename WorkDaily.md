@@ -1,7 +1,5 @@
 [TOC]
 
-
-
 ## Mitrastar Info:
 
 

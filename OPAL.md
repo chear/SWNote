@@ -516,10 +516,23 @@ openwrt-mediatek-ex3320t0-ex3320-t0-squashfs-sysupgrade.bin
 |-----------|
 |  root     |
 |-----------| 
-|  zyfwinfo |  
+|  zyfwinfo | (zyfwinfo image contain kernel_chksum, zyfwinfw_chksum, root_chksum)
 |-----------|-------
-| meta_data | metadata_json && fstool
+| meta_data | metadata_json && fwtool -I - ${sysuprade}.bin
 |-----------|-------
+```
+
+make  *${board}-squashfs-sysupgrade.bin*  flow:
+
+```shell
+## 1. make zyfwinfo
+zyfwinfo -e little -n 0 -d 08/16/2022 -t 05:22:28 -k ex3320-t0-kernel.bin -r root.squashfs -s "V5.71(YAK.0)a0_20220810" -S "V5.71(YAK.0)a0_20220810" -p "EX3320-T0" -m "4A30" -o openwrt-mediatek-ex3320t0-ex3320-t0-squashfs-zyfwinfo.bin
+
+## 2. calculate check sume and tar files
+OPDIR=`pwd` zyfwinfo=${board}squashfs-zyfwinfo.bin sh sysupgrade-zytar.sh --board ex3320-t0 --kernel ex3320-t0-kernel.bin --rootfs root.squashfs --zyfwinfo ${board}-squashfs-zyfwinfo.bin openwrt-mediatek-ex3320t0-ex3320-t0-squashfs-sysupgrade.bin
+
+## 3. append meta_data to end of image.
+echo '{  "metadata_version": "1.1", "compat_version": "1.0",   "supported_devices":["mediatek,mt7981-spim-snand-rfb"], "version": { "dist": "OpenWrt", "version": "21.02-SNAPSHOT", "revision": "r0-102e107c", "target": "mediatek/ex3320t0", "board": "ex3320-t0" }, "zyfwinfo": { "product_name": "EX3320-T0", "model_id": "4A30", "fw_ver": "V5.71(YAK.0)a0_20220810", "extfw_ver": "V5.71(YAK.0)a0_20220810", "build_date": "08/19/2022", "build_time": "02:30:00", "kernel_chksum": "0x459b", "rootfs_chksum": "0x7a7b", "blocksize": "128kB" } }' | fwtool -I - ${board}-squashfs-sysupgrade.bin
 ```
 
 
@@ -661,4 +674,14 @@ chear@Build_Opal_Docker6604: source ~/.bashrc
 ```
 
 this issue may cased by **'UTF-8 locales'** .
+
+
+
+### 4.  Debug Zcfg
+
+```shell
+# zysh
+ZySH> debug module-debug set all debug-level 7
+ZySH> debug module-debug set printf debug-level 0
+```
 

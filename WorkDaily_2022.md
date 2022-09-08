@@ -420,3 +420,140 @@ graph LR
 A("./driver/leds/leds-gpio.c")-->B("./leds/led-class.c")
 B-->E("./leds/ledtrig-timer.c")
 ```
+
+
+
+## 2022.07.11  MTK Secure Boot
+
+building uboot:
+
+```shell
+# cd uboot-mtk-20220412-sb
+# make mt7981_spim_nand_sb_rfb_defconfig
+# make V=s FIT_KEY=./../keys/fit_key.crt
+```
+
+building **atf (Arm Trust Firmware)**
+
+```shell
+# cd atf
+# make distclean
+# export CROSS_COMPILE=/usr/bin/aarch64-linux-gnu-
+# make PLAT="mt7981" BL33=../Uboot-upstream/u-boot.bin BOOT_DEVICE="spim-nand" NMBM=1 NAND_TYPE="spim:2k+64" DRAM_USE_DDR4=0 DDR3_FREQ_2133=1 BOARD_BGA=1 LOG_LEVEL=20 MBEDTLS_DIR=../tools/mbedtls-mbedtls-2.24.0/ TRUSTED_BOARD_BOOT=1 GENERATE_COT=1 ROT_KEY=../keys/fip_private_key.pem BROM_SIGN_KEY=../keys/bl2_private_key.pem all fip
+```
+
+building kernel & rootfs
+
+```shell
+# git clone --branch openwrt-21.02 https://git.openwrt.org/openwrt/openwrt.git
+# cp -Rf tools/mtk-wifi-mt7981/* openwrt/
+# echo "src-git mtk_openwrt_feed https://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds" >>feeds.conf.default
+# cd openwrt
+# ./autobuild/clean-staging.sh
+# ./autobuild/mt7981-AX3000-sb/lede-branch-build-sanity.sh
+```
+
+
+
+## 2022.09.8  IGMP version 3
+
+IGMP Snooping
+
+![snoooping](./img/igmp_snooping.bmp)
+
+IGMP proxy
+
+![igmp](./img/igmp_proxy.bmp)
+
+
+
+### IGMPv3 Membership Query Message Format
+
+```text
+  0                   10                  20                  30
+  0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |  Type = 0x11  | Max Resp Code |           Checksum            |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |                         Group Address                         |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ | Resv  |S| QRV |     QQIC      |     Number of Sources (N)     |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |                       Source Address [1]                      |
+ +-                                                             -+
+ |                       Source Address [2]                      |
+ +-                              .                              -+
+ .                               .                               .
+ .                               .                               .
+ +-                                                             -+
+ |                       Source Address [N]                      |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
+
+ **Code**: Initialized to zero by the sender; ignored by receivers.
+
+ **Max** **Resp** **Code field:**
+
+  The value is in units of 1/10 second.
+
+ If Max Resp Code < 128, Max Resp Time = Max Resp Code
+
+ If Max Resp code >= 128, Max Resp Time = (mant | 0x10) << (exp + 3)
+
+```text
+      0 1 2 3 4 5 6 7
+     +-+-+-+-+-+-+-+-+
+     |1| exp | mant  |   
+     +-+-+-+-+-+-+-+-+
+```
+
+(Note :  IGMPv1 MRC 10sec , IGMPv2 MRC 0~25.5 sec , IMPv3  MRC : 0~52.90 minutes )
+
+ **Querier’s** **Query Interval Code field:**
+
+ If QQIC < 128, QQI = QQIC
+
+ If QQIC >= 128, QQI = (mant | 0x10) << (exp + 3)
+
+```text
+      0 1 2 3 4 5 6 7                      0 1 2 3 4 5 6 7
+     +-+-+-+-+-+-+-+-+    Calculate       +-+-+-+-+-+-+-+-+
+     |1| exp | mant  |     MAX Val        |1|1 1 1|1 1 1 1|
+     +-+-+-+-+-+-+-+-+                    +-+-+-+-+-+-+-+-+
+```
+
+ **QRV**: Querier’s Robustness Variable
+
+ **S Flag**: Suppress Router-Side Processing
+
+​           
+
+### IGMPv3 Membership Report Message Format
+
+```text
+  0                   1                   2                   3
+  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |  Type = 0x22  |    Reserved   |           Checksum            |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |           Reserved            |  Number of Group Records (M)  |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ .                                                               .
+ .                        Group Record [1]                       .
+ .                                                               .
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ .                                                               .
+ .                        Group Record [2]                       .
+ .                                                               .
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |                               .                               |
+ .                               .                               .
+ |                               .                               |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ .                                                               .
+ .                        Group Record [M]                       .
+ .                                                               .
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
+
+![report](./img/igmp_packet.bmp)

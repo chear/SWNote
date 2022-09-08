@@ -1,4 +1,4 @@
-# 1. OPAL
+# 	1. OPAL
 
 ## 1.1 OPAL Arch Overview
 
@@ -677,11 +677,68 @@ this issue may cased by **'UTF-8 locales'** .
 
 
 
-### 4.  Debug Zcfg
+### 5.  Debug Zcfg for OPAL
+
+print debug info for be_module .
 
 ```shell
 # zysh
 ZySH> debug module-debug set all debug-level 7
 ZySH> debug module-debug set printf debug-level 0
+```
+
+
+
+### 6.  Packet mirror for MTK platform
+
+ports defined on  *linux-5.4.194/arch/arm64/boot/dts/mediatek/ex3320-t0.dts*
+
+```c
+switch@0 {
+	compatible = "mediatek,mt7531";
+	reg = <31>;
+	reset-gpios = <&pio 39 0>;	
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;		
+		port@1 {
+				reg = <1>;
+				label = "lan3";
+		};		
+		port@2 {
+				reg = <2>;
+				label = "lan2";
+		};		
+		port@3 {
+				reg = <3>;
+				label = "lan1";
+		};		
+		port@6 {
+			reg = <6>;
+			label = "cpu";
+			ethernet = <&gmac0>;
+			phy-mode = "2500base-x";
+			
+			fixed-link {
+					speed = <2500>;
+					full-duplex;
+					pause;
+			};
+		};
+	};
+};
+```
+
+to mirror lan port by follow, ``switch mirror target [PORT_NUM] [TYPE]``,  [TYPE] values by (0 off/1 Rx/2 Tx/3 all) , the following cmd this mirror packet from lan3 (port 1) to lan1 (port 3) 
+
+```shell
+root@EX3320-T0:/# switch mirror target 1 3
+root@EX3320-T0:/# switch mirror monitor 3
+```
+
+to get wan packet by 
+
+```shell
+root@EX3320-T0:/# tcpdump -ni eth1.4 -ve
 ```
 

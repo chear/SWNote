@@ -133,7 +133,7 @@ $ ssh -d -p 23
 *Tips 3:  to add git alias by*
 
 ```shell
-$ git config --global alias.b “branch -vv” 
+$ git config --global alias.b “remote -vv” 
 ```
 
 *Tips 3: to keep patch when building package*
@@ -541,7 +541,7 @@ echo '{  "metadata_version": "1.1", "compat_version": "1.0",   "supported_device
 
 # FAQ:
 
-### 1.  switch branch 'develop' to 'CTB_7528HU_7561DU_HGW500TX2X2E_20210801'
+### 1.  switch branch 'develop' to 'CTB_7528HU_7561DU_HGW500TX2X2E_20210801' 
 
 ```shell
 chear@Build_Opal_Docker$ zyrepo branch -b develop
@@ -557,6 +557,12 @@ Switch to existed branch  CTB_7528HU_7561DU_HGW500TX2X2E_20210801
 ``git fetch`` will update only the branch you're on, but not merge any changes in.
 
 ``git pull`` will update *and* merge any remote changes of the current branch you're on. This would be the one you use to update a local branch.
+
+delete remote branch:
+
+```shell
+chear@Build_Opal_Docker$ git push origin :bugfix-ctbbu-test
+```
 
 
 
@@ -640,7 +646,7 @@ FS differ:
 
 
 
-### 4.  zyrepo upload failed
+### 4.  zyrepo upload failed 
 
 ‘zyrepo upload -t  CTB_MT7981_HGW500GX2X2M_20220607 -m yes’ get following error on docker *ropd20_mt7981*:
 

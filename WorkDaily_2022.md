@@ -492,7 +492,7 @@ IGMP proxy
 
  **Code**: Initialized to zero by the sender; ignored by receivers.
 
- **Max** **Resp** **Code field:**
+ **Max Resp Code**  field:
 
   The value is in units of 1/10 second.
 
@@ -509,7 +509,7 @@ IGMP proxy
 
 (Note :  IGMPv1 MRC 10sec , IGMPv2 MRC 0~25.5 sec , IMPv3  MRC : 0~52.90 minutes )
 
- **Querier’s** **Query Interval Code field:**
+ **Querier’s Query Interval Code**  field:
 
  If QQIC < 128, QQI = QQIC
 
@@ -557,3 +557,27 @@ IGMP proxy
 ```
 
 ![report](./img/igmp_packet.bmp)
+
+
+
+### 2022.09.29 
+
+WPS  working process.
+
+```text
+(key press wps button)
+zybtnchk -->  sendMsgHdr->type = ZCFG_MSG_WPS_START_ONBOARDING;
+			  sendMsgHdr->srcEid = ZCFG_EID_ZYBTNCHK;
+			  sendMsgHdr->dstEid = ZCFG_EID_WIFID;
+					|
+					|----
+					|	
+					v			  
+zywifid     zyWifiWPSOnboarding --> zymtk_wps_onboarding 
+										rm /data/map_cfg_agent_bh_profile.txt
+										/usr/bin/wappctrl ra0 wps_pbc
+										|
+										|--> zymtk_iwpriv_set_ssid
+										|--> zymtk_iwpriv_set_radio
+```
+

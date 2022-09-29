@@ -226,11 +226,11 @@ default for toor
 
 ## WAN Info
 
-![wan](./img/wan_info.bmp)
+![wan](./img/wan_info.jpg)
 
 
 
-
+![wan2](./img/wan_info2.png)
 
 
 
@@ -240,3 +240,6 @@ user: sw3_pub/12345678
 
 chearssdev#gmail.com
 
+tocken:(z`)
+
+Expires on Wed, Nov 23 2022

@@ -8,9 +8,7 @@ IPv4 和 IPv6 设计上并不是互操作的，但是有IPv6转换机制来允�
 
 Windows 能够同时支持 ipv4 和ipv6两种网络
 
-![1547536861493](img\1547536861493.png)
-
-
+![ipv6_addr](./img/ipv6_addr.png)
 
 
 

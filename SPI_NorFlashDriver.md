@@ -1,4 +1,4 @@
-## Nor Flash 
+## NOR Flash 
 
 - Nor Flash 像内存一样是直接挂在系统总线上的，这样有足够多的地址线使得CPU能够寻址到每一个存储单元上去，这也意味着CPU能够直接通过总线访问 Nor Flash 上存储的内容，同时它还支持XIP (XIP, eXecute In Place）.
 
@@ -10,15 +10,15 @@
 ## Glossary
 
 - VCC, VDD, VSS：C=circuit 表示电路的意思, 即接入电路的电压， D=device 表示器件的意思, 即器件内部的工作电压，在普通的电子电路中，一般Vcc>Vdd !  ( VSS) :S=series 表示公共连接的意思，也就是负极。
-(Note: 在电子电路中，VCC是电路的供电电压, VDD是芯片的工作电压,有些IC 同时有VCC和VDD， 这种器件带有电压转换功能。)
-
+  (Note: 在电子电路中，VCC是电路的供电电压, VDD是芯片的工作电压,有些IC 同时有VCC和VDD， 这种器件带有电压转换功能。)
 - CPOL : indicates the initial clock polarity.  CPOL=0 means the clock starts low, so the first (leading) edge is rising, and the second (trailing) edge is falling.  CPOL=1 means the clock starts high, so the first (leading) edge is falling.
-
 - CPHA : indicates the clock phase used to sample data; CPHA=0 says sample on the leading edge, CPHA=1 means the trailing edge.  Since the signal needs to stablize before it's sampled, CPHA=0  implies that its data is written half a clock before the first clock edge.  The chipselect may have made it become available.
+
+(**leading edge** :  主导的边沿，每个周期中第一个出现的边沿就是 *leading edge*, **trailing edge** : 拖尾的边沿，在每个周期中，最后一个出现的边沿就是 *trailing edge*)
 
 ## SPI Summary
 
-The **SPI ( Serial Peripheral Interface)**  is a synchronous four wire serial link used to connect microcontrollers to sensors, memory, and peripherals , widely used with embedded systems. It is a simple and efficient interface: basically a multiplexed shift register, not complicated enough to acquire a standardization body.  SPI uses a master/slave configuration.
+The **[SPI ( Serial Peripheral Interface)](<https://www.analog.com/cn/analog-dialogue/articles/introduction-to-spi-interface.html>)**  is a synchronous four wire serial link used to connect microcontrollers to sensors, memory, and peripherals , widely used with embedded systems. It is a simple and efficient interface: basically a multiplexed shift register, not complicated enough to acquire a standardization body.  SPI uses a master/slave configuration.
 
 The three or four signal wires hold a clock (**SCK**, often in the range of 1-20 MHz), a **“Master Out, Slave In” (MOSI)** data line,  a **“Master In, Slave Out” (MISO)** data line , and  **Chip Select (CS) ,other word SS  **.
 (Other names are also used.) 
@@ -45,7 +45,7 @@ There are four clocking modes through which data is exchanged; mode-0 and mode-3
 
 The SPI bus facilities listed in Linux provide a generalized interface to declare SPI busses and devices, manage them according to the standard Linux driver model, and perform input/output operations.
 
-The programming interface is structured around two kinds of driver, and two kinds of device. A “Controller Driver” abstracts the controller hardware, which may be as simple as a set of GPIO pins or as complex as a pair of FIFOs connected to dual DMA engines on the other side of the SPI shift register (maximizing throughput). Such drivers bridge between whatever bus they sit on (often the platform bus) and SPI, and expose the SPI side of their device as a `struct spi_master`. 
+The programming interface is structured around two kinds of driver, and two kinds of device. A “Controller Driver” abstracts the controller hardware, which may be as simple as a set of GPIO pins or as complex as a pair of FIFOs connected to dual [DMA](<https://blog.csdn.net/qq_43460068/article/details/122321702>) engines on the other side of the SPI shift register (maximizing throughput). Such drivers bridge between whatever bus they sit on (often the platform bus) and SPI, and expose the SPI side of their device as a `struct spi_master`. 
 
 SPI devices are children of that master, represented as a [`struct spi_device`](https://www.kernel.org/doc/html/v4.14/driver-api/spi.html#c.spi_device) and manufactured from [`struct spi_board_info`](https://www.kernel.org/doc/html/v4.14/driver-api/spi.html#c.spi_board_info) descriptors which are usually provided by board-specific initialization code. A [`struct spi_driver`](https://www.kernel.org/doc/html/v4.14/driver-api/spi.html#c.spi_driver) is called a “Protocol Driver”, and is bound to a spi_device using normal driver model calls.
 

@@ -177,6 +177,10 @@ user input files   optional input   processes          output files
 configure.ac ----------------------->|autoconf|------> configure ----->autoconfig.h,Makefile
 ```
 
+**Note:  使用  ``make`` or ``make install`` 是出现 missing aclocal-1.14 未找到命令, 可以使用 ``autoreconf`` 或者  ``autoreconf -vif`` 重新生成 *configure* 文件 **
+
+
+
 
 
 ## 4. Print sal debug info for Hisilicon platfrom
@@ -361,6 +365,15 @@ both ```svn revert``` and ```svn upload -r``` are reload version
 # svn up -r 10237 hisilicon/gateway/sercice/cm/odl/source/igdCmTransferServices.c
 ```
 
+to revert changes form revision
+
+```shell
+## should revert the changes of r1944 in your working copy. 
+## You can then review the changes in your working copy (with diff), 
+## but you'd need to commit in order to apply the revert into the repository.
+# svn merge -r 1944:1943 . 
+```
+
 
 
 
@@ -429,6 +442,10 @@ PROVINCE_HUB
 # Find 		"PROVINCE_([A-Z])([A-Z])([A-Z])"
 # Replace 	"PROVINCE_$1$2$3 \L$1$2$3"
 ```
+
+switch lower-case to upper-case for hex format, opposite for ``\U$0``
+
+![switch](./img/upper_letter_switch.bmp)
 
 
 

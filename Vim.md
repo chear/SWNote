@@ -5,6 +5,7 @@
 to build ctags
 
 ```shell
+
 $ ./autogen.sh
 $ ./configure --prefix=/home/chear/ # defaults to /usr/local
 $ make
@@ -71,7 +72,7 @@ etags:
 ( finally command ./ctags -w -o ctags `find -L tools  arch/arm/cpu/zx279128s/ arch/arm/lib/ common/ drivers/crypto/ drivers/i2c/ drivers/mtd/ drivers/mtd/nand/ drivers/mtd/spi/ drivers/net/ drivers/net/phy/ drivers/rtc/ drivers/serial/ drivers/spi/ drivers/usb/ulpi/ lib/libfdt/ lib/ lib/lzma/ lib/lzo/ lib/zlib/ net/ board/zxic/zx279128sevb/ include -name '*.[chS]' -print` )
 ```
 
-
+**(Note: ^M 在linux 下写法 按^M 是回车换行符,输入方法是按住CTRL+v,松开v,按m,  ":%s/^M//g" to remove windows space.)**
 
 
 

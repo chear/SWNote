@@ -12,6 +12,8 @@
 
 (Note: *make* default order **GUNmakefile > makefile > Makefile** )
 
+Makefile 以 Tab 开头的行被认定为 *recipe* 的一部分	，被认为是 *shell* 脚本，传递给 Shell 解析并执行，而以空格开头的行必须是 Makefile 的用法，[如](<https://blog.csdn.net/QQ839787886/article/details/108573298>)。
+
 
 
 ## Makefile 主要参数

@@ -265,7 +265,7 @@ dmac( destnation mac,) ;  dscp DSCP 差分服务标记字段（Different Service
 $cli /home/cli/hal/sec/sec_vlan_dump
 ```
 
-![image](E:/Resource/MitrastarNote/img/hi_vlan_dump_result.png)
+![image](./img/hi_vlan_dump_result.png)
 
 ### 5. Update Devices Info
 

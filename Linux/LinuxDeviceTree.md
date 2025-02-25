@@ -42,7 +42,24 @@ Every device in the system is represented by a device tree node.  node name form
 
 <name> is a simple ascii string and can be up to  31 characters in length.  
 
-<unit-address> is included if the node describes a device with  an address.  In general, the unit address is the primary address used to  access the device, and is listed in the node's `reg` property.  We'll cover the reg property later in this document. 
+<unit-address> is included if the node describes a device with  an address.  In general, the unit address is the primary address used to  access the device, and is listed in the node's `reg` property.  We'll cover the reg property later in this document. such like
+
+```c
+/{
+    /* define note pwn and register client for "driver/pwn/"*/
+	pwm: pwm@10048000 {
+		compatible = "mediatek,mt7981-pwm";
+		reg = <0 0x10048000 0 0x1000>;
+		#pwm-cells = <2>;
+		clocks = <&infracfg_ao CK_INFRA_PWM_STA>,
+			 <&infracfg_ao CK_INFRA_PWM_HCK>,
+			 <&infracfg_ao CK_INFRA_PWM1_CK>,
+			 <&infracfg_ao CK_INFRA_PWM2_CK>,
+			 <&infracfg_ao CK_INFRA_PWM3_CK>;
+		clock-names = "top", "main", "pwm1", "pwm2", "pwm3";
+	};
+};
+```
 
 
 
@@ -91,7 +108,7 @@ phandle 属性通过一个唯一的 u32 整数指向 DeviceTree 中的其他节�
 
 
 
-## 1.3 Addressing
+## 1.3 *[Addressing](https://elinux.org/Device_Tree_Usage)*
 
 Devices that are addressable use the following properties to encode address information into the device tree: 
 
@@ -99,9 +116,17 @@ Devices that are addressable use the following properties to encode address info
 - `#address-cells`
 - `#size-cells`
 
+Each [addressable](https://kernel.meizu.com/device-tree.html) device gets a `reg` which is a list of tuples in the form `reg = <address1 length1 [address2 length2] [address3 length3] ... >`.   Each tuple represents an address range used by the device.  Each  address value is a list of one or more 32 bit integers called *cells*.  Similarly, the length value can either be a list of cells, or empty. 
+
+Since both the address and length fields are variable of variable size, the `#address-cells` and `#size-cells`  properties in the parent node are used to state how many cells are in  each field.  Or in other words, interpreting a reg property correctly  requires the parent node's #address-cells and #size-cells values.  To  see how this all works, lets add the addressing properties to the sample  device tree, starting with the CPUs. 
+
+ref
 
 
-## 1.4 Interrupts 
+
+
+
+## 1.4 Interrupts
 
 
 
@@ -175,3 +200,4 @@ This device contains following:
     };
 };
 ```
+

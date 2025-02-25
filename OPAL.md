@@ -258,6 +258,12 @@ Clone and checkout repo by zyrepo
 
 ```shell
 chear@Build_Opal_Docker$ zyrepo init -u git@btc-git.zyxel.com:opal20/manifest.git -m opal_econet_old.xml
+(MTK: -m opal21_mtk_v7_6_5_0.xml )
+```
+
+download code and checkout branch:
+
+```shell
 chear@Build_Opal_Docker$ zyrepo sync
 chear@Build_Opal_Docker$ zyrepo branch -b develop
 chear@Build_Opal_Docker$ zyrepo branch -b CTB_7528HU_7561DU_HGW500TX2X2E_20210801
@@ -272,7 +278,7 @@ chear@Build_Opal_Docker$ zyrepo foreach -c "git status"
 # Download and merge source to local develop branch 
 chear@Build_Opal_Docker$ zyrepo foreach -c "git pull origin CTB_7528HU_7561DU_HGW500TX2X2E_20210801 --rebase"
 
-# branch format such like "bugfix-ctbbt-xxxxxx"
+# branch format such like "bugfix-ctbbu-xxxxxx"
 chear@Build_Opal_Docker$ zyrepo branch -b bugfix-ctbbu-SMT_fast_startup
 chear@Build_Opal_Docker$ git commit
 
@@ -310,7 +316,7 @@ opal2p0
 
 
 
-Note: debug Spi Nand flash :
+Note: debug SPI Nand flash :
 
 ```shell
 # echo "211" > /proc/driver/spi_nand_debug
@@ -421,7 +427,7 @@ main configuration files tree in the SDK .
 	(arm-trusted-firmware:https://github.com/ARM-software/arm-trusted-firmware)
 ```
 
-mt7981 flash partition layout.
+​	mt7981 flash partition layout.
 
 ```text
 	|-----------|
@@ -433,23 +439,42 @@ mt7981 flash partition layout.
 	|-----------|
 	|  fip.bin  |                           |-----------|
 	|-----------|                           | kernel    |
-	|  zloader  |	zloader.bin.gz.uImage   | rootfs    |  (ubi volume ubi0_0 ubi0_3)
-	|-----------|                           | zyfwinfo  |  
+	|  zloader  |   zloader.bin.gz.uImage   | rootfs    |  (ubi volume ubi0_0 ubi0_3)
+	|-----------|                           | zyfwinfo  |
 	|  ubi      |   kernel && rootfs -------| root_data |
-	|-----------|                           |-----------| 
+	|-----------|                           |-----------|
 	|  ubi 2    |  
 	|-----------|
 	|  zyubi    |          |--------|
 	|-----------|  --------| romfile|
-				           | rom-d  |
-				           | wwan   | ubi volume ubi1_0 ~ ubi1_4
-				           | data   |
-				           | misc   |
-				           |--------|
+	                       | rom-d  |
+	                       | wwan   | ubi volume ubi1_0 ~ ubi1_4
+	                       | data   |
+	                       | misc   |
+	                       |--------|
 (Note: with in mt7981 , /sys/devices/virtual/ubi/ubi1/ means 'zyubi' partition.)
 ```
 
-*bl2.img* layout:
+*openwrt-mediatek-ex3320t0-ex3320-t0-squashfs-sysupgrade.bin* layout:
+
+```shell
+openwrt-mediatek-ex3320t0-ex3320-t0-squashfs-sysupgrade.bin
+|-----------|-------
+|  CONTROL  |  
+|-----------|  tar -cvf ${file} sysupgrade/ 
+|  kernel   |	
+|-----------|
+|  root     |
+|-----------| 
+|  zyfwinfo | (zyfwinfo image contain kernel_chksum, zyfwinfw_chksum, root_chksum)
+|-----------|-------
+| meta_data | metadata_json && fwtool -I - ${sysuprade}.bin
+|-----------|-------
+```
+
+
+
+bl2.img* layout:
 
 ![bl2_img](./img/mtk_bl2_struct.jpg)
 
@@ -462,18 +487,20 @@ mt7981 flash partition layout.
 zloader image:
 
 ```shell
- bootloader-factory.bin					zld.bin
-	|-----------|							|-----------|
-	|  bl2.bin  |							|zld_img_hdr| contains image type, 
-	|-----------|							|  .bin     |    size, checksum.
-	| uboot-env |							|-----------|	
-	|-----------|							| bl2.bin   |
-	|  fip.bin  |							|-----------| 
-	|-----------|							| fip.bin   |  
-	|  zloader  |							|-----------| 
-	|-----------|							| zloader   |
-											|-----------| 
+ bootloader-factory.bin                 zld.bin
+	|-----------|                      |-----------|
+	|  bl2.bin  |                      |zld_img_hdr| contains image type,
+	|-----------|                      |  .bin     |    size, checksum.
+	| uboot-env |                      |-----------|
+	|-----------|                      | bl2.bin   |
+	|  fip.bin  |                      |-----------|
+	|-----------|                      | fip.bin   |
+	|  zloader  |                      |-----------|
+	|-----------|                      | zloader   |
+	                                   |-----------| 
 ```
+
+**(both *bootloader-factory.bin* and *zld.bin*  are skip 'Factory' partition while exist by /dev/mtd3)**
 
 
 
@@ -537,6 +564,62 @@ echo '{  "metadata_version": "1.1", "compat_version": "1.0",   "supported_device
 
 
 
+# 3. OPAL EN7529 MOS
+
+go debug Gpon s
+
+```shell
+# echo msg int 1 >/proc/gpon/debug
+# echo msg oam 1 >/proc/gpon/debug
+## captured path /tmp/omcicapture.raw, /tmp/omcicapture.cmd,
+## /tmp/omcicapture.rxtx
+# moscli capture enable cmd
+# moscli capture enable raw
+# moscli capture enable rxtx
+
+# ponmgr gpon get info
+ ONU Info:
+ ONU ID:    255
+ ONU State: O2
+ SN:        ZYXE8cada669
+ PASSWD:
+ ASCII:     0000000035
+ HEX:       30303030303030303335
+ Key Idx:   1
+ Key:       4a291684cf4463ad33f0e700d7e6b50f
+ O1 Timer:  10000 ms
+ O2 Timer:  100 ms
+ OMCC ID:   65535
+```
+
+to upgrade omci [plug-in](\\172.25.5.39\cpeswdoc\cpesw\Vendor\EcoNet\China\MT752X\2015\SOP_for_OMCI_add-on_Wireshark\omci.lua) for *WireShark* by *[SOP_for_OMCI_add-on_Wireshark.docx](//172.25.5.39/cpeswdoc/cpesw/Vendor/EcoNet/China/MT752X/2015/SOP_for_OMCI_add-on_Wireshark.docx)*
+
+start to capture omci package on Wireshark
+
+```shell
+# /usr/bin/sys wan2lan on
+# /usr/bin/sys wan2lan 15
+```
+
+Enable MOS log
+
+```shell
+# cdbg 1 1
+# cdbg 2 OMCI 1
+# cdbg 3 OMCI all 1
+# cdbg 10 debug all com 1
+```
+
+To get PLOAM message by:
+
+```shell
+# echo msg int 1 >/proc/gpon/debug
+# echo 'msg oam 1' >/proc/gpon/debug
+# dmesg|less
+```
+
+
+
 
 
 # FAQ:
@@ -562,6 +645,7 @@ delete remote branch:
 
 ```shell
 chear@Build_Opal_Docker$ git push origin :bugfix-ctbbu-test
+chear@Build_Opal_Docker$ zyrepo foreach -c "git push origin :bugfix-ctbbu-test"
 ```
 
 
@@ -661,7 +745,7 @@ execute cmd =  git push -u origin bugfix-ctbbu-fw_generator_mtk_mash_upgrade
   File "/opt/tools/zyrepo/zyrepo", line 1734, in main
     exec_upload(args)
   File "/opt/tools/zyrepo/zyrepo", line 1480, in exec_upload
-    repo_upload(manifest_remotes, manifest_default, manifest_projects, args1)
+    repo_upload(, manifest_default, manifest_projects, args1)
   File "/opt/tools/zyrepo/zyrepo", line 1033, in repo_upload
     needMerge = upload_one(project,args1.target,branch,args1.merge,tag,commit)
   File "/opt/tools/zyrepo/zyrepo", line 1007, in upload_one
@@ -746,5 +830,51 @@ to get wan packet by
 
 ```shell
 root@EX3320-T0:/# tcpdump -ni eth1.4 -ve
+```
+
+
+
+## 7.   clean and delete all volume in 'zyubi'  on uboot
+
+to get all ubi part info by following:
+
+```shell
+# MT7981> mtd list
+# MT7981> ubi part zyubi
+ubi0: attaching mtd9
+ubi0: scanning is finished
+ubi0: attached mtd9 (name "zyubi", size 34 MiB)
+ubi0: PEB size: 131072 bytes (128 KiB), LEB size: 126976 bytes
+ubi0: min./max. I/O unit sizes: 2048/2048, sub-page size 2048
+ubi0: VID header offset: 2048 (aligned 2048), data offset: 4096
+ubi0: good PEBs: 276, bad PEBs: 0, corrupted PEBs: 0
+ubi0: user volume: 1, internal volumes: 1, max. volumes count: 128
+ubi0: max/mean erase counter: 13/9, WL threshold: 4096, image sequence number: 1657010496
+ubi0: available PEBs: 202, total reserved PEBs: 74, PEBs reserved for bad PEB handling: 19
+```
+
+to delete volume on ubi by:
+
+```shell
+# MT7981> ubi remove romfile
+Remove UBI volume romfile (id 0)
+```
+
+get info for ubi partition  in kernel by
+
+```shell
+root@EX3320-T0:# ubinfo /dev/ubi1
+```
+
+
+
+## 8. Direct building Kernel
+
+to direct compile kernel without patch by :
+
+```shell
+# export PATH=/work/cpe-opal/EXTDISK/mtk_cicd/opal20/opal/staging_dir/toolchain-aarch64_cortex-a53_gcc-8.4.0_musl/bin/:$PATH
+
+# make -C /work/cpe-opal/EXTDISK/mtk_cicd/opal20/opal/build_dir/target-aarch64_cortex-a53_musl/linux-mediatek_ex3320t1/linux-5.4.194 KCFLAGS="-fmacro-prefix-map=/work/cpe-opal/EXTDISK/mtk_cicd/opal20/opal/build_dir/target-aarch64_cortex-a53_musl=target-aarch64_cortex-a53_musl" HOSTCFLAGS="-O2 -I/work/cpe-opal/EXTDISK/mtk_cicd/opal20/opal/staging_dir/host/include  -Wall -Wmissing-prototypes -Wstrict-prototypes" CROSS_COMPILE="aarch64-openwrt-linux-musl-" ARCH="arm64" KBUILD_HAVE_NLS=no KBUILD_BUILD_USER="" KBUILD_BUILD_HOST="" KBUILD_BUILD_TIMESTAMP="Sun Oct  9 10:01:46 2022" KBUILD_BUILD_VERSION="0" HOST_LOADLIBES="-L/work/cpe-opal/EXTDISK/mtk_cicd/opal20/opal/staging_dir/host/lib" KBUILD_HOSTLDLIBS="-L/work/cpe-opal/EXTDISK/mtk_cicd/opal20/opal/staging_dir/host/lib" CONFIG_SHELL="bash" V=''  cmd_syscalls=  KERNELRELEASE=5.4.194 CC="aarch64-openwrt-linux-musl-gcc"
 ```
 

@@ -147,7 +147,7 @@ OOB 区域的管理,各芯片厂商不同，一般都有写保护用户无法直
 **ECC**，是一种用于Nand Flash的差错检测和修正的算法。由于操作的时序和电路稳定性等原因，常常会出现一些bit出错，也就是原来的某个位，本来是0而变成了1，或者本来是1而变成0。从现象来看，问题其实看起来并不是特别的严重，但是如果恰好某个重要的文件的某一位发生了变化，那么问题就大了，可能会导致此时文件不能运行，如果这个文件是一个影响系统的程序，那么直接将导致系统会出现问题，所以对于Nand Flash就出现了这样一个机制。它能纠正1个bit的错误和检测出2个bit的错误，对于1bit以上的错误无法纠正，而对于2bit以上的错误不能保证能检测。对于ECC其纠错算法是什么样的呢？
 
 1. 当往Nand Flash写入数据时候，每256个字节生成一个ECC校验，针对这些数据会生成一个ECC校验码，然后保存到对应的page的OOB数据区。
-2. 当读取Nand Flash的数据时候，每256个字节就会生成一个ECC校验，那么对于这些数据就会计算出一个ECC校验码，然后将从OOB中读取存储的ECC校验和计算的ECC校验想比较，
+2. 当读取Nand Flash的数据时候，每256个字节就会生成一个ECC校验，那么对于这些数据就会计算出一个ECC校验码，然后将从OOB中读取存储的ECC校验和计算的ECC校验相比较，
 
 
 
@@ -858,6 +858,7 @@ typedef struct hdrPartInfo_s {
 	unsigned short Good_blocks;
 } hdrPartInfo_t;
 
+/* sizeof hdrNandHeader_t = 56 byte */
 typedef struct hdrNandHeader_s {
 	hdrNandInfo_t nand;
 	char productVersion[32];

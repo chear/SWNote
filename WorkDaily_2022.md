@@ -84,8 +84,6 @@ For example generate source index for en75xx-loader
 
 
 
-
-
 ## 2022.03.01  Merge code into 'develop' branch
 
 to get my log by 
@@ -140,7 +138,7 @@ prepare create new user and generate public key by  ``ssh-keygen`` , then add th
 # ssh-keygen -t ed25519
 ```
 
-get docker image and register *gitlab-runner*
+get docker image and register *gitlab-runner* on *172.25.24.30*
 
 ```shell
 $ docker run -d -p 5000:5000 --restart=always --name registry -v /srv/registry:/var/lib/registry registry:2
@@ -562,6 +560,12 @@ IGMP proxy
 
 ## 2022.09.29
 
+to debugging ``zywifid``  ,  need patch *package/system/procd/patches/000-ZYXEL_init.patch*  , and cmd below:
+
+```shell
+# zywlctl loglevel set debug,info,warning
+```
+
 WPS  working process.
 
 ```text
@@ -580,4 +584,28 @@ zywifid     zyWifiWPSOnboarding --> zymtk_wps_onboarding
 										|--> zymtk_iwpriv_set_ssid
 										|--> zymtk_iwpriv_set_radio
 ```
+
+
+
+````shell
+ wps key poress                                mesh key press (controller)
+        |                                              |
+        |                                              |
+        v                                              v
+ZCFG_MSG_WPS_ACTION_CANCEL    ZCFG_MSG_WPS_START_ONBOARDING    ---->
+( esmd send to zywifid)                              |     beWifi_StartWpsOnboarding
+        |                                            |
+        |                                            |
+        |                                            v
+        v
+ZCFG_MSG_WPS_HWBTN_PRESS or 
+ZCFG_MSG_WPS_SWBTN_PRESS
+(esmd send to zywifid)
+        |
+        |
+        v
+wl_handle->beWifi_StartWpsHWPBC
+````
+
+
 

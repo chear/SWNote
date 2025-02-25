@@ -63,3 +63,14 @@ If a another bridge in the spanning tree does not send out a hello packet for a 
 # ifconfig mybridge up
 ```
 
+
+
+```c
+printk("{%02x, %02x, %02x},{%02x, %02x, %02x}",(&hdr->saddr)->in6_u.u6_addr16[0],
+	htonl((&hdr->saddr)->in6_u.u6_addr16[0]),htons((&hdr->saddr)->in6_u.u6_addr16[0]), 
+	htonl(0xff02) , htons(0xff02) , 0xff02);
+/*  output:
+	{fe3f, 3ffe0000, 3ffe},{2ff00000, 2ff, ff02}
+*/ 
+```
+

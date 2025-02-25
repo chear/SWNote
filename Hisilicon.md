@@ -1,7 +1,5 @@
 > [TOC]
 >
-> 
->
 
 #  Hisilicon Platform Introduction
 
@@ -228,7 +226,6 @@ for 5116
 ```shell
 $ ls openwrt/staging_dir/target-arm-openwrt-linux-uclibcgnueabi/root-sd5116/
 $ ls openwrt/build_dir/target-arm-openwrt-linux-uclibcgnueabi/root-sd5116/
-
 ```
 for 5663
 
@@ -451,7 +448,7 @@ hi # upg javaa
 
 
 
-## 1.7 gPon debug
+## 1.7 GPon debug
 
 OAM message at physical layer falls into three types: **embedded OAM**, **PLOAM** and **OMCI**.
 
@@ -636,5 +633,299 @@ typedef struct tagHI_UPG_FILE_HADER_ST
 	hi_uchar8            auc_pkg_total_length[HI_UPG_INT_LEN]; /*!< 升级包整包长度 */ 
     hi_uchar8            auc_head_crc[HI_UPG_INT_LEN];         /*!< CRC */ 
 } HI_UPG_FILE_HADER_ST;
+```
+
+
+
+# 3 Hisi 5682  Arch building
+
+![5672_startup](./img/hi_5682_startup_flow.bmp)
+
+## 3.1 Strcuture
+
+partition list
+
+```text
+#  partition list file
+#
+#  ENV_NAME     FILENAME            ADDR        LEN              FILEPATH
+    esbc         hi_esbc.bin        0x0           0x80000         hi_esbc.bin
+    boota0       hi_uboot.bin       0x80000       0x80000         hi_uboot.bin
+    boota1       hi_uboot.bin       0x100000      0x80000         null
+    boota2       hi_uboot.bin       0x180000      0x80000         null
+    boota3       hi_uboot.bin       0x200000      0x80000         null
+    bootb0       hi_uboot.bin       0x280000      0x80000         hi_uboot.bin
+    bootb1       hi_uboot.bin       0x300000      0x80000         null
+    bootb2       hi_uboot.bin       0x380000      0x80000         null
+    bootb3       hi_uboot.bin       0x400000      0x80000         null
+    enva         env.bin            0x480000      0x80000         null
+    envb         env.bin            0x500000      0x80000         null
+    fac          fac.bin            0x580000      0x200000        null
+    cfga         cfg.bin            0x780000      0x200000        null
+    cfgb         cfg.bin            0X980000      0x200000        null
+    log          log.bin            0xb80000      0x240000        null
+    pstore       log.bin            0xdc0000      0x40000         null
+    kernela      kernel.images      0xe00000      0x700000        kernel.images
+    kernelb      kernel.images      0x1500000     0x700000        kernel.images
+    rootfsa      rootfs.jffs2       0x1c00000     0x2D00000       rootfs.jffs2
+    rootfsb      rootfs.jffs2       0x4900000     0x2D00000       rootfs.jffs2
+    fwka         fwka.jffs2         0x7600000     0x2300000       fwk.jffs2
+    fwka         fwka.jffs2         0x9900000     0x2300000       fwk.jffs2
+    app.bin      app.bin            0xbc00000     0x4400000       null
+```
+
+files strcuture
+
+```shell
+$ tree -L 2
+├── build                # 编译脚本
+│   ├── build.py
+│   ├── build_script/    # 各模块编译实现
+│   └── chip_release.sh
+├── build.py -> build/build.py
+├── chip                 # 芯片差异化目录，以芯片代称命名
+│   └── xiling ,baiyun ,emei ,jiuzhai ,luofu 
+├── gateway              # 网关业务参考代码
+├── hisilicon            # 海思自研代码
+│   ├── atf              # ATF自研驱
+│   ├── basic            # 平台接口适配层
+│   ├── boot             # bootloader自研代
+│   ├── linux            # linux平台自研驱动代码 & inux平台自研业务代码
+│   └── teeos            # TEE OS自研代码
+├── interim_bin          # 海思提供的二进制文件
+├── open_source          # 开源组件
+├── platform             # 华为内部组件
+│   └── local
+├── project              # 工程相关配置
+│   └── config
+├── solution             # 维测代码
+│   └── rootfs
+├── tools                # 编译工具
+vendors                  # 第三方厂商代
+│    ├── drivers
+│    ├── Makefile.hsan
+│    ├── phy
+│    └── slic
+├── tmp                  # 临时编译目录，将需要编译的源码拷贝到该目录进行编译
+└── output               # 编译结果的存放目录
+```
+
+
+
+## 3.2 Start Building
+
+download  & building SDK
+
+```shell
+ $ svn co http://wx-svn.zyxel.cn/SW3-1/turnkey_trunk/hisi_trunk/HSAN_3.3.10.linux.076
+ $ cd sdk && python3 ./build.py --chip=xiling --vtype=debug
+```
+
+to debug and build sub-module
+
+```shell
+$ python3 ./build.py --chip=xiling --vtype=release --module=service
+## python3 build.py  --chip=<chip_name> --module=<module_mane> --name=<name>
+## <chip_name> 可以有如下 ['qishan', 'jiuzhai', 'xiling', 'wuxing', 'wutai', 'tiangong2', 'emei', 'luofu', 'baiyun', 'fenghuolun', 'tiangong1'] 选择错误不会进行编译
+## <module_mane> 主要在下面进行选择 ['sdk', 'uboot', 'userapp', 'linux', 'liteos', 'tee', 'itee_sdk', 'itee_srv', 'service', 'dts', 'vendors', 'opensrc', 'mkp', 'solution', 'vendors', 'micro', 'hisap', 'hgw', '2p5g_phy', 'all'] 默认进行全量编译（全量编译会删除所有中间文件重新编译）
+## <name>只有在编译的module为opensrc才有效，其中name为opensrc文件夹下面的开源软件名称
+
+
+## /*building boot/
+python3 build/build.py --chip=xiling --vtype=release --module=uboot
+
+## /*building kernel/
+python3 build/build.py --chip=xiling --vtype=release --module=linux
+```
+
+to set LED value
+
+```shell
+# echo 26 > /sys/class/gpio/export
+# echo out > /sys/class/gpio/gpio26/direction
+# echo 0 > /sys/class/gpio/gpio26/value
+# echo 1 > /sys/class/gpio/gpio26/value
+```
+
+## 3.3 Generate SMT image
+
+```shell
+#  partition list file
+#
+#
+#  ENV_NAME     FILENAME            ADDR        LEN              FILEPATH
+#
+    esbc         hi_esbc.bin        0x0           0x80000         hi_esbc.bin
+    boota0       hi_uboot.bin       0x80000       0x80000         hi_uboot.bin
+    boota1       hi_uboot.bin       0x100000      0x80000         null
+    boota2       hi_uboot.bin       0x180000      0x80000         null
+    boota3       hi_uboot.bin       0x200000      0x80000         null
+    bootb0       hi_uboot.bin       0x280000      0x80000         hi_uboot.bin
+    bootb1       hi_uboot.bin       0x300000      0x80000         null
+    bootb2       hi_uboot.bin       0x380000      0x80000         null
+    bootb3       hi_uboot.bin       0x400000      0x80000         null
+    enva         env.bin            0x480000      0x80000         null
+    envb         env.bin            0x500000      0x80000         null
+    fac          fac.bin            0x580000      0x200000        null
+    cfga         cfg.bin            0x780000      0x200000        null
+    cfgb         cfg.bin            0X980000      0x200000        null
+    log          log.bin            0xb80000      0x440000        null
+    pstore       log.bin            0xfc0000      0x40000         null
+    kernela      kernel.images      0x1000000     0x700000        kernel.images
+    kernelb      kernel.images      0x1700000     0x700000        kernel.images
+    rootfsa      rootfs.jffs2       0x1e00000     0x2D00000       rootfs.jffs2
+    rootfsb      rootfs.jffs2       0x4b00000     0x2D00000       rootfs.jffs2
+    fwka         fwka.jffs2         0x7800000     0x2300000       fwk.jffs2
+    fwka         fwka.jffs2         0x9b00000     0x2300000       fwk.jffs2
+    app.bin      app.bin            0xbe00000     0x4400000       null
+```
+
+
+
+make SMT images
+
+```shell
+# cd tmp/tools/hi_makeimage/
+# ./mkp /work/cpe-hisi/hisi_new/HSAN+3.3.13.linux/turnkey/ xiling
+```
+
+make upgrade image by following ,  final generate image at *tmp/tools/xiling_ker_fs_fwk.bin* for web upgrade
+
+```shell
+# cd tmp/tools
+# ./hi_mk_upgpkg xiling xiling
+```
+
+test for bob
+
+```shell
+# hi_ipc /etc/cli/pon/set_apd_lut -v type 1 offset 4 Vbr_min 34 Vbr_max 44 slope_H 0.03 slope_L 0.03 R_kohm 200 tempr0 36
+# hi_ipc /etc/cli/pon/read_i2c_len -v addr 0x51 reg 0x60 length 2
+# hi_ipc /etc/cli/pon/read_i2c -v addr 0x51 reg 0x60
+# hi_ipc /etc/cli/pon/read_i2c_word -v addr 0x51 reg 0x60
+```
+
+to debug module for hi5682  by ``dbgcfg``
+
+```shell
+# dbgcfg omci.lib:0x80:0    // open omci debug
+# dbgcfg omci.file:0x80:1   //
+
+# dbgcfg netapp:0x80:0      // Open debug
+# dbgcfg netapp:0x0:0       // close debug message
+
+## To debug cwmp and cm 
+# dbgcfg cwmp:8:0
+# dbgcfg cm.lan:8:0
+```
+
+Ymodem *xiling* chip boot with bootram:
+
+```shell
+##带ddr3的单板使用Ymodem加载ddr3镜像hi_ddr_init_xiling_ddr3.bin
+bootrom # loady 0x11804000
+bootrom # go 0x11804000
+
+##loading for u-boot.bin
+bootrom # loady 0x80000000
+bootrom # go 0x80000000
+```
+
+easy to compose released  sdk from Hisi
+
+```shell
+# mkdir turnkey
+# tar -xf HSAN_3.3.10.linux.0960.tar.gz --strip-components=1 -C turnkey
+# tar -xf HSAN_3.3.10.linux.0961.tar.gz --strip-components=1 -C turnkey
+# cd turnkey
+# ./build.py --chip=emei --vtype=release
+```
+
+
+
+# 4 hi_5682 HSAN_3.5 T12 SDK
+
+|      | Borad ID  | Vendor ID     | Type     |
+| ---- | --------- | ------------- | -------- |
+| v200 | 5,        | hsan          | xgpon    |
+| v300 | 13, 30290 | vendor3, hsan | cmcc_hgu |
+
+Building step:
+
+```mermaid
+graph LR
+A(1.cbuild.py) --> B(delete_all)
+A --> C(prebuild_all)
+A --> D(build_all)
+D --> D_1(cmake)
+D_1 -->|Makefile| D_2(make)
+A --> E(build_mkp)
+```
+
+dtb structure
+
+![dbt](./img/hsan_dtbo.bmp)
+
+## Building command
+
+v200 building and make upgrade image
+
+```shell
+$ ./cbuild.py -c=xiling -p=xgpon -t=release
+
+## generate files in ./output/xiling_xgpon_release/images/upgrade_pkg/
+##		├── V1.1.0.AA.BB.bin  
+##		├── V1.1.0.AA.BB1.bin  
+##		├── xiling_multi_upg.bin  
+##		└── xiling_multi_upg.ini
+$ cd tools/hosttool/hi_multi_upg_package
+$ ./make_upgrade_package xiling xgpon release /work/cpe-hisi/sdk xgpon
+
+## to package FW image
+$ cd tmp/xiling_xgpon_release/ && make build_mkp V=s
+```
+
+v300 building and make upgrade image , does no support *bootram* update bootloader
+
+```shell
+$ ./cbuild.py -c=tiangong0 -p=cmcc_hgu -t=release
+
+## generate files in 
+## ./tmp/tiangong0_cmcc_hgu_release/tools/hosttool/hi_multi_upg_package/
+##		├── tiangong0_ker_fs_fwk.bin
+##		├── tiangong0_ker_fs_multi.bin
+##		├── tiangong0_ker_fs_multi.ini
+##		└── tiangong0_ker_fs_sign.bin
+$ cd tmp/tiangong0_cmcc_hgu_release/tools/hosttool/hi_multi_upg_package
+$ ./hi_mk_upgpkg tiangong0 cmcc_hgu release rw
+```
+
+To generate  SMT image
+
+![dbt](./img/hsan_t12_smt.bmp)
+
+```shell
+## to build SMT image
+# cd tools/hosttool/hi_make
+# ./mkp ~/feat-migrate-to-C2020_baseline/sdk tiangong0 cmcc_hgu release 64 2048 128 4
+```
+
+Normally cmd:
+
+```shell
+## enable seriall port
+# stty -F /dev/console -ixon -ixoff
+
+## debug module
+# dbgcfg web:8:0
+
+## display board_id & vendor_id
+# xxd /sys/firmware/devicetree/base/vendor_id | awk '{print $6}'
+# xxd /sys/firmware/devicetree/base/board_id | awk '{print "0x" $2$3}'
+
+## to check DDR memory ,'0x1019C004' for DDR4 , '0xDFDF0933' for DDR3
+# devmem 0x10100c14 32
+0x1019C004
+
 ```
 

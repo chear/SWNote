@@ -50,7 +50,7 @@ Kernel modules can register to listen at any of these hooks. A module that regis
 
  A packet selection system called *IP Tables* has been built over the net-filter framework. It is a direct descendent of **ipchains** ( which where from *kernel 2.2* , and replaced by **iptables** since *kernel 2.4* ,that came from **ipfwadm**, that came from BSD's **ipfw** IIRC), with extensibility. 
 
-The **[iptables](<https://blog.csdn.net/longbei9029/article/details/53056744>)** has the following 4 built-in tables. **Filter, NAT, Mangle, Raw**  ,for the chain in other word the **chain = hook** 
+The **[iptables](<https://blog.csdn.net/longbei9029/article/details/53056744>)** has the following 4 built-in tables. **RAW, Mangle, NAT, Filter**  , packet should be match the rules in these four tables in the order of **sequentially** , for the chain in other word the **chain = hook** 
 
 ![netfileter_tables](../img/netfilter_tables.png)
 
@@ -221,4 +221,39 @@ static unsigned int wlan_share_option82_func(
 
 
  
+
+### Sample: 
+
+#### EX3501-T1_TT LAN PC can't receive DNS packet
+
+match rule for DNS query packet send from LAN PC.
+
+```shell
+### create rules to accept packet for udp protocol and src_ip is 192.168.1.185 
+### sended from lan PC.
+# iptables -I INPUT -t mangle -p udp -s 192.168.1.185 -j ACCEPT
+
+### display send stream for DNS requirment.
+# iptables -t mangle -L INPUT -nv
+Chain INPUT (policy ACCEPT 155 packets, 252K bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+    1    58 ACCEPT     udp  --  *      *       192.168.1.185        0.0.0.0/0    
+
+### delete rules
+# iptables -D INPUT -t mangle -p udp -s 192.168.1.185 -j ACCEPT
+```
+
+match rule for DNS packet query response received from ETH_WAN.
+
+```shell
+### create rules to accept packet for received from DNS response
+# iptables -I OUTPUT -t mangle -p udp -d 192.168.1.185 --sport 53 -j ACCEPT
+
+# iptables -t mangle -L OUTPUT -nv
+Chain OUTPUT (policy ACCEPT 4960 packets, 7726K bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+   19  3464 ACCEPT     udp  --  *      *       0.0.0.0/0            192.168.1.185        udp spt:53
+
+# iptables -D OUTPUT -t mangle -p udp -d 192.168.1.185 --sport 53 -j ACCEPT
+```
 

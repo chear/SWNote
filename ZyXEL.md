@@ -330,18 +330,18 @@ $ make production
 The **zld.bin (tcboot.bin)** size for 128k ,  and layout by following.
 
 ```Text
-		 0x0000 --------------|
+         0x0000 --------------|
               |     ubifs     |
-		 0x3f00 --------------|
-	          |     mi.conf   |
-		 0x3ff7 --------------|
-			  |               |
-		0x10000 --------------|  __boot_start
-              |     boot.bin  |
-			  |			      |
-			  |---------------|  __boot_end
+         0x3f00 --------------|
+              |     mi.conf   |
+         0x3ff7 --------------|
               |               |
-	    0x20000 ----------XXXX|  last 4 bytes for crc,32 bytes for hash256.
+        0x10000 --------------|  __boot_start
+              |     boot.bin  |
+              |             |
+              |---------------|  __boot_end
+              |               |
+        0x20000 ----------XXXX|  last 4 bytes for crc,32 bytes for hash256.
 ```
 
 The **ras.bin** compose by  **ZyXEL_Header + kernel  +rootfs **.

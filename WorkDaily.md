@@ -380,7 +380,7 @@ AsicSetSyncModeAndEnable(): NotSupportedFunc for this arch(HIF_MT)!
 [42949514460ms]PLOAM: Send REI message.(3A080000 00000900 00000000)
 ```
 
-(more detail at [gPonKownledge](pdf_resource/GPON_Knowledge_Introduce.pptx)  , the following sequence of events to register on OLT  by  **1) serial number  ; 2) password ; 3) LOID** )
+(more detail at [GponKownledge](pdf_resource/GPON_Knowledge_Introduce.pptx)  , the following sequence of events to register on OLT  by  **1) serial number  ; 2) password ; 3) LOID** )
 
 
 
@@ -871,28 +871,28 @@ HSAN partition info based on H2-3
 
 ```text
                     |--------------------|-----------------------------------
-                    |       Java B       |	java.bin,zize=0xE00000
+                    |       Java B       |  java.bin,zize=0xE00000
             0x6000000 -------------------|
-                    |       Java A       |	
+                    |       Java A       |
             0x4200000 -------------------|-----------------------------------
                     |                    |
-                    |		rootfs B	 |  root.squshfs,size=0x1900000              
+                    |       rootfs B     |  root.squshfs,size=0x1900000
             0x2900000 -------------------|
                     |                    |
-                    |        rootfs A	 |	root.squshfs,size=0x1900000
- 	        0x1000000 -------------------|-----------------------------------
+                    |        rootfs A    |  root.squshfs,size=0x1900000
+            0x1000000 -------------------|-----------------------------------
                     |                    |
-                    |	  	kernel B	 |	kernel.images size=0x50000
+                    |       kernel B     |  kernel.images size=0x50000
              0xB00000 -------------------|
                     |                    |
                     |       kernel A     |  
              0x600000 -------------------|-----------------------------------
-                    |		ENV          |	env.bin, size=0xA0000
- 	          0xc0000 -------------------|
+                    |       ENV          |  env.bin, size=0xA0000
+              0xc0000 -------------------|
                     |     	ENV          |  env.bin, size=0xA0000
- 	          0x20000 -------------------|-----------------------------------
-                    |    	HI_Boot      |	hi_boot.bin,size=0x20000
- 	          0x00000 -------------------|
+              0x20000 -------------------|-----------------------------------
+                    |       HI_Boot      |  hi_boot.bin,size=0x20000
+              0x00000 -------------------|
 ```
 
 

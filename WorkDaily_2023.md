@@ -276,7 +276,7 @@ CONFIG_PACKAGE_libncurses=y
 
 
 
-### 2023.2.7 Linux LED structure
+## 2023.2.7 Linux LED structure
 
 
 
@@ -286,7 +286,7 @@ CONFIG_PACKAGE_libncurses=y
 
 
 
-### 2023.2.13  Kernel & Rootfs checksum incorrect
+## 2023.2.13  Kernel & Rootfs checksum incorrect
 
 *openwrt-mediatek-ex3320t0-ex3320-t0-squashfs-sysupgrade.bin*  layout
 
@@ -326,9 +326,9 @@ uint16_t zyxelChecksum(uint8_t *start, uint32_t len)
 
 
 
-### 2023.3.21 coverity  for review code
+## 2023.3.21 coverity  for review code
 
-#### 1. start coverity GUI
+### 1. start coverity GUI
 
 ```shell
 $ cov-install-gui -d ${PREVENT_PATH}/dir --password 1234 --port 2391 --product EX33320-T0
@@ -339,7 +339,7 @@ Note ( ``sh -n``  只读取shell脚本，检测语法错误，但不实际执行
 
 
 
-#### 2. create environment to scan code
+### 2. create environment to scan code
 
 *coverity*  is tools to scan static source code to analyse , and then report memory leak or not release point etc. 
 
@@ -351,7 +351,7 @@ $ cp do_cov.sh {SOURCE_PATH} && ./do_cov.sh all sw3 100 EX3320-T0_CAT MTK
 
 
 
-#### 4.  SMTP client to auto send mail
+### 4.  SMTP client to auto send mail
 
 */etc/s-nail.rc*
 
@@ -371,7 +371,7 @@ $ echo -e "Summary of result \n" `grep -Pz '(?s)Total Results:.*</ul>'  -o ./Dai
 
 
 
-#### 3.  create docker image and import to CICD
+### 3.  create docker image and import to CICD
 
 ```shell
 $ ropd_gitlab_runner
@@ -381,21 +381,21 @@ $ ropd_gitlab_runner
 
 
 
-### 2023.04.14  Send mail automatic when daily build faile
+## 2023.04.14  Send mail automatic when daily build faile
 
-#### 1. create new docker image to run *gitlab-runner*
+### 1. create new docker image to run *gitlab-runner*
 
 ```shell
 $ docker run --rm -it cpe-docker-registry.zyxel.com:5000/opal2_mt7981_image_ubuntu_18_04_64bit:v1.03 bash
 ```
 
-#### 2. install  *heirloom-mailx* by , use mailx to send mails should config *.mailrc*
+### 2. install  *heirloom-mailx* by , use mailx to send mails should config *.mailrc*
 
 ```shell
 $ apt install heirloom-mailx
 ```
 
-#### 3. script to send mail.
+### 3. script to send mail.
 
 ```shell
 #!/bin/sh
@@ -417,7 +417,7 @@ echo "check\n commited by ${AUTH_MAIL} \n ${CI_COMMIT_DESCRIPTION} .\n " | heirl
 
 
 
-### 2023.05.15  GN28L97 from SamTech for Hisi 5682
+## 2023.05.15  GN28L97 from SamTech for Hisi 5682
 
 - Look-Up Table (LUT)
 - Automatic Power Control (APC)
@@ -452,7 +452,7 @@ command to set GN28L97 chip value
 
 
 
-### 2023.05.31 update zyrepo cicd setting for AX1800 & AX3000
+## 2023.05.31 update zyrepo cicd setting for AX1800 & AX3000
 
 The main branch for ax1800 and ax3000
 
@@ -466,7 +466,7 @@ The main branch for ax1800 and ax3000
 
 
 
-### 2023.06.01  hi_5682 upgrade SDK  from HSAN_3.3.10.linux.076 to HSAN_3.3.10.linux.080
+## 2023.06.01  hi_5682 upgrade SDK  from HSAN_3.3.10.linux.076 to HSAN_3.3.10.linux.080
 
 *hisilicon/boot/bootloader/uboot/configs/xiling_defconfig*
 
@@ -487,13 +487,13 @@ The main branch for ax1800 and ax3000
 
 
 
-### 2023.07.28  XTX flash chip for XT26G12D  conclution
+## 2023.07.28  XTX flash chip for XT26G12D  conclution
 
 开着 ECC 写，需要开着 ECC 读，关着ECC 写，就需要关着 ECC读
 
 
 
-### 2023.08.10 Merge Hisi SDK HSAN_3.3.10.linux.097
+## 2023.08.10 Merge Hisi SDK HSAN_3.3.10.linux.097
 
 ```shell
 mkdir turnkey
@@ -508,7 +508,7 @@ svn add --no-ignore turnkey
 
 
 
-### 2023.09.07  IPV6 certification
+## 2023.09.07  IPV6 certification
 
 test env:
 
@@ -537,7 +537,7 @@ to make
 
 
 
-### 2023.10.10  RealTek H3-2r For Gansu
+## 2023.10.10  RealTek H3-2r For Gansu
 
 build sdk 
 
@@ -600,7 +600,7 @@ lose package
 
 
 
-### 2023.12.19  Building Airoha SDK for tcboot
+## 2023.12.19  Building Airoha SDK for tcboot
 
 start docker by ``ropd_an7552``
 
@@ -616,7 +616,7 @@ start docker by ``ropd_an7552``
 
 
 
-### 2023.12.29  Airoha SDK porting to OPAL u-boot "data abort" issue
+## 2023.12.29  Airoha SDK porting to OPAL u-boot "data abort" issue
 
 This issue caused by memory align, checked by blog [u-boot data abort](<https://blog.csdn.net/agave7/article/details/102572974?utm_medium=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-3.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-3.control>) from MSDN.
 
@@ -636,7 +636,7 @@ for memory aligin [reference by](<https://blog.csdn.net/qq_39397165/article/deta
 
 
 
-### 2024.01.09  Zyxel Firmware Signature
+## 2024.01.09  Zyxel Firmware Signature
 
 Download from [openssl_1.1.1t](<https://github.com/openssl/openssl/releases/tag/OpenSSL_1_1_1t>) ,  make and install by *openssl-1.1.1t/INSTALL* ,  final to get link library by ``ldd /usr/local/bin/openssl``.
 
@@ -671,9 +671,9 @@ $ diff -rq dl/ ~/EXTDISK2/AN7552/SDK_V033/openwrt-21.02/dl/ |grep "/home/chear/E
 
 
 
-#### OPAL AN7552 to signature image and verify
+### OPAL AN7552 to signature image and verify
 
-1. to generate private and public key .
+#### 1. to generate private and public key .
 
 ```shell
 ### generate ras_private.key
@@ -703,7 +703,7 @@ $ diff -rq dl/ ~/EXTDISK2/AN7552/SDK_V033/openwrt-21.02/dl/ |grep "/home/chear/E
 (openssl rsa -pubin -inform DER -in rsa_public.pem -text -noout)
 ```
 
-2. building ``zyimagesign``  host executable by 
+#### 2. building ``zyimagesign``  host executable by 
 
 ```shell
 ## zyxel_private/zyxel/zyhosttool/zyhosttool-1.0/zyimagesign.c
@@ -712,13 +712,13 @@ $ diff -rq dl/ ~/EXTDISK2/AN7552/SDK_V033/openwrt-21.02/dl/ |grep "/home/chear/E
 
    import  private key for encrypt by  ``bin2h -i private.key -o privatekey.h -n ras_private`` within package *Makefile*  , and the *private.key* copy from  *defconfig/${profile}/openssl_rsa_keys/rsa_private.key*
 
-3.  encrypt command by 
+#### 3.  encrypt command by 
 
 ```shell
 # $(STAGING_DIR_HOST)/bin/zyimagesign -s rsa.sign -i $(IMAGE_FILENAME)
 ```
 
-4. encrypt & decrypt for upgrade FW
+#### 4. encrypt & decrypt for upgrade FW
 
 ```shell
 # openssl enc -aes-256-cbc -pbkdf2 -pass pass:4B00_@5pWdazR1TqL7vHx -in ras_signatured.bin -out ras_signatured_enc.bin

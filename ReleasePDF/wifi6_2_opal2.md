@@ -18,7 +18,7 @@
 
 升级 FW 需要预先安装如下软件：
 
-- 软件 ( [MobaXterm_Installer_v20.6.zip](<\\172.25.5.39\cpeswdoc\cpesw\Software>)  or [Xshell-6.0.0197p.exe](<\\172.25.5.39\cpeswdoc\cpesw\Software>) , 以及 [tftp](<\\172.25.5.39\cpeswdoc\cpesw\Software>) )
+- 软件 ( [MobaXterm_Installer_v20.6.zip](file://172.25.5.39/cpeswdoc/cpesw/Software/MobaXterm_Installer_v20.6.zip)  or [Xshell-6.0.0197p.exe](<file://172.25.5.39/cpeswdoc/cpesw/Software/Xshell-6.0.0197p.exe>) , 以及 [tftp](<file://172.25.5.39/cpeswdoc/cpesw/Software/tftpd32.329.zip>) )
 - 串口连接工具，以及串口驱动
 
 ## 2.1 搭建升级环境

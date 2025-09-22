@@ -900,13 +900,26 @@ $ cd tmp/tiangong0_cmcc_hgu_release/tools/hosttool/hi_multi_upg_package
 $ ./hi_mk_upgpkg tiangong0 cmcc_hgu release rw
 ```
 
+to building code for CMCC
+
+```shell
+### buliding tiangong0
+# /building.sh HX5-9hs
+
+### buliding xiling
+# /building.sh HX5-9h
+
+### generate smt image
+# env SW_VERSION="V50.BA1.03" SOFT_BOARDID="0x0003A390" ./building_nand.sh HX5-9hs
+```
+
 To generate  SMT image
 
 ![dbt](./img/hsan_t12_smt.bmp)
 
 ```shell
 ## to build SMT image
-# cd tools/hosttool/hi_make
+# cd tools/hosttool/hi_makeimage
 # ./mkp ~/feat-migrate-to-C2020_baseline/sdk tiangong0 cmcc_hgu release 64 2048 128 4
 ```
 

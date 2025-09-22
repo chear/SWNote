@@ -41,11 +41,30 @@ ICache (Instruction Cache) and DCache (Data Cache) are types of cache memory use
 +-----------------+
 ```
 
-(Note: 调试如 u-boot 中自带的 "helloworld.bin" standalone 程序，除了需要注意CONFIG_STANDALONE_LOAD_ADDR 外，还需要在用  ``go [address]`` 加载程序之前先清理 icache 和 dcache)
+**(Note: 调试如 u-boot 中自带的 "helloworld.bin" standalone 程序，除了需要注意CNFIG_STANDALONE_LOAD_ADDR 外，还需要在用  ``go [address]`` 加载程序之前先清理 icache 和 dcache)**
+
+# 2. TPL and SPL
+
+**TPL (Tertiary Program Loader)** ,  **SPL(Second Program Loader)**
+
+TPL 必须适配 SRAM 的容量限制（通常为几十 KB），因此代码需高度精简.
+
+## 启动流程
+
+1. BootROM 
+   - 芯片上电后，BootROM 从存储介质（eMMC/SD）加载 TPL 到 SRAM 并执行 。
+2. TPL 阶段 
+   - 初始化 DDR，跳转回 BootROM 。
+3. SPL 阶段 
+   - BootROM 加载 SPL 到 DDR，SPL 完成剩余初始化并加载 U-Boot 。
+4. U-Boot 阶段 
+   - 加载内核、设备树并启动系统
+
+在 U-Boot 2023 中，**TPL 是平台启动的关键阶段** ，通过分阶段初始化（TPL → SPL → U-Boot）解决了 SRAM 容量限制问题，并实现了 DDR 初始化的开源化。其设计体现了嵌入式系统中“渐进式初始化”的典型思想
 
 
 
-# 2. FIT (Flattened Image Tree) Image
+# 3. FIT (Flattened Image Tree) Image
 
 用于 U-Boot 引导加载程序。FIT 镜像格式允许将多个镜像（如内核、设备树、文件系统等）打包到一个单一的镜像文件中，并且可以包含镜像的元数据和签名信息。
 
